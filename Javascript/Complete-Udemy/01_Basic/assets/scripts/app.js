@@ -13,20 +13,28 @@ function createAndWriteOutput(operator, resultBeforeCalc, numberForCalc) {
   outputResult(currentResult, calculationDescription); // from vendor.js
 }
 
+function writeToLog(
+  operationIdentifier,
+  prevReselt,
+  operationNumber,
+  newReselt
+) {
+  const logEntry = {
+    operation: operationIdentifier,
+    prevResult: prevReselt,
+    number: operationNumber,
+    result: newReselt,
+  };
+  logEntries.push(logEntry);
+  console.log(logEntries);
+}
+
 function add() {
   const enteredNumber = getUserNumberInput();
   const initialResult = currentResult;
   currentResult += enteredNumber;
   createAndWriteOutput("+", initialResult, enteredNumber);
-  const logEntry = {
-    operation: 'ADD',
-    prevResult: initialResult,
-    number: enteredNumber,
-    result: currentResult
-  };
-  logEntries.push(logEntry);
-  console.log(logEntry.operation)
-  console.log(logEntries);
+  writeToLog("ADD", initialResult, enteredNumber, currentResult);
 }
 
 function subtract() {
@@ -34,6 +42,7 @@ function subtract() {
   const initialResult = currentResult;
   currentResult -= enteredNumber;
   createAndWriteOutput("-", initialResult, enteredNumber);
+  writeToLog("SUBTRACT", initialResult, enteredNumber, currentResult);
 }
 
 function multiply() {
@@ -41,6 +50,7 @@ function multiply() {
   const initialResult = currentResult;
   currentResult *= enteredNumber;
   createAndWriteOutput("*", initialResult, enteredNumber);
+  writeToLog("MULTIPLY", initialResult, enteredNumber, currentResult);
 }
 
 function divide() {
@@ -48,6 +58,7 @@ function divide() {
   const initialResult = currentResult;
   currentResult /= enteredNumber;
   createAndWriteOutput("/", initialResult, enteredNumber);
+  writeToLog("DIVIDE", initialResult, enteredNumber, currentResult);
 }
 
 // add() 이렇게 하면, 자바스크립트는 해당 문장이 나올 때마다 함수를 실행할 것.
