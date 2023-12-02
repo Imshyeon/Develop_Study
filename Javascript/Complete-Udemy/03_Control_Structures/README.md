@@ -28,9 +28,26 @@
 
     hobbies === moreHobbies // false
     ```
-    
+
 2. 조건문
    1. 복합적인 조건문 만들기
+   2. 연산자의 우선 순위 : 기본적인 수학적인 규칙 적용 + **[참고](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Operators/Operator_precedence)** : &&가 || 보다 우선순위가 높다.
+   3. **Falsy and Truthy Values** : 거짓 같은 / 사실 같은 &rarr; Javascript의 특수한 경우로 연산자 비교 없이 if문에 하나의 값을 입력하거나 변수에 값을 넣는 경우(변수만 넣는 경우), Javascript가 변수와 값을 살펴보고 참 또는 거짓을 반환.
+      1. `if(변수)`인 경우, 변수가 만약 0 이라면 => `false`
+      2. 변수가 음수를 포함한 어떤 값이라면 => `true`
+      ```javascript
+        if(!enteredNumber){   
+        return;
+        }
+       ```
+      - enteredNumber에 Falsy(0)가 들어가면, 조건문은 !Falsy니까 참이 된다. &rarr; return이 실행 
+      - enteredNumber가 음수를 포함한 어떤 값(Truthy)이면, !Truthy니까 거짓이 된다. &rarr; 조건문을 만족하지 못하고 조건문 안을 수행하지 않음. &rarr; 계속 진행. 
+
+      3. ""와 같은 빈 문자열 => `false`
+      4. 빈 문자열이 아닌 어떤 문자열(false 포함) => `true`
+      5. {}, [], 모든 object 또는 array => `true`
+      6. `null`, `undefined`, `NaN` => `false`
+
 
 3. 반복문
 4. 오류 처리
