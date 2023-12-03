@@ -8,3 +8,5 @@
 <br>
 
 🚀 [03_Control_Structures](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/03_Control_Structures) : 조건문, 반복문, 오류처리, boolean 비교 연산자에 대해 다뤘습니다!
+1. [Calculator](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/03_Control_Structures/Calculator) : 계산기 로직, 주로 조건문에 대한 내용을 담았습니다.
+2. [Monster_Killer](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/03_Control_Structures/Monster_Killer) : Udemy 강사가 제공해주는 예시 프로젝트 입니다.
