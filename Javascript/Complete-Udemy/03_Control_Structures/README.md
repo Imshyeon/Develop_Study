@@ -48,7 +48,33 @@
       5. {}, [], 모든 object 또는 array => `true`
       6. `null`, `undefined`, `NaN` => `false`
 
-    **Javascript는 if에 전달한 값을 불값으로 강제 변환하려고 한다. 그런데 실제로 값을 변환하지는 않는다. 즉, 비교를 하는데 일시적으로 사용되는 새로운 불리언을 생성.**
+        **Javascript는 if에 전달한 값을 불값으로 강제 변환하려고 한다. 그런데 실제로 값을 변환하지는 않는다. 즉, 비교를 하는데 일시적으로 사용되는 새로운 불리언을 생성.**
 
+   4. 삼차 연산자
+      ```javascript
+      const userName = isLogin ? 'Max' : null;  // 로그인을 한 것이 참(혹은 truthy) -> Max. 거짓(falsy)이면 null.
+      ```
+      읽기 어려운 경우에는 if문을 쓰지만 짧고 쉬운 문장의 경우에는 위와 같이 삼차 연산자를 쓰자.
+
+   5. 논리적 연산자
+      1. `!!` : 부정을 부정한다. <br>
+         &rarr; `!!""` : 실제 거짓 불리언.<br>
+         &rarr; `!!1` : 실제 참 불리언.
+      2. `||` : OR 연산자 앞에 있는 입력값을 확인, 입력값이 거짓이면 OR 연산자 뒤의 값을 확인. OR&AND => 참/거짓으로 반환하지 않음. <br>
+         &rarr; OR는 실제 불리언으로 전환하지 않고 첫번째 truthy값을 반환. 원래 값을 유지하고 반환.
+         ```javascript
+            const name = someInput || "Max";    // Max 반환
+         ```
+      3. `&&` : 마지막으로 확인한 값을 반환.
+         ```javascript
+         const name = isLoggedInt && 'Max'; // isLoggedIn이 참 혹은 truthy인 경우 마지막으로 확인한 값을 반환 -> Max 반환.
+         ```
+
+      4. 실습
+         ```javascript
+         const userInput = ''; // undefined
+         const isValidInput = userInput ? true : false; // userInput에 값이 있으면 true, 그렇지 않으면 false 반환
+         
+         ```
 3. 반복문
 4. 오류 처리
