@@ -178,11 +178,29 @@
       2. `continue`로 반복 제어하기
          ```javascript
          for (let i = 0; i < 5; i++) {
-            if(i===3){
-               continue;   // break가 아니라 다음 코드가 실행.
-            } 
+           if (i === 3) {
+             continue; // break가 아니라 다음 코드가 실행.
+           }
            console.log(i);
-         }  // 0, 1, 2, 4 가 실행.
+         } // 0, 1, 2, 4 가 실행.
+         ```
+      3. 레이블 문장으로 제어하기
+         ```javascript
+         let j = 0;
+         outerWhile: do {  // 반복문의 이름을 설정.
+           console.log("Outer", j);
+           innerFor: for (let k = 0; k < 5; k++) {
+             if (k === 3) {
+               break outerWhile; // continue outerWhile ===> dangerous! infinite loop!
+             }
+             console.log("Inner", k);
+           }
+           j++;
+         } while (j < 3);
+         // Outer 0
+         // Inner 0
+         // Inner 1
+         // Inner 2 로 결과가 나옴.
          ```
 
 4. 오류 처리
