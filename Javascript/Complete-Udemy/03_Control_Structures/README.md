@@ -73,8 +73,39 @@
       4. 실습
          ```javascript
          const userInput = ''; // undefined
-         const isValidInput = userInput ? true : false; // userInput에 값이 있으면 true, 그렇지 않으면 false 반환
-         
+         const isValidInput = !!userInput; // userInput에 값이 있으면 true, 그렇지 않으면 false 반환
+         isValidInput // false
+         !userInput // true
+         !!userInput // false
+
+
+         const userName = userInput || 'Max';
+         userName // 'Max'
+         const realUserInput = 'Manu';
+         const realUserName = realUserInput || 'Max';
+         realUserName // 'Manu'
+
+
+         const isLoggedIn = true;
+         const shoppingCart = isLoggedIn && ['Books']
+         shoppingCart // ['Books']
+         isLoggedIn = false
+         isLoggedIn && ['Books'] // false
+         null && ['Books'] // null
+
+
+         isLoggedIn = true
+         isLoggedIn && "" // "" => 첫번째 값이 참이면 언제나 두번째 값을 반환. 첫번째 값이 거짓이면 언제나 첫번째 값을 반환.
+
+
+         const userName = 'Max';
+         const altName = '';
+         console.log(altName || ''); // 둘 다 Falsy이지만 첫번째가 falsy니까 두번째 반환 -> '' 출력
+         console.log(userName && 'Anna'); // 'Anna' => userName 은 truthy니까
+         console.log(altName && 'Anna'); // 'Anna' => altName이 Falsy
+         console.log(userName && ''); // '' => userName Truthy
          ```
+
+
 3. 반복문
 4. 오류 처리
