@@ -172,7 +172,17 @@
         j++;
       } while (j < 3);
       ```
+
    5. 제어하기
       1. `break`로 반복문 제어하기
       2. `continue`로 반복 제어하기
+         ```javascript
+         for (let i = 0; i < 5; i++) {
+            if(i===3){
+               continue;   // break가 아니라 다음 코드가 실행.
+            } 
+           console.log(i);
+         }  // 0, 1, 2, 4 가 실행.
+         ```
+
 4. 오류 처리
