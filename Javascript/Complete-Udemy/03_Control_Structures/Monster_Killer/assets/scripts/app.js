@@ -15,6 +15,7 @@ const enteredValue = prompt("Maximum life for you and the monster", "100");
 
 let chosenMaxLife = parseInt(enteredValue);
 let battelLog = [];
+let lastLoggedEntry;
 
 // 숫자로 변환할 수 없는 값을 입력했을 경우
 if (isNaN(chosenMaxLife) || chosenMaxLife <= 0) {
@@ -217,10 +218,13 @@ function printLogHandler() {
   // }
   let i = 0;
   for (const logEntry of battelLog) {
-    // 완전 새로 생성하는거기 때문에 const ---> index에는 접근하지 못한다는 걸 알고있자.
-    console.log(`#${i}`);
-    for (const key in logEntry) {
-      console.log(`${key} => ${logEntry[key]}`);
+    if (!lastLoggedEntry && lastLoggedEntry!== 0 || lastLoggedEntry < i) {
+      console.log(`#${i}`);
+      for (const key in logEntry) {
+        console.log(`${key} => ${logEntry[key]}`);
+      }
+      lastLoggedEntry = i;
+      break;
     }
     i++;
   }
