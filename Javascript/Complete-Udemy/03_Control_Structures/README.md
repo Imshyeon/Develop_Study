@@ -106,7 +106,9 @@
          console.log(userName && ''); // '' => userName Truthy
          ```
 
+   6. Switch - Case
+
+
 3. 반복문
-   1. Switch - Case
    
 4. 오류 처리
