@@ -200,23 +200,30 @@ function healPlayerHandler() {
 }
 
 function printLogHandler() {
+  // ============ for =============
   for (let i = 0; i < 3; i++) {
     console.log("------------");
+  }
+  // ============ while =============
+  let j = 0;
+  while (j < 3) {
+    console.log("--------");
+    j++;
   }
 
   // ============ for ~ of / in =============
   // for (let i = 0; i < battelLog.length; i++){
   //   console.log(battelLog[i])
   // }
-  let i = 0
-  for (const logEntry of battelLog) {// 완전 새로 생성하는거기 때문에 const ---> index에는 접근하지 못한다는 걸 알고있자.
+  let i = 0;
+  for (const logEntry of battelLog) {
+    // 완전 새로 생성하는거기 때문에 const ---> index에는 접근하지 못한다는 걸 알고있자.
     console.log(`#${i}`);
     for (const key in logEntry) {
-      console.log(`${key} => ${logEntry[key]}`)
+      console.log(`${key} => ${logEntry[key]}`);
     }
     i++;
-  } 
-  
+  }
 }
 
 attackBtn.addEventListener("click", attackMonsterHandler);
