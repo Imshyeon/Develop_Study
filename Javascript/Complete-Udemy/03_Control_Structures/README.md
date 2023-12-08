@@ -108,7 +108,31 @@
 
    6. Switch - Case
 
-
 3. 반복문
+   1. for loop
+      ```javascript
+      for (let i = 0; i < 3; i++){
+         console.log(i);
+      }
+      ```
+   2. for-of loop : 배열의 모든 요소에 대해 반복
+      ```javascript
+      for (const el of array){
+         console.log(el);
+      }
+      ```
+   3. for-in loop : 객체의 모든 키에 대해서 반복
+      ```javascript
+      for (const key in  obj){
+         console.log(key);
+         console.log(obj[key]);
+      }
+      ```
+   4. while loop : 어떤 조건이 충족되는 동안 반복 수행
+      ```javascript
+      while (isLoggedIn){
+         ...
+      }
+      ```
    
 4. 오류 처리
