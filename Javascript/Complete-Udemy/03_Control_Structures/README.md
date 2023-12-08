@@ -111,7 +111,7 @@
 3. 반복문
    1. for loop
       ```javascript
-      for (let i = 0; i < 3; i++){
+      for (let i = 0; i < 3; i++){  // for(;;) => 무한 반복문.
          console.log(i);
       }
       ```
