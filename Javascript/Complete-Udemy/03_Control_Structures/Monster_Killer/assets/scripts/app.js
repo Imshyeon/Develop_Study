@@ -217,9 +217,11 @@ function printLogHandler() {
   //   console.log(battelLog[i])
   // }
   let i = 0;
+  console.log(i, lastLoggedEntry);
   for (const logEntry of battelLog) {
-    if (!lastLoggedEntry && lastLoggedEntry!== 0 || lastLoggedEntry < i) {
-      console.log(`#${i}`);
+    console.log(i, lastLoggedEntry)
+    if (!lastLoggedEntry && lastLoggedEntry !== 0 || lastLoggedEntry < i) {
+      console.log(`#${i} ==> ${lastLoggedEntry}`);
       for (const key in logEntry) {
         console.log(`${key} => ${logEntry[key]}`);
       }
