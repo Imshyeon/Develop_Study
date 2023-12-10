@@ -65,3 +65,20 @@
     // Uncaught ReferenceError: hobbies is not defined
     ```
     - `let`, `const`를 사용해 중괄호(함수, if, 반복문, try~catch문 등) 안에 변수를 생성하면, 변수는 해당 블록으로 스코프가 지정되고 중괄호는 결국 블록을 표시. &rarr; 따라서 **해당 블록에서만 사용 가능. 블록 밖에서는 사용 불가능.**
+
+3. Hoisting : JavaScript 엔진과 브라우저에서 스크립트를 로드할 때, 전체 스크립트를 확인해서 함수를 찾은 뒤 자동으로 로드 & 등록 &rarr; 실제 사용하는 코드 아래에 함수를 작성하도록 함. &rarr; 변수에도 동일함.
+    ```javascript
+    console.log(userName); // undefined로 나옴
+    var userName = 'Max'; 
+
+    //=> 사실 다음과 같이 동작되는 것임. 브라우저가 보이지 않는 작업을 수행한 것.
+    //=> var 뿐만 아니라 let, const도 마찬가지..
+    var userName;
+    console.log(userName); 
+    userName = 'Max'; 
+    ```
+
+    그러나 `let userName = 'Max';`로 했을 때 오류가 났던 이유는 `let`,`const`가 `undefined`로 변수를 초기화하지 않기 때문이다.<br>
+    => **변수의 생성과정** : 선언 &rarr; 초기화 &rarr; 할당
+    - `var` : 선언과 초기화가 동시에 이뤄진다. 즉, 변수를 등록 &rarr; 메모리 확보 &rarr; `undefined` 할당
+    - `let`, `const` : 선언과 초기화가 각각 이뤄진다. 즉, 초기화는 let이 실제로 사용되는 부분에서 이뤄짐. 따라서 초기화 이전에 변수를 불러오려고 하면 에러가 발생 &rarr; 변수를 위한 메모리 확보도 되지 않은 상태이기 때문에 참조 에러(Referrence Error) 발생
