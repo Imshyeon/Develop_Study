@@ -11,7 +11,6 @@ const LOG_EVENT_MONSTER_ATTACK = "MONSTER_ATTACK";
 const LOG_EVENT_PLAYER_HEAL = "PLAYER_HEAL";
 const LOG_EVENT_GAME_OVER = "GAME_OVER";
 
-
 let battelLog = [];
 let lastLoggedEntry;
 
@@ -21,12 +20,21 @@ function getMaxLifeValues() {
   let parsedValue = parseInt(enteredValue);
   // 숫자로 변환할 수 없는 값을 입력했을 경우
   if (isNaN(parsedValue) || parsedValue <= 0) {
-    throw {message: 'Invalid user input, not a number!'}
+    throw { message: "Invalid user input, not a number!" };
   }
   return parsedValue;
 }
 
-let chosenMaxLife = getMaxLifeValues()
+let chosenMaxLife;
+try {
+  chosenMaxLife = getMaxLifeValues();
+} catch (error) {
+  console.log(error);
+  chosenMaxLife = 100;
+  alert("You entered something wrong, default value of 100 was used.");
+} finally { // 오류가 있든 없든 실행
+  
+}
 
 let currentMonsterHealth = chosenMaxLife;
 let currentPlayerHealth = chosenMaxLife;
@@ -225,8 +233,8 @@ function printLogHandler() {
   let i = 0;
   console.log(i, lastLoggedEntry);
   for (const logEntry of battelLog) {
-    console.log(i, lastLoggedEntry)
-    if (!lastLoggedEntry && lastLoggedEntry !== 0 || lastLoggedEntry < i) {
+    console.log(i, lastLoggedEntry);
+    if ((!lastLoggedEntry && lastLoggedEntry !== 0) || lastLoggedEntry < i) {
       console.log(`#${i} ==> ${lastLoggedEntry}`);
       for (const key in logEntry) {
         console.log(`${key} => ${logEntry[key]}`);
