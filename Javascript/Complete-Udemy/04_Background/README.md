@@ -21,4 +21,47 @@
       - 블록 스코프
    3. `const`
       - 상수를 생성
-      - 블록 스코프 ㄴ
+      - 블록 스코프
+
+    ```javascript
+    var name = 'Taemin';
+
+    if (name === 'Taemin') {    // 함수가 아닌 if문!
+        var hobbies = ['Sports', 'Cooking'] // if문은 함수가 아니기 때문에 전역변수로 설정된 것. 정상적인 전역 변수임.
+        console.log(hobbies);
+    }
+
+    function greet() {
+        var age = 31;
+        var name = 'Lee Taemin' // 외부의 변수 쉐도잉(덮어쓰기)
+        console.log(name, age, hobbies);
+    }
+    console.log(name, hobbies);
+    greet()
+
+    // 출력
+    // ['Sports', 'Cooking']
+    // Taemin ['Sports', 'Cooking']
+    // Lee Taemin 31 ['Sports', 'Cooking']
+    ```
+
+    ```javascript
+    var name = 'Taemin';
+
+    if (name === 'Taemin') {    /
+        let hobbies = ['Sports', 'Cooking'] // let으로 바뀜
+        console.log(hobbies);
+    }
+
+    function greet() {
+        var age = 31;
+        var name = 'Lee Taemin' 
+        console.log(name, age, hobbies);
+    }
+    console.log(name, hobbies);
+    greet()
+    // 출력
+    // ['Sports', 'Cooking']
+    // Uncaught ReferenceError: hobbies is not defined
+    ```
+    - `let`, `const`를 사용해 중괄호(함수, if, 반복문, try~catch문 등) 안에 변수를 생성하면, 변수는 해당 블록으로 스코프가 지정되고 중괄호는 결국 블록을 표시. &rarr; 따라서 **해당 블록에서만 사용 가능. 블록 밖에서는 사용 불가능.**
