@@ -115,3 +115,8 @@
    3. Event Loop : Event Listener를 지원.
       - Event Listerner가 브라우저로 정보를 전달함에 따라 JavaScript는 진행 중인 리스너에 대한 관여를 하지 않고 브라우저가 이들을 관리하게 된다.
       - 브라우저는 JavaScript 엔진에 핑을 보내는데 JavaScript 코드에 리스너가 설정한 새로운 이벤트가 있을 때마다 핑이 수신된다.
+
+
+### (+) JavaScript 언어 vs. 브라우저 API
+1. JavaScript 언어 : 핵심구문(let, const 등)은 이해하지만 DOM(예시 중 하나)에 대해서는 아무것도 모름
+2. Browser API : 코드를 이해할 책임이 없는 대신 스크립트 코드 내부에서 사용할 수 있는 DOM API와 같은 API를 노출해야 한다.
