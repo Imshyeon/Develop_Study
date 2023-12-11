@@ -35,7 +35,7 @@
       - 상수를 생성
       - 블록 스코프
 
-    ```javascript
+   ```javascript
     var name = 'Taemin';
 
     if (name === 'Taemin') {    // 함수가 아닌 if문!

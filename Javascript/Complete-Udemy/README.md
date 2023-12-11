@@ -12,5 +12,5 @@
 2. [Monster_Killer](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/03_Control_Structures/Monster_Killer) : Udemy 강사가 제공해주는 예시 프로젝트 입니다.
 
 
-🚀 [04_BTS_of_JavaScript](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/04_BTS_of_JavaScript) : 백그라운드 & JavaScript의 특이한 과거(ES3, ES5, ES6+)
-<br>
+🚀 [04_BTS_of_JavaScript](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/04_Background) : 백그라운드 & JavaScript의 특이한 과거(ES3, ES5, ES6+) <br>
+🚀 [05_Function](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/05_Function) : 함수 더보기 <br>
