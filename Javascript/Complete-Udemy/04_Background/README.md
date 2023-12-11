@@ -90,3 +90,28 @@
    => 배치된 함수에만 엄격모드가 활성화.
    1. 예약어를 변수로 선언할 수 없게 만듦.
    2. 변수 선언 필수.
+
+5. JavaScript Engines & What They Do
+   1. JavaScript Parsing & Execution
+      - Interpreter(인터프리터) : Parsing Script & starts execution => 스크립트를 로드, 읽어서 실행하기 . 더쉬운 바이트 코드로 변환 -> 스크립트 실행(한줄씩 실행)
+      - Compiler(JiT) : 인터프리터는 한줄씩 실행. 가장 빠른 방식으로 실행되는 것이 아니다. => 머신에 코드를 컴파일 한 다음 운영체제에 전달하는 것을 목표
+      - 즉, interpreter 가 컴파일러에게 bytecode를 전달하는 형식(로드된 스크립트를 컴파일러로 전달)이다. 
+   2. compile 된 머신 코드는 컴퓨터로 전달되어 실행 단계에 접어듦.
+
+6. How Code Gets Executed
+   1. JavaScript Engine 내부 : 메모리와 실행단계에 대한 관리가 이뤄짐.
+      1. Heap(Memory Allocation) : 장기 메모리 => 메모리 할당과 관련되어 있음
+         - 시스템 메모리 데이터를 저장. 브러우저가 힙을 관리, 시스템 메모리에 대한 작업을 수행.
+      2. Stack(Execution Context) : 단기 메모리 => 프로그램 흐름을 관리
+         - 주로 현재 실행되고 있는 함수를 관리하는 역할을 함. 새로운 함수를 실행할 때에 현재 실행되고 있는 함수 중 어떤 함수가 데이터를 반환하는지 관리.
+         - 스택에서는 맨 위에 있는 항목이 항상 현재 실행 중인 항목이 됨.
+      - app.js
+        - Stack : (anonymous) &rarr; greet() &rarr; getName() &rarr; prompt() 순으로 쌓임. 실행이 완료되면 스택에서 빠져나옴.
+
+   2. JavaScrip는 Single Threaded이다.
+      - 한번에 하나의 작업만 수행한다. => 스택과 더불어 함수 호출을 관리하고, 스택에서의 스크립트 흐름을 볼 수 있다는 개념이 단일 스레드의 원리. 
+      - 함수의 실행 순서를 보장하고 모든 함수가 어떤 함수와 관련되었는지를 알아볼 수 있게 해줌.
+
+   3. Event Loop : Event Listener를 지원.
+      - Event Listerner가 브라우저로 정보를 전달함에 따라 JavaScript는 진행 중인 리스너에 대한 관여를 하지 않고 브라우저가 이들을 관리하게 된다.
+      - 브라우저는 JavaScript 엔진에 핑을 보내는데 JavaScript 코드에 리스너가 설정한 새로운 이벤트가 있을 때마다 핑이 수신된다.

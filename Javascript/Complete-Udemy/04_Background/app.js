@@ -20,3 +20,15 @@
 console.log(userName);
 
 var userName = 'Max'; // Hoising으로 인해 undefined로 나옴. => let, const로 설정하면 오류가 발생.
+
+// =============================== BTS of JavaScript ===============================
+function getName() {
+    return prompt('Your Name: ','')
+}
+
+function greet() {
+    const userName = getName()
+    console.log('Hello '+ userName)
+}
+
+greet();
