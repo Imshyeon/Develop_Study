@@ -7,6 +7,7 @@
 📌 [JavaScript Engines & What They Do](#5-javascript-engines--what-they-do)<br>
 📌 [How Code Gets Executed](#6-how-code-gets-executed)<br>
 📌 [🔥원시 vs. 참조 값🔥](#🔥7-원시-vs-참조-값🔥)<br>
+📌 [가비지 콜렉션 & 메모리 관리](#8-가비지-콜렉션--메모리-관리)<br>
 
 ✏️ [(+) JavaScript 언어 vs. 브라우저 API](#javascript-언어-vs-브라우저-api)
 
@@ -193,6 +194,12 @@ JavaScript에서의 Types/Values의 두 가지 카테고리
      person = {age:33};
      // 에러 발생! Assignment to constant variable.
      ```
+
+## 8. 가비지 콜렉션 & 메모리 관리
+- 힙(Heap)의 경우 오래동안 저장하는 것이기 때문에 메모리 관리가 중요하다.
+1. Garbagee Collector : 사용되지 않은 객체에 대한 힙 메모리를 주기적으로 확인.
+   - 사용되지 않은 객체란 참조되지 않은 객체를 의미한다.
+
 
 ---
 ### (+) JavaScript 언어 vs. 브라우저 API
