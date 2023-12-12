@@ -33,8 +33,6 @@ const getComputerChoice = function () {
   }
 };
 
-const add = (a, b) => a + b;
-
 const getWinner = (cChoice, pChoice) =>
   cChoice === pChoice
     ? RESULT_DRAW

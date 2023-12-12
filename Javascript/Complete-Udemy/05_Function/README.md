@@ -12,9 +12,9 @@
     function sayHi(name){...} // name => 매개변수
     ```
   - 인수 : 함수를 호출할 때 함수에 전달하는 구체적인 값
-    `javascript
-sayHi('Taemin');    // 매개변수 name에 대해서 'Taemin'은 함수의 인수이다.
-`
+    ```javascript
+    sayHi('Taemin');    // 매개변수 name에 대해서 'Taemin'은 함수의 인수이다.
+    ```
     <br>
 
 ## 함수 vs. 매서드
