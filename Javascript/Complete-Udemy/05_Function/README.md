@@ -88,3 +88,5 @@ startGameBtn.addEventListener('click', function(){
 });
 // 하지만 익명함수를 쓰면 나중에 디버깅할 때 함수 이름을 알기가 힘들다. 
 ```
+<br>
+
