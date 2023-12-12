@@ -63,7 +63,14 @@ startGameBtn.addEventListener("click", function () {
   const playerSelection = getPlayerChoice();
   const computerChoice = getComputerChoice();
   const winner = getWinner(computerChoice, playerSelection);
-  console.log(
-    `${winner} ==> player : ${playerSelection}   computer : ${computerChoice}`
-  );
+  let message = `You picked ${playerSelection}, computer picked ${computerChoice}. Therefore you `;
+  if (winner === RESULT_DRAW) {
+    message += "had a draw.";
+  } else if (winner === RESULT_PLAYER_WINS) {
+    message += "won.";
+  } else {
+    message += "lost.";
+  }
+  alert(message);
+  gameIsRunning = false;
 }); // addEventListener는 startGameBtn이 객체의 메서드가 됨.
