@@ -5,6 +5,8 @@
 📌 [함수 표현식](#함수-표현식--변수에-함수-저장하기)<br>
 📌 [익명 함수](#익명-함수)<br>
 📌 [화살표 함수](#화살표-함수)<br>
+📌 [함수의 기본인자](#함수의-기본인자)<br>
+<br>
 
 - (+) 매개변수 vs. 인수
   - 매개변수 : 함수를 정의할 때 괄호 안에 지정하는 변수
@@ -13,7 +15,7 @@
     ```
   - 인수 : 함수를 호출할 때 함수에 전달하는 구체적인 값
     ```javascript
-    sayHi('Taemin');    // 매개변수 name에 대해서 'Taemin'은 함수의 인수이다.
+    sayHi("Taemin"); // 매개변수 name에 대해서 'Taemin'은 함수의 인수이다.
     ```
     <br>
 
@@ -148,5 +150,20 @@ arg => {...}
 (a, b) => {
     a *= 2;
     return a + b;
-} 
+}
 ```
+
+<br>
+
+## 함수의 기본인자
+
+1. 함수의 기본 인자는 `undefined`일 때만 반영이 됨(혹은 값이 전달되지 않았거나). 다른 falsy 값은 영향을 미치지 않게 된다.
+2. 함수에서 기본 인자는 항상 매개변수 리스트의 마지막에 넣어야 함.
+
+```javascript
+const getWinner = (cChoice, pChoice = DEFAULT_USER_CHOICE) => {...}
+// 참고 : 이런식으로 작성해도 됨
+const getWinner = (cChoice, pChoice = cChoice === 'ROCK' ? PAPER : DEFAULT_USER_CHOICE)=>{...}
+```
+
+3. [참고](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Functions/Default_parameters)
