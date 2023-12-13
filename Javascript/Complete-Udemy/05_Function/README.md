@@ -7,6 +7,8 @@
 📌 [화살표 함수](#화살표-함수)<br>
 📌 [함수의 기본인자](#함수의-기본인자)<br>
 📌 [Rest 매개변수 소개](#rest-매개변수-소개-rest연산자)<br>
+📌 [함수 내의 함수 생성하기](#함수-내의-함수-생성하기)<br>
+📌 [콜백 함수 이해하기](#콜백-함수-이해하기)<br>
 <br>
 
 - (+) 매개변수 vs. 인수
@@ -168,31 +170,79 @@ const getWinner = (cChoice, pChoice = cChoice === 'ROCK' ? PAPER : DEFAULT_USER_
 ```
 
 3. [참고](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Functions/Default_parameters)
-<br>
+   <br>
 
 ## Rest 매개변수 소개 (Rest연산자)
+
 ```javascript
-const sumUp = (...numbers)=>{
+const sumUp = (...numbers) => {
   let sum = 0;
-  for (const num of numbers){
+  for (const num of numbers) {
     sum += num;
   }
   return sum;
-}
+};
 
-const subtractUp = function(){
+const subtractUp = function () {
   let sub = 0;
-  for (const num of arguments){ 
+  for (const num of arguments) {
     // arguments는 JavaScript에서 이미 설계된 것. function 키워드를 사용하는 함수 안에서만 사용이 가능하다.
     // 하지만 Rest 매개변수를 사용하는 방법을 써라!
     sub -= num;
   }
   return sub;
-}
+};
 
-console.log(sumUp(1,5,10,-3,6,10));   
-console.log(sumUp(1,5,10,-3,6,10,25,80));
-console.log(subtractUp(1,10,15,20))
+console.log(sumUp(1, 5, 10, -3, 6, 10));
+console.log(sumUp(1, 5, 10, -3, 6, 10, 25, 80));
+console.log(subtractUp(1, 10, 15, 20));
 ```
 
 [참고](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters)
+<br>
+
+## 함수 내의 함수 생성하기
+
+```javascript
+const sumUp = (...numbers) => {
+  const validateNumber = (number) => {
+    return isNaN(number) ? 0 : number;
+  };
+
+  let sum = 0;
+  for (const num of numbers) {
+    sum += num;
+  }
+  return sum;
+};
+
+console.log(sumUp(1, 5, 10, -3, 6, 10));
+console.log(sumUp(1, 5, 10, -3, 6, 10, 25, 80));
+```
+
+<br>
+
+## 콜백 함수 이해하기
+
+- 무언가에 의해 불러와진다.
+
+```javascript
+const sumUp = (resultHandler, ...numbers) => {
+  const validateNumber = (number) => {
+    return isNaN(number) ? 0 : number;
+  };
+
+  let sum = 0;
+  for (const num of numbers) {
+    sum += num;
+  }
+  resultHandler(sum);
+};
+
+const showResult = (result) => {
+  alert("The result after adding all numbers is: " + result);
+};
+
+sumUp(showResult, 1, 5, 10, -3, 6, 10);
+sumUp(showResult, 1, 5, 10, -3, 6, 10, 25, 80);
+```
