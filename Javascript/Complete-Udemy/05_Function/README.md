@@ -11,6 +11,7 @@
 📌 [콜백 함수 이해하기](#콜백-함수-이해하기)<br>
 📌 [bind() 사용하기](#bind-사용하기)<br>
 📌 [계산기 프로젝트에 bind() 사용하기](#계산기-프로젝트에-bind-사용하기)<br>
+📌 [call()과 apply()](#call과-apply)<br>
 <br>
 
 - (+) 매개변수 vs. 인수
@@ -319,3 +320,7 @@ combine(
 
 ## 계산기 프로젝트에 bind() 사용하기
 🚀[계산기 프로젝트 바로가기](https://github.com/Imshyeon/Develop_Study/blob/js/Javascript/Complete-Udemy/05_Function/Calculator/assets/scripts/app.js)
+<br>
+
+## call()과 apply()
+* 매개변수로 어떤 것을 특정해야하는지를 알 수 있게 함. 함수를 즉시 실행하는 특징을 가진다.
