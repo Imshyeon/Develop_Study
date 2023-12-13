@@ -1,17 +1,17 @@
 # Function
 
-📌 [함수 vs. 메서드](#함수-vs-매서드)<br>
-📌 [함수는 객체다](#함수는-객체다)<br>
-📌 [함수 표현식](#함수-표현식--변수에-함수-저장하기)<br>
-📌 [익명 함수](#익명-함수)<br>
-📌 [화살표 함수](#화살표-함수)<br>
-📌 [함수의 기본인자](#함수의-기본인자)<br>
-📌 [Rest 매개변수 소개](#rest-매개변수-소개-rest연산자)<br>
-📌 [함수 내의 함수 생성하기](#함수-내의-함수-생성하기)<br>
-📌 [콜백 함수 이해하기](#콜백-함수-이해하기)<br>
-📌 [bind() 사용하기](#bind-사용하기)<br>
-📌 [계산기 프로젝트에 bind() 사용하기](#계산기-프로젝트에-bind-사용하기)<br>
-📌 [call()과 apply()](#call과-apply)<br>
+1.[함수 vs. 메서드](#📌-함수-vs-매서드)<br>
+2.[함수는 객체다](#📌-함수는-객체다)<br>
+3.[함수 표현식](#📌-함수-표현식--변수에-함수-저장하기)<br>
+4.[익명 함수](#📌-익명-함수)<br>
+5.[화살표 함수](#📌-화살표-함수)<br>
+6.[함수의 기본인자](#📌-함수의-기본인자)<br>
+7.[Rest 매개변수 소개](#📌-rest-매개변수-소개-rest연산자)<br>
+8.[함수 내의 함수 생성하기](#📌-함수-내의-함수-생성하기)<br>
+9.[콜백 함수 이해하기](#📌-콜백-함수-이해하기)<br>
+10.[bind() 사용하기](#📌-bind-사용하기)<br>
+11.[계산기 프로젝트에 bind() 사용하기](#📌-계산기-프로젝트에-bind-사용하기)<br>
+12.[call()과 apply()](#📌-call과-apply)<br>
 <br>
 
 - (+) 매개변수 vs. 인수
@@ -25,7 +25,7 @@
     ```
     <br>
 
-## 함수 vs. 매서드
+## 📌 함수 vs. 매서드
 
 1. `addEventListener` : 브라우저가 정의한 함수. JavaScript가 생성한 객체이다.
 2. 메서드 : 객에체 함수가 저장된 것.
@@ -43,7 +43,7 @@
 
    <br>
 
-## 함수는 객체다.
+## 📌 함수는 객체다.
 
 ```javascript
 function startGame() {
@@ -63,7 +63,7 @@ console.dir(startGame);
 //1: Global {window: Window, self: Window, document: document, name: '', location: Location, …}
 ```
 
-## 함수 표현식 : 변수에 함수 저장하기
+## 📌 함수 표현식 : 변수에 함수 저장하기
 
 ```javascript
 const start = function startGame() {
@@ -100,7 +100,7 @@ const start = function () {
    => 상수가 정의되지 않은 상태로 호이스트됨. 따라서 파일의 어디에서나 선언될 수는 없다.
    <br>
 
-## 익명 함수
+## 📌 익명 함수
 
 ```javascript
 startGameBtn.addEventListener("click", function () {
@@ -111,7 +111,7 @@ startGameBtn.addEventListener("click", function () {
 
 <br>
 
-## 화살표 함수
+## 📌 화살표 함수
 
 ```javascript
 const getWinner = (cChoice, pChoice) => {
@@ -161,7 +161,7 @@ arg => {...}
 
 <br>
 
-## 함수의 기본인자
+## 📌 함수의 기본인자
 
 1. 함수의 기본 인자는 `undefined`일 때만 반영이 됨(혹은 값이 전달되지 않았거나). 다른 falsy 값은 영향을 미치지 않게 된다.
 2. 함수에서 기본 인자는 항상 매개변수 리스트의 마지막에 넣어야 함.
@@ -175,7 +175,7 @@ const getWinner = (cChoice, pChoice = cChoice === 'ROCK' ? PAPER : DEFAULT_USER_
 3. [참고](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Functions/Default_parameters)
    <br>
 
-## Rest 매개변수 소개 (Rest연산자)
+## 📌 Rest 매개변수 소개 (Rest연산자)
 
 ```javascript
 const sumUp = (...numbers) => {
@@ -204,7 +204,7 @@ console.log(subtractUp(1, 10, 15, 20));
 [참고](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters)
 <br>
 
-## 함수 내의 함수 생성하기
+## 📌 함수 내의 함수 생성하기
 
 ```javascript
 const sumUp = (...numbers) => {
@@ -225,7 +225,7 @@ console.log(sumUp(1, 5, 10, -3, 6, 10, 25, 80));
 
 <br>
 
-## 콜백 함수 이해하기
+## 📌 콜백 함수 이해하기
 
 - 무언가에 의해 불러와진다.
 
@@ -252,7 +252,7 @@ sumUp(showResult, 1, 5, 10, -3, 6, 10, 25, 80);
 
 <br>
 
-## `bind()` 사용하기
+## 📌 `bind()` 사용하기
 
 ```javascript
 const combine = (resultHandler, operation, ...numbers) => {
@@ -318,9 +318,9 @@ combine(
 * bind()는 함수의 인자를 '사전 구성'하려는 상황에서 함수를 직접 호출하지 않을 때 유용하다.
 <br>
 
-## 계산기 프로젝트에 bind() 사용하기
+## 📌 계산기 프로젝트에 bind() 사용하기
 🚀[계산기 프로젝트 바로가기](https://github.com/Imshyeon/Develop_Study/blob/js/Javascript/Complete-Udemy/05_Function/Calculator/assets/scripts/app.js)
 <br>
 
-## call()과 apply()
+## 📌 call()과 apply()
 * 매개변수로 어떤 것을 특정해야하는지를 알 수 있게 함. 함수를 즉시 실행하는 특징을 가진다.
