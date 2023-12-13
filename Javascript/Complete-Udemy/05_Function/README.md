@@ -10,6 +10,7 @@
 📌 [함수 내의 함수 생성하기](#함수-내의-함수-생성하기)<br>
 📌 [콜백 함수 이해하기](#콜백-함수-이해하기)<br>
 📌 [bind() 사용하기](#bind-사용하기)<br>
+📌 [계산기 프로젝트에 bind() 사용하기](#계산기-프로젝트에-bind-사용하기)<br>
 <br>
 
 - (+) 매개변수 vs. 인수
@@ -316,5 +317,5 @@ combine(
 * bind()는 함수의 인자를 '사전 구성'하려는 상황에서 함수를 직접 호출하지 않을 때 유용하다.
 <br>
 
-## 계산기 프로젝트에 bind() 추가하기
-🚀[계산기 프로젝트 바로가기]()
+## 계산기 프로젝트에 bind() 사용하기
+🚀[계산기 프로젝트 바로가기](https://github.com/Imshyeon/Develop_Study/blob/js/Javascript/Complete-Udemy/05_Function/Calculator/assets/scripts/app.js)
