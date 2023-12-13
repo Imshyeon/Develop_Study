@@ -3,9 +3,10 @@
 📌 [DOM이란 무엇인가?](#dom이란-무엇인가)<br>
 📌 [문서와 윈도우 객체](#문서와-윈도우-객체)<br>
 📌 [DOM과 생성 방식 이해하기](#dom과-생성-방식-이해하기)<br>
+📌 [DOM 쿼리하기](#dom-쿼리하기)<br>
 <br>
 
-## DOM이란 무엇인가?
+## 📌 DOM이란 무엇인가?
 
 1. DOM = Document Object Model
 2. JavaScript-Browser는 항상 상호작용을 한다.
@@ -27,13 +28,13 @@
    - 기본적으로 전역 엔트리 포인트이자 저장소인데 브라우저에서 제공하는 모든 기능에 대해 엑세스를 가능하게 함.
      <br>
 
-## 문서와 윈도우 객체
+## 📌 문서와 윈도우 객체
 
 1. 사용자가 무언가를 호출하거나 액세스하면 브라우저는 항상 window 객체에서 찾는다. 따라서 `alert`는 `window.alert`와 동일하게 작동한다.
 2. `document`도 `window`안에 포함되어 있다!
    <br>
 
-## DOM과 생성 방식 이해하기
+## 📌 DOM과 생성 방식 이해하기
 
 ```html
 <!DOCTYPE html>
@@ -66,3 +67,10 @@
 
 * (Chrome Dev Tool) 브라우저 검사에서 `<h1>Dive into the DOM!</h1> == $0`라고 나와있는데 console에서 $0를 입력하면 선택한 요소를 볼 수 있다.
 * $0는 항상 Elements 탭에서 마지막으로 선택한 요소에 대한 액세스를 제공한다.
+<br>
+
+## 📌 DOM 쿼리하기
+1. `querySelector(), getElementByID()`
+   - 단일 요소 선택
+   - 
+2. `querySelectorAll(), getElementByTagName(),...` : 다중 요소 선택

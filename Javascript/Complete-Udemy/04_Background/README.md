@@ -1,18 +1,18 @@
 # Behind the Scene of JavaScript
 
-📌 [ES5 & ES6](#1-es5--es6)<br>
-📌 [`var` vs. `let`,`const`](#2-var-vs-letconst)<br>
-📌 [Hoisting](#3-hoisting)<br>
-📌 [엄격모드](#4-엄격-모드)<br>
-📌 [JavaScript Engines & What They Do](#5-javascript-engines--what-they-do)<br>
-📌 [How Code Gets Executed](#6-how-code-gets-executed)<br>
-📌 [🔥원시 vs. 참조 값🔥](#🔥7-원시-vs-참조-값🔥)<br>
-📌 [가비지 콜렉션 & 메모리 관리](#8-가비지-콜렉션--메모리-관리)<br>
+📌 [ES5 & ES6](#📌-es5--es6)<br>
+📌 [`var` vs. `let`,`const`](#📌-var-vs-letconst)<br>
+📌 [Hoisting](#📌-hoisting)<br>
+📌 [엄격모드](#📌-엄격-모드)<br>
+📌 [JavaScript Engines & What They Do](#📌-javascript-engines--what-they-do)<br>
+📌 [How Code Gets Executed](#📌-how-code-gets-executed)<br>
+📌 [🔥원시 vs. 참조 값🔥](#🔥원시-vs-참조-값🔥)<br>
+📌 [가비지 콜렉션 & 메모리 관리](#📌-가비지-콜렉션--메모리-관리)<br>
 
 ✏️ [(+) JavaScript 언어 vs. 브라우저 API](#javascript-언어-vs-브라우저-api)
 
 
-## 1. ES5 & ES6
+## 📌 ES5 & ES6
    - ES : ECMAScript &rarr; JavaScript는 ECMAScript의 한 가지 버전.
    - ES5
      - older
@@ -24,7 +24,7 @@
      - 새로운 기능이 도입됨에 따라 더 깔끔하고 빠르고 더 나은 코드 작성을 할 수 있게 됨. 그리고 차선의 해결책 및 임시적인 방법들을 줄여줌.
      - 지속적인 발전 단계에 있음. 그러나 ES6는 큰 발전이었다..!
 
-## 2. `var` vs. `let`,`const`
+## 📌 `var` vs. `let`,`const`
    1. `var`
       - 변수를 생성
       - 함수, 전역 스코프에서 선언 가능.
@@ -35,50 +35,50 @@
       - 상수를 생성
       - 블록 스코프
 
-   ```javascript
-    var name = 'Taemin';
+      ```javascript
+      var name = 'Taemin';
 
-    if (name === 'Taemin') {    // 함수가 아닌 if문!
-        var hobbies = ['Sports', 'Cooking'] // if문은 함수가 아니기 때문에 전역변수로 설정된 것. 정상적인 전역 변수임.
-        console.log(hobbies);
-    }
+      if (name === 'Taemin') {    // 함수가 아닌 if문!
+         var hobbies = ['Sports', 'Cooking'] // if문은 함수가 아니기 때문에 전역변수로 설정된 것. 정상적인 전역 변수임.
+         console.log(hobbies);
+      }
 
-    function greet() {
-        var age = 31;
-        var name = 'Lee Taemin' // 외부의 변수 쉐도잉(덮어쓰기)
-        console.log(name, age, hobbies);
-    }
-    console.log(name, hobbies);
-    greet()
+      function greet() {
+         var age = 31;
+         var name = 'Lee Taemin' // 외부의 변수 쉐도잉(덮어쓰기)
+         console.log(name, age, hobbies);
+      }
+      console.log(name, hobbies);
+      greet()
 
-    // 출력
-    // ['Sports', 'Cooking']
-    // Taemin ['Sports', 'Cooking']
-    // Lee Taemin 31 ['Sports', 'Cooking']
-    ```
+      // 출력
+      // ['Sports', 'Cooking']
+      // Taemin ['Sports', 'Cooking']
+      // Lee Taemin 31 ['Sports', 'Cooking']
+      ```
 
-    ```javascript
-    var name = 'Taemin';
+      ```javascript
+      var name = 'Taemin';
 
-    if (name === 'Taemin') {    /
-        let hobbies = ['Sports', 'Cooking'] // let으로 바뀜
-        console.log(hobbies);
-    }
+      if (name === 'Taemin') {    /
+         let hobbies = ['Sports', 'Cooking'] // let으로 바뀜
+         console.log(hobbies);
+      }
 
-    function greet() {
-        var age = 31;
-        var name = 'Lee Taemin' 
-        console.log(name, age, hobbies);
-    }
-    console.log(name, hobbies);
-    greet()
-    // 출력
-    // ['Sports', 'Cooking']
-    // Uncaught ReferenceError: hobbies is not defined
-    ```
-    - `let`, `const`를 사용해 중괄호(함수, if, 반복문, try~catch문 등) 안에 변수를 생성하면, 변수는 해당 블록으로 스코프가 지정되고 중괄호는 결국 블록을 표시. &rarr; 따라서 **해당 블록에서만 사용 가능. 블록 밖에서는 사용 불가능.**
+      function greet() {
+         var age = 31;
+         var name = 'Lee Taemin' 
+         console.log(name, age, hobbies);
+      }
+      console.log(name, hobbies);
+      greet()
+      // 출력
+      // ['Sports', 'Cooking']
+      // Uncaught ReferenceError: hobbies is not defined
+      ```
+       - `let`, `const`를 사용해 중괄호(함수, if, 반복문, try~catch문 등) 안에 변수를 생성하면, 변수는 해당 블록으로 스코프가 지정되고 중괄호는 결국 블록을 표시. &rarr; 따라서 **해당 블록에서만 사용 가능. 블록 밖에서는 사용 불가능.**
 
-## 3. Hoisting 
+## 📌 Hoisting 
 - JavaScript 엔진과 브라우저에서 스크립트를 로드할 때, 전체 스크립트를 확인해서 함수를 찾은 뒤 자동으로 로드 & 등록 &rarr; 실제 사용하는 코드 아래에 함수를 작성하도록 함. &rarr; 변수에도 동일함.
     ```javascript
     console.log(userName); // undefined로 나옴
@@ -96,7 +96,8 @@
     - `var` : 선언과 초기화가 동시에 이뤄진다. 즉, 변수를 등록 &rarr; 메모리 확보 &rarr; `undefined` 할당
     - `let`, `const` : 선언과 초기화가 각각 이뤄진다. 즉, 초기화는 let이 실제로 사용되는 부분에서 이뤄짐. 따라서 초기화 이전에 변수를 불러오려고 하면 에러가 발생 &rarr; 변수를 위한 메모리 확보도 되지 않은 상태이기 때문에 참조 에러(Referrence Error) 발생
 
-## 4. 엄격 모드
+
+## 📌 엄격 모드
    ```javascript
     "use strict";
    ``` 
@@ -104,14 +105,14 @@
    1. 예약어를 변수로 선언할 수 없게 만듦.
    2. 변수 선언 필수.
 
-## 5. JavaScript Engines & What They Do
+## 📌 JavaScript Engines & What They Do
    1. JavaScript Parsing & Execution
       - Interpreter(인터프리터) : Parsing Script & starts execution => 스크립트를 로드, 읽어서 실행하기 . 더쉬운 바이트 코드로 변환 -> 스크립트 실행(한줄씩 실행)
       - Compiler(JiT) : 인터프리터는 한줄씩 실행. 가장 빠른 방식으로 실행되는 것이 아니다. => 머신에 코드를 컴파일 한 다음 운영체제에 전달하는 것을 목표
       - 즉, interpreter 가 컴파일러에게 bytecode를 전달하는 형식(로드된 스크립트를 컴파일러로 전달)이다. 
    2. compile 된 머신 코드는 컴퓨터로 전달되어 실행 단계에 접어듦.
 
-## 6. How Code Gets Executed
+## 📌 How Code Gets Executed
    1. JavaScript Engine 내부 : 메모리와 실행단계에 대한 관리가 이뤄짐.
       1. Heap(Memory Allocation) : 장기 메모리 => 메모리 할당과 관련되어 있음
          - 시스템 메모리 데이터를 저장. 브러우저가 힙을 관리, 시스템 메모리에 대한 작업을 수행.
@@ -129,7 +130,7 @@
       - Event Listerner가 브라우저로 정보를 전달함에 따라 JavaScript는 진행 중인 리스너에 대한 관여를 하지 않고 브라우저가 이들을 관리하게 된다.
       - 브라우저는 JavaScript 엔진에 핑을 보내는데 JavaScript 코드에 리스너가 설정한 새로운 이벤트가 있을 때마다 핑이 수신된다.
 
-## 🔥7. 원시 vs. 참조 값🔥
+## 🔥원시 vs. 참조 값🔥
 JavaScript에서의 Types/Values의 두 가지 카테고리
 
 <table style="text-align: center;">
@@ -195,7 +196,7 @@ JavaScript에서의 Types/Values의 두 가지 카테고리
      // 에러 발생! Assignment to constant variable.
      ```
 
-## 8. 가비지 콜렉션 & 메모리 관리
+## 📌 가비지 콜렉션 & 메모리 관리
 - 힙(Heap)의 경우 오래동안 저장하는 것이기 때문에 메모리 관리가 중요하다.
 1. Garbagee Collector : 사용되지 않은 객체에 대한 힙 메모리를 주기적으로 확인.
    - 사용되지 않은 객체란 참조되지 않은 객체를 의미한다.
