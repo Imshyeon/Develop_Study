@@ -9,6 +9,7 @@
 📌 [Rest 매개변수 소개](#rest-매개변수-소개-rest연산자)<br>
 📌 [함수 내의 함수 생성하기](#함수-내의-함수-생성하기)<br>
 📌 [콜백 함수 이해하기](#콜백-함수-이해하기)<br>
+📌 [bind() 사용하기](#bind-사용하기)<br>
 <br>
 
 - (+) 매개변수 vs. 인수
@@ -211,7 +212,7 @@ const sumUp = (...numbers) => {
 
   let sum = 0;
   for (const num of numbers) {
-    sum += num;
+    sum += validateNumber(num);
   }
   return sum;
 };
@@ -234,7 +235,7 @@ const sumUp = (resultHandler, ...numbers) => {
 
   let sum = 0;
   for (const num of numbers) {
-    sum += num;
+    sum += validateNumber(num);
   }
   resultHandler(sum);
 };
@@ -246,3 +247,70 @@ const showResult = (result) => {
 sumUp(showResult, 1, 5, 10, -3, 6, 10);
 sumUp(showResult, 1, 5, 10, -3, 6, 10, 25, 80);
 ```
+
+<br>
+
+## `bind()` 사용하기
+
+```javascript
+const combine = (resultHandler, operation, ...numbers) => {
+  const validateNumber = (number) => {
+    return isNaN(number) ? 0 : number;
+  };
+
+  let sum = 0;
+  for (const num of numbers) {
+    if (operation === "ADD") {
+      sum += validateNumber(num);
+    } else {
+      sum -= validateNumber(num);
+    }
+  }
+  resultHandler(sum);
+};
+
+// const subtractUp = function (resultHandler, ...numbers) {
+//   let sub = 0;
+//   for (const num of numbers) {
+//     sub -= num;
+//   }
+//   resultHandler(sub, 'The result after subtracting all numbers is');
+// };
+
+const showResult = (messageText, result) => {
+  alert(messageText + " " + result);
+};
+
+combine(
+  showResult.bind(this, "The result after adding all numbers is:"),
+  "ADD",
+  1,
+  5,
+  10,
+  -3,
+  6,
+  10
+);
+combine(
+  showResult.bind(this, "The result after adding all numbers is:"),
+  "ADD",
+  1,
+  5,
+  10,
+  -3,
+  6,
+  10,
+  25,
+  80
+);
+combine(
+  showResult.bind(this, "The result after subtracting all numbers is:"),
+  "SUBTRACT",
+  1,
+  10,
+  15,
+  20
+);
+```
+
+1. bind()
