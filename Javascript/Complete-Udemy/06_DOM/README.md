@@ -4,6 +4,7 @@
 📌 [문서와 윈도우 객체](#문서와-윈도우-객체)<br>
 📌 [DOM과 생성 방식 이해하기](#dom과-생성-방식-이해하기)<br>
 📌 [DOM 쿼리하기](#dom-쿼리하기)<br>
+📌 [DOM에서 요소 선택하기](#📌-dom에서-요소-선택하기)<br>
 <br>
 
 ## 📌 DOM이란 무엇인가?
@@ -88,3 +89,17 @@
    - Available methods and properties depend on the kind of element.
    - Can be selected in various dirrent ways (via JavaScript).
    - Can be created and removed via JavaScript.
+
+## 📌 DOM에서 요소 선택하기
+```javascript
+console.dir(document.getElementById('main-title'))
+const h1 = document.getElementById('main-title')
+
+document.getElementsByClassName('list-item')
+// 요즘엔 querySelector를 사용하는게 더 보편적임
+document.querySelectorAll('.list-item')
+document.querySelectorAll('ul li:first-of-type') // 첫번째로 나와있는 항목을 선택하는 CSS 선택자가 된다.
+
+const ul = document.querySelector('ul')
+ul.querySelector('li')  // 자식 노드 Select. 단 가장 첫번째 것을 선택.
+```
