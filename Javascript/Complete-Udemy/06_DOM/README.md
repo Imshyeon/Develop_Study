@@ -7,6 +7,7 @@
 📌 [DOM에서 요소 선택하기](#📌-dom에서-요소-선택하기)<br>
 📌 [DOM 프로퍼티 탐구 및 변경](#📌-dom-프로퍼티-탐구-및-변경)<br>
 📌 [속성 vs. 프로퍼티](#📌-속성-vs-프로퍼티)<br>
+📌 [다수의 요소 선택하기 & 요약](#📌-다수의-요소-선택하기--요약)<br>
 <br>
 
 ## 📌 DOM이란 무엇인가?
@@ -160,4 +161,14 @@ h1.id = 'new-id'; // Element창(HTML)으로 가서 보면, id 속성값이 변�
 const input = document.querySelector('input')
 input.setAttribute('value', 'some other default text') // 첫번쨰 인수 : 바꾸고자 하는 속성, 두번째 : 내용
 // 속성값이 변한다!
+```
+<br>
+
+## 📌 다수의 요소 선택하기 & 요약
+```javascript 
+// const listItemElements = document.querySelectorAll("li"); // 실시간 목록 제공 X
+const listItemElements = document.getElementsByTagName('li'); // 요소의 변경사항을 반영하는 실시간 목록을 제공한다.
+
+for (const listItemEl of listItemElements) {
+    console.dir(listItemEl)
 ```
