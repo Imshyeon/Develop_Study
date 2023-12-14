@@ -72,5 +72,19 @@
 ## 📌 DOM 쿼리하기
 1. `querySelector(), getElementByID()`
    - 단일 요소 선택
-   - 
-2. `querySelectorAll(), getElementByTagName(),...` : 다중 요소 선택
+   - 늘 DOM 페이지에서 맨 처음으로 일치하는 요소를 액세스한다.
+   - DOM 요소에 대한 직접적인 참조가 제공된다. &rarr; DOM 노드는 JavaScript 객체, 즉 참조 값이다. 이러한 메서드는 객체 참조(주소)를 반환한다.
+
+2. `querySelectorAll(), getElementByTagName(),...`
+   - 다중 요소 선택
+   - 유사 배열 객체인 요소의 집합을 반환한다. &rarr; 일반적으로 NodeList를 반환.
+   - `getElementsByTagName` : 특정 HTML 태그가 있는 모든 요소를 제공
+   - `querySelectorAll`은 정적 NodeList, 즉 현재 렌더링 된 DOM의 스냅샷을 제공하는 반면. `getElementsByTagName` 종류의 메서드는 동적 NodeList를 제공한다. &rarr; 요소를 추가하거나 제거하는 경우 `getElementsByTagName`은 반영이 되지만 `querySelectorAll`은 반영되지 않는다.
+
+### Nodes & Elements
+1. Nodes : DOM을 구성하는 객체. DOM은 모두 노드로 이루어진다.
+2. Elements : 요소 노드. 렌더링된 HTML의 태그에서 생성된 노드이면 내부에는 텍스트가 없다.
+   - Special properties and methods to interact with the elements.
+   - Available methods and properties depend on the kind of element.
+   - Can be selected in various dirrent ways (via JavaScript).
+   - Can be created and removed via JavaScript.
