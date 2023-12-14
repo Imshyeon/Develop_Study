@@ -6,6 +6,7 @@
 📌 [DOM 쿼리하기](#dom-쿼리하기)<br>
 📌 [DOM에서 요소 선택하기](#📌-dom에서-요소-선택하기)<br>
 📌 [DOM 프로퍼티 탐구 및 변경](#📌-dom-프로퍼티-탐구-및-변경)<br>
+📌 [속성 vs. 프로퍼티](#📌-속성-vs-프로퍼티)<br>
 <br>
 
 ## 📌 DOM이란 무엇인가?
@@ -123,4 +124,40 @@ p.className = "new-class" // <p.. class="new-class">
 p.style.backgroundColor = 'orange';
 p.style.color = 'white';
 console.dir(p1);
+```
+<br>
+
+## 📌 속성 vs. 프로퍼티
+* 속성(Attribute)은 종종 프로퍼티에 매핑되어 있고 실시간 동기화가 설정되어 있다.
+  
+```html
+<input id="input-1" class="input-default" value="Enter text...">
+```
+* Attributes(속성) : `id="input-1"`, `class="input-default"`, `value="Enter text..."` &rarr; HTML 태그에 추가되는 것은 해당 태그의 속성. 브라우저가 이 속성으로 수행하는 작업은 DOM 개체를 생성(태그 이름을 기반으로)
+* Properties(프로퍼티) : HTML 코드를 기반으로 생성된 객체에 저장된 값. DOM 객체가 있든 없든 상관없이 JavaScript 객체에 프로퍼티가 있다. 생성된 DOM 객체에 자동으로 프로퍼티가 추가됨.
+
+만약 `const input`을 통해서 input 변수에 저장을 한다면, `input`을 통해서 id, className, value를 읽을 수 있다.
+```javascript
+input.id
+input.className
+input.value
+
+// 예시
+const input = document.querySelector('input')
+console.dir(input)
+input.value = "hello world~~" // 사용자 인터페이스에는 반영 됨. 하지만 Elements창(HTML)에서 본 input의 value값은 default value로 그대로이다!
+// 이전의 속성이므로 리셋한 것이 반영되지 않음.
+
+// id, class 
+const h1 = document.getElementById('main-title')
+h1.id // main-title
+h1.id = 'new-id'; // Element창(HTML)으로 가서 보면, id 속성값이 변경되어 있음을 알 수 있다.
+// class 또한 변경된 값이 속성값에 반영됨.
+```
+
+만약, 속성을 변경하고 싶다면?
+```javascript
+const input = document.querySelector('input')
+input.setAttribute('value', 'some other default text') // 첫번쨰 인수 : 바꾸고자 하는 속성, 두번째 : 내용
+// 속성값이 변한다!
 ```
