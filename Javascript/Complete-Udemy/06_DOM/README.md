@@ -5,6 +5,7 @@
 📌 [DOM과 생성 방식 이해하기](#dom과-생성-방식-이해하기)<br>
 📌 [DOM 쿼리하기](#dom-쿼리하기)<br>
 📌 [DOM에서 요소 선택하기](#📌-dom에서-요소-선택하기)<br>
+📌 [DOM 프로퍼티 탐구 및 변경](#📌-dom-프로퍼티-탐구-및-변경)<br>
 <br>
 
 ## 📌 DOM이란 무엇인가?
@@ -102,4 +103,24 @@ document.querySelectorAll('ul li:first-of-type') // 첫번째로 나와있는 �
 
 const ul = document.querySelector('ul')
 ul.querySelector('li')  // 자식 노드 Select. 단 가장 첫번째 것을 선택.
+
+document.body // <body> 요소 노들르 선택
+document.head // <head> 요소를 선택
+document.documentElement // <html> 요소를 선택
+```
+<br>
+
+## 📌 DOM 프로퍼티 탐구 및 변경
+```html
+<p id="welcome-text" class="text-default">Welcome!</p>
+```
+```javascript
+const p = document.getElementById('welcome-text')
+p.textContent // "Welcome!"
+p.id // "welcome-text"
+p.className // "text-default"
+p.className = "new-class" // <p.. class="new-class">
+p.style.backgroundColor = 'orange';
+p.style.color = 'white';
+console.dir(p1);
 ```
