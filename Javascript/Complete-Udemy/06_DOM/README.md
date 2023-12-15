@@ -327,3 +327,12 @@ const newLi = document.createElement('li')
 newLi.textContent = 'Item 4'
 secondLi.insertAdjacentElement('afterend', newLi)
 ```
+<br>
+
+### 📖 DOM 요소 복제하기
+* `cloneNode()` : 노드를 복제해서 새로운 노드를 반환. 참이나 거짓이 되는 불리언이라는 1개의 선택적 인수를 취한다. &rarr; 기본값은 거짓. 깊은 복제 여부만 결정한다. 
+```javascript
+newLi.cloneNode(false) // 리스트 항목 자체만 복제됨
+const newLi2 = newLi.cloneNode(true) // 자식 요소뿐만 아니라 해당 요소의 전체 자식 요소와 전체 자손 요소가 복제의 일부가 됨.
+list.append(newLi, newLi2) // 끝 부분에 Item 4가 두 개 추가가 됨.
+```
