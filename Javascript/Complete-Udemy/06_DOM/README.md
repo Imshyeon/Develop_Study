@@ -336,3 +336,19 @@ newLi.cloneNode(false) // 리스트 항목 자체만 복제됨
 const newLi2 = newLi.cloneNode(true) // 자식 요소뿐만 아니라 해당 요소의 전체 자식 요소와 전체 자손 요소가 복제의 일부가 됨.
 list.append(newLi, newLi2) // 끝 부분에 Item 4가 두 개 추가가 됨.
 ```
+<br>
+
+### 📖 라이브 노드 리스트 vs. 정적 노드 리스트
+```javascript
+const list = document.querySelector('ul');
+const listItems = list.querySelectorAll('li'); // NodeList(3)
+const listItems2 = list.getElementByTagName('li'); // HTMLCollection(3)
+
+const newLi = document.createElement('li');
+newLi.textContent = 'Item 4';
+list.append(newLi);
+
+listItems // NodeList(3) => 초기 결과 그대로! => Non-live Array / Non-live List
+listItems2 // HTMLCollection(4) => Item 4 추가한 결과 반영.
+```
+* `querySelector / querySelectorAll`을 사용하는 이유 : 더 유연하고 다양한 쿼리를 지원
