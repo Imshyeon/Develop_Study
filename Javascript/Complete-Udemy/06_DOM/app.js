@@ -9,3 +9,18 @@ for (const listItemEl of listItemElements) {
 const ul = document.body.firstElementChild.nextElementSibling
 const firstLi = ul.firstElementChild
 console.log(firstLi)    
+
+
+// DOM 요소 스타일링하기
+const section = document.querySelector('section');
+// section.style.backgroundColor = 'blue';
+section.className = ''; // HTML에서 작성한 스타일 클래스 삭제. red-bgfmf cnrkgoeh ehla.
+
+const button = document.querySelector('button');
+button.addEventListener('click', () => {
+    if (section.className === 'red-bg visible') {
+        section.className = 'red-bg invisible';
+    } else {
+        section.className = 'red-bg visible'
+    }
+})

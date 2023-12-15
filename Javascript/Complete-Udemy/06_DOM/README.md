@@ -11,6 +11,8 @@
 📌 [자식 노드 탐색하기](#📌-자식-노드-탐색하기)<br>
 📌 [부모 노드 & 부모 요소 사용하기](#📌-부모-노드--부모-요소-사용하기)<br>
 📌 [형제 요소 선택하기](#📌-형제-요소-선택하기)<br>
+📌 [DOM 탐색 vs. 쿼리 메서드](#📌-dom-탐색-vs-쿼리-메서드)<br>
+📌 [DOM 요소 스타일링하기](#📌-dom-요소-스타일링하기)<br>
 <br>
 
 ## 📌 DOM이란 무엇인가?
@@ -219,4 +221,15 @@ ul.previousElementSibling // header가 나옴
 ul.previousSibling // text 노드
 ul.nextSibling // text 노드
 ul.nextElementSibling // input이 나옴
+```
+<br>
+
+## 📌 DOM 탐색 vs. 쿼리 메서드
+DOM을 이용해서 탐색하는 것은 정말 신중하게 써야한다. 정말 바뀌지 않을 것들만 쓰자!
+<br>
+
+## 📌 DOM 요소 스타일링하기
+```javascript
+const section = document.querySelector('section');
+section.style.backgroundColor = 'green';
 ```
