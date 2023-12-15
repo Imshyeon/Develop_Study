@@ -8,6 +8,7 @@
 📌 [DOM 프로퍼티 탐구 및 변경](#📌-dom-프로퍼티-탐구-및-변경)<br>
 📌 [속성 vs. 프로퍼티](#📌-속성-vs-프로퍼티)<br>
 📌 [다수의 요소 선택하기 & 요약](#📌-다수의-요소-선택하기--요약)<br>
+📌 [자식 노드 탐색하기](#📌-자식-노드-탐색하기)<br>
 <br>
 
 ## 📌 DOM이란 무엇인가?
@@ -171,4 +172,20 @@ const listItemElements = document.getElementsByTagName('li'); // 요소의 변�
 
 for (const listItemEl of listItemElements) {
     console.dir(listItemEl)
+}
+```
+<br>
+
+## 📌 자식 노드 탐색하기
+```javascript
+const ul = document.querySelector('ul');
+ul.children
+ul.children[1]
+
+ul.childNodes // 텍스트 노드와 요소 노드도 볼 수 있음. 
+
+ul.firstChild
+ul.firstElementChild
+ul.lastChild
+ul.lastElementChild
 ```
