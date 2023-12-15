@@ -9,6 +9,7 @@
 📌 [속성 vs. 프로퍼티](#📌-속성-vs-프로퍼티)<br>
 📌 [다수의 요소 선택하기 & 요약](#📌-다수의-요소-선택하기--요약)<br>
 📌 [자식 노드 탐색하기](#📌-자식-노드-탐색하기)<br>
+📌 [부모 노드 & 부모 요소 사용하기](#📌-부모-노드--부모-요소-사용하기)<br>
 <br>
 
 ## 📌 DOM이란 무엇인가?
@@ -189,3 +190,22 @@ ul.firstElementChild
 ul.lastChild
 ul.lastElementChild
 ```
+<br>
+
+## 📌 부모 노드 & 부모 요소 사용하기
+```javascript
+const liFirst = document.querySelector('li');
+liFirst.parentElement // 가장 가까운 부모 요소 노드에 접근
+liFirst.parentNode // 가장 가까운 부모 노드에 접근
+```
+- 텍스트 노드는 자식 노드를 가질 수 없기 때문에 사실 상 두 parent~ 는 같다고 볼 수 있다.
+```javascript
+document.documentElement.parentElement  // null
+document.documentElement.parentNode // document -> 전체 문서 객체
+```
+
+```javascript
+const liFirst = document.querySelector('li');
+liFirst.closest('body') // body 요소가 선택된다.
+```
+* `closest()`는 요소 트리에 있는 아무 조상을 선택하기 좋다. `querySelector`처럼 CSS 요소를 사용한다는 것이 특징.
