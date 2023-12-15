@@ -342,7 +342,7 @@ list.append(newLi, newLi2) // 끝 부분에 Item 4가 두 개 추가가 됨.
 ```javascript
 const list = document.querySelector('ul');
 const listItems = list.querySelectorAll('li'); // NodeList(3)
-const listItems2 = list.getElementByTagName('li'); // HTMLCollection(3)
+const listItems2 = list.getElementsByTagName('li'); // HTMLCollection(3)
 
 const newLi = document.createElement('li');
 newLi.textContent = 'Item 4';
@@ -352,3 +352,13 @@ listItems // NodeList(3) => 초기 결과 그대로! => Non-live Array / Non-liv
 listItems2 // HTMLCollection(4) => Item 4 추가한 결과 반영.
 ```
 * `querySelector / querySelectorAll`을 사용하는 이유 : 더 유연하고 다양한 쿼리를 지원
+
+<br>
+
+### 📖 요소 제거하기
+```javascript
+const list = document.querySelector('ul');
+list.remove(); // 방법1 : DOM에서 리스트를 삭제. 렌더링 페이지에서 삭제가 된다.
+
+list.parentElement.removeChild(list); // 방법2
+```
