@@ -366,4 +366,4 @@ list.parentElement.removeChild(list); // 방법2
 <br>
 
 ## 📌 Demo Project
-[Demo Project 바로가기]()
+[Demo Project 바로가기](https://github.com/Imshyeon/Develop_Study/blob/js/Javascript/Complete-Udemy/06_DOM/demoProject/assets/scripts/app.js)
