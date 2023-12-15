@@ -10,6 +10,7 @@
 📌 [다수의 요소 선택하기 & 요약](#📌-다수의-요소-선택하기--요약)<br>
 📌 [자식 노드 탐색하기](#📌-자식-노드-탐색하기)<br>
 📌 [부모 노드 & 부모 요소 사용하기](#📌-부모-노드--부모-요소-사용하기)<br>
+📌 [형제 요소 선택하기](#📌-형제-요소-선택하기)<br>
 <br>
 
 ## 📌 DOM이란 무엇인가?
@@ -209,3 +210,13 @@ const liFirst = document.querySelector('li');
 liFirst.closest('body') // body 요소가 선택된다.
 ```
 * `closest()`는 요소 트리에 있는 아무 조상을 선택하기 좋다. `querySelector`처럼 CSS 요소를 사용한다는 것이 특징.
+<br>
+
+## 📌 형제 요소 선택하기
+```javascript
+const ul = li.parentElements;
+ul.previousElementSibling // header가 나옴
+ul.previousSibling // text 노드
+ul.nextSibling // text 노드
+ul.nextElementSibling // input이 나옴
+```
