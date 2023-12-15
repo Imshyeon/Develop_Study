@@ -13,6 +13,7 @@
 📌 [형제 요소 선택하기](#📌-형제-요소-선택하기)<br>
 📌 [DOM 탐색 vs. 쿼리 메서드](#📌-dom-탐색-vs-쿼리-메서드)<br>
 📌 [DOM 요소 스타일링하기](#📌-dom-요소-스타일링하기)<br>
+📌 [JS로 요소 생성하기](#📌-js로-요소-생성하기)<br>
 <br>
 
 ## 📌 DOM이란 무엇인가?
@@ -252,6 +253,7 @@ ul.nextElementSibling; // input이 나옴
 ## 📌 DOM 탐색 vs. 쿼리 메서드
 
 DOM을 이용해서 탐색하는 것은 정말 신중하게 써야한다. 정말 바뀌지 않을 것들만 쓰자!
+
 <br>
 
 ## 📌 DOM 요소 스타일링하기
@@ -264,3 +266,31 @@ section.classList.toggle("visible");
 section.classList.toggle("invisible");
 ```
 * classList에서 `visible`이 있으면 삭제하고 없으면 추가. `invisible`도 마찬가지임.
+  
+<br>
+
+## 📌 JS로 요소 생성하기
+  
+1. HTML string
+   1. `innerHTML` &rarr; Add(render) HTML string
+   2. `inserAdjacentHTML()` : 기존의 콘텐츠 옆에 추가하고자 할 때 사용할 수 있는 메서드 &rarr; Add(render) HTML string in specific position
+
+2. `createElement()`
+   1. `appendChild() / append()` : 새로운 DOM 요소나 노드를 다른 요소의 내부에 추가. 새로운 부모 요소나 부모 노드를 추가할 수 있다. &rarr; Append new DOM element/node
+   2. `prepend(), before(), after(), insertBefore()` : 기존 자식 노드 리스트 끝에 추가하는 대신에 원하는  특정 위치에 추가. &rarr; Insert new DOM element/node in specific position
+   3. `replceChild(), replaceWith()` &rarr; Replace existing DOM element/node with new one.
+
+### 📖 코드에서 HTML을 통해 요소 추가하기 &rarr; innerHTML
+* section 태그 사이에 있는 어떤 이전 노드와 직속 자식 노드 뿐만 아니라 자손들도 모두 새로운 HTML 코드로 바뀌었다.
+* 추천하진 않는 방법.
+```javascript
+section.innerHTML = '<h2> A new title </h2>'
+
+// 혹은
+const list = document.querySelector('ul');
+list.innerHTML = list.innerHTML + '<li>New Item</li>';
+```
+
+```javascript
+div.insertAdjacentHTML('beforeend', '<p>Something went wrong</p>')
+```
