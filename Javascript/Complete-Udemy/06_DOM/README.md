@@ -294,3 +294,14 @@ list.innerHTML = list.innerHTML + '<li>New Item</li>';
 ```javascript
 div.insertAdjacentHTML('beforeend', '<p>Something went wrong</p>')
 ```
+<br>
+
+### 📖 `createElement()`를 통해 요소 추가하기
+* 생성하고자 하는 요소의 태그 이름을 넣으면 됨!
+```javascript
+const list = document.querySelector('ul');
+const newLi = document.createElement('li');
+list.appendChild(newLi);
+newLi.textContent = 'Item 4';
+newLi.style.backgroundColor = 'blue';
+```
