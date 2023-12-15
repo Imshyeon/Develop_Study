@@ -305,3 +305,25 @@ list.appendChild(newLi);
 newLi.textContent = 'Item 4';
 newLi.style.backgroundColor = 'blue';
 ```
+<br>
+
+### 📖 DOM 요소 삽입하기
+```javascript
+const list = document.querySelector('ul');
+const newLi = document.createElement('li');
+newLi.textContent = 'Item 4';
+list.prepend(newLi); // 첫번째 요소로 삽입이 됨.
+
+list.lastElementChild.before(newLi) // 이렇게 하면 윗 줄에서 첫번째 요소로 삽입되었던 Item 4 가 삭제되고 세번째 요소가 됨.
+// 기존 위치가 변경된다고 생각하면 된다.
+list.lastElementChild.after(newLi)
+list.firstElementChild.replaceWith(newLi) // Item 1이 삭제되고 Item 4로 교체가 됨.
+```
+
+```javascript
+const list = document.querySelector('ul')
+const secondLi = list.children[1]
+const newLi = document.createElement('li')
+newLi.textContent = 'Item 4'
+secondLi.insertAdjacentElement('afterend', newLi)
+```
