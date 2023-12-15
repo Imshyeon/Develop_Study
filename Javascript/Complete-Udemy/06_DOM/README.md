@@ -64,6 +64,7 @@
 ```
 
 ### Element Node
+
 1. `<html>` &rarr; html 노드. 최상위 노드 - `<head>`와 `<body>`가 자식 노드
 2. `<head>` - `<title>`이 자식 노드
 3. `<title>`
@@ -72,14 +73,17 @@
 6. `<h1>`
 7. `<main>` - `<p>`가 자식 노드
 8. `<p>`
+
 ---
 
-* (Chrome Dev Tool) 브라우저 검사에서 `<h1>Dive into the DOM!</h1> == $0`라고 나와있는데 console에서 $0를 입력하면 선택한 요소를 볼 수 있다.
-* $0는 항상 Elements 탭에서 마지막으로 선택한 요소에 대한 액세스를 제공한다.
-<br>
+- (Chrome Dev Tool) 브라우저 검사에서 `<h1>Dive into the DOM!</h1> == $0`라고 나와있는데 console에서 $0를 입력하면 선택한 요소를 볼 수 있다.
+- $0는 항상 Elements 탭에서 마지막으로 선택한 요소에 대한 액세스를 제공한다.
+  <br>
 
 ## 📌 DOM 쿼리하기
+
 1. `querySelector(), getElementByID()`
+
    - 단일 요소 선택
    - 늘 DOM 페이지에서 맨 처음으로 일치하는 요소를 액세스한다.
    - DOM 요소에 대한 직접적인 참조가 제공된다. &rarr; DOM 노드는 JavaScript 객체, 즉 참조 값이다. 이러한 메서드는 객체 참조(주소)를 반환한다.
@@ -91,6 +95,7 @@
    - `querySelectorAll`은 정적 NodeList, 즉 현재 렌더링 된 DOM의 스냅샷을 제공하는 반면. `getElementsByTagName` 종류의 메서드는 동적 NodeList를 제공한다. &rarr; 요소를 추가하거나 제거하는 경우 `getElementsByTagName`은 반영이 되지만 `querySelectorAll`은 반영되지 않는다.
 
 ### Nodes & Elements
+
 1. Nodes : DOM을 구성하는 객체. DOM은 모두 노드로 이루어진다.
 2. Elements : 요소 노드. 렌더링된 HTML의 태그에서 생성된 노드이면 내부에는 텍스트가 없다.
    - Special properties and methods to interact with the elements.
@@ -99,137 +104,163 @@
    - Can be created and removed via JavaScript.
 
 ## 📌 DOM에서 요소 선택하기
+
 ```javascript
-console.dir(document.getElementById('main-title'))
-const h1 = document.getElementById('main-title')
+console.dir(document.getElementById("main-title"));
+const h1 = document.getElementById("main-title");
 
-document.getElementsByClassName('list-item')
+document.getElementsByClassName("list-item");
 // 요즘엔 querySelector를 사용하는게 더 보편적임
-document.querySelectorAll('.list-item')
-document.querySelectorAll('ul li:first-of-type') // 첫번째로 나와있는 항목을 선택하는 CSS 선택자가 된다.
+document.querySelectorAll(".list-item");
+document.querySelectorAll("ul li:first-of-type"); // 첫번째로 나와있는 항목을 선택하는 CSS 선택자가 된다.
 
-const ul = document.querySelector('ul')
-ul.querySelector('li')  // 자식 노드 Select. 단 가장 첫번째 것을 선택.
+const ul = document.querySelector("ul");
+ul.querySelector("li"); // 자식 노드 Select. 단 가장 첫번째 것을 선택.
 
-document.body // <body> 요소 노들르 선택
-document.head // <head> 요소를 선택
-document.documentElement // <html> 요소를 선택
+document.body; // <body> 요소 노들르 선택
+document.head; // <head> 요소를 선택
+document.documentElement; // <html> 요소를 선택
 ```
+
 <br>
 
 ## 📌 DOM 프로퍼티 탐구 및 변경
+
 ```html
 <p id="welcome-text" class="text-default">Welcome!</p>
 ```
+
 ```javascript
-const p = document.getElementById('welcome-text')
-p.textContent // "Welcome!"
-p.id // "welcome-text"
-p.className // "text-default"
-p.className = "new-class" // <p.. class="new-class">
-p.style.backgroundColor = 'orange';
-p.style.color = 'white';
+const p = document.getElementById("welcome-text");
+p.textContent; // "Welcome!"
+p.id; // "welcome-text"
+p.className; // "text-default"
+p.className = "new-class"; // <p.. class="new-class">
+p.style.backgroundColor = "orange";
+p.style.color = "white";
 console.dir(p1);
 ```
+
 <br>
 
 ## 📌 속성 vs. 프로퍼티
-* 속성(Attribute)은 종종 프로퍼티에 매핑되어 있고 실시간 동기화가 설정되어 있다.
-  
+
+- 속성(Attribute)은 종종 프로퍼티에 매핑되어 있고 실시간 동기화가 설정되어 있다.
+
 ```html
-<input id="input-1" class="input-default" value="Enter text...">
+<input id="input-1" class="input-default" value="Enter text..." />
 ```
-* Attributes(속성) : `id="input-1"`, `class="input-default"`, `value="Enter text..."` &rarr; HTML 태그에 추가되는 것은 해당 태그의 속성. 브라우저가 이 속성으로 수행하는 작업은 DOM 개체를 생성(태그 이름을 기반으로)
-* Properties(프로퍼티) : HTML 코드를 기반으로 생성된 객체에 저장된 값. DOM 객체가 있든 없든 상관없이 JavaScript 객체에 프로퍼티가 있다. 생성된 DOM 객체에 자동으로 프로퍼티가 추가됨.
+
+- Attributes(속성) : `id="input-1"`, `class="input-default"`, `value="Enter text..."` &rarr; HTML 태그에 추가되는 것은 해당 태그의 속성. 브라우저가 이 속성으로 수행하는 작업은 DOM 개체를 생성(태그 이름을 기반으로)
+- Properties(프로퍼티) : HTML 코드를 기반으로 생성된 객체에 저장된 값. DOM 객체가 있든 없든 상관없이 JavaScript 객체에 프로퍼티가 있다. 생성된 DOM 객체에 자동으로 프로퍼티가 추가됨.
 
 만약 `const input`을 통해서 input 변수에 저장을 한다면, `input`을 통해서 id, className, value를 읽을 수 있다.
+
 ```javascript
-input.id
-input.className
-input.value
+input.id;
+input.className;
+input.value;
 
 // 예시
-const input = document.querySelector('input')
-console.dir(input)
-input.value = "hello world~~" // 사용자 인터페이스에는 반영 됨. 하지만 Elements창(HTML)에서 본 input의 value값은 default value로 그대로이다!
+const input = document.querySelector("input");
+console.dir(input);
+input.value = "hello world~~"; // 사용자 인터페이스에는 반영 됨. 하지만 Elements창(HTML)에서 본 input의 value값은 default value로 그대로이다!
 // 이전의 속성이므로 리셋한 것이 반영되지 않음.
 
-// id, class 
-const h1 = document.getElementById('main-title')
-h1.id // main-title
-h1.id = 'new-id'; // Element창(HTML)으로 가서 보면, id 속성값이 변경되어 있음을 알 수 있다.
+// id, class
+const h1 = document.getElementById("main-title");
+h1.id; // main-title
+h1.id = "new-id"; // Element창(HTML)으로 가서 보면, id 속성값이 변경되어 있음을 알 수 있다.
 // class 또한 변경된 값이 속성값에 반영됨.
 ```
 
 만약, 속성을 변경하고 싶다면?
+
 ```javascript
-const input = document.querySelector('input')
-input.setAttribute('value', 'some other default text') // 첫번쨰 인수 : 바꾸고자 하는 속성, 두번째 : 내용
+const input = document.querySelector("input");
+input.setAttribute("value", "some other default text"); // 첫번쨰 인수 : 바꾸고자 하는 속성, 두번째 : 내용
 // 속성값이 변한다!
 ```
+
 <br>
 
 ## 📌 다수의 요소 선택하기 & 요약
-```javascript 
+
+```javascript
 // const listItemElements = document.querySelectorAll("li"); // 실시간 목록 제공 X
-const listItemElements = document.getElementsByTagName('li'); // 요소의 변경사항을 반영하는 실시간 목록을 제공한다.
+const listItemElements = document.getElementsByTagName("li"); // 요소의 변경사항을 반영하는 실시간 목록을 제공한다.
 
 for (const listItemEl of listItemElements) {
-    console.dir(listItemEl)
+  console.dir(listItemEl);
 }
 ```
+
 <br>
 
 ## 📌 자식 노드 탐색하기
+
 ```javascript
-const ul = document.querySelector('ul');
-ul.children
-ul.children[1]
+const ul = document.querySelector("ul");
+ul.children;
+ul.children[1];
 
-ul.childNodes // 텍스트 노드와 요소 노드도 볼 수 있음. 
+ul.childNodes; // 텍스트 노드와 요소 노드도 볼 수 있음.
 
-ul.firstChild
-ul.firstElementChild
-ul.lastChild
-ul.lastElementChild
+ul.firstChild;
+ul.firstElementChild;
+ul.lastChild;
+ul.lastElementChild;
 ```
+
 <br>
 
 ## 📌 부모 노드 & 부모 요소 사용하기
+
 ```javascript
-const liFirst = document.querySelector('li');
-liFirst.parentElement // 가장 가까운 부모 요소 노드에 접근
-liFirst.parentNode // 가장 가까운 부모 노드에 접근
+const liFirst = document.querySelector("li");
+liFirst.parentElement; // 가장 가까운 부모 요소 노드에 접근
+liFirst.parentNode; // 가장 가까운 부모 노드에 접근
 ```
+
 - 텍스트 노드는 자식 노드를 가질 수 없기 때문에 사실 상 두 parent~ 는 같다고 볼 수 있다.
+
 ```javascript
-document.documentElement.parentElement  // null
-document.documentElement.parentNode // document -> 전체 문서 객체
+document.documentElement.parentElement; // null
+document.documentElement.parentNode; // document -> 전체 문서 객체
 ```
 
 ```javascript
-const liFirst = document.querySelector('li');
-liFirst.closest('body') // body 요소가 선택된다.
+const liFirst = document.querySelector("li");
+liFirst.closest("body"); // body 요소가 선택된다.
 ```
-* `closest()`는 요소 트리에 있는 아무 조상을 선택하기 좋다. `querySelector`처럼 CSS 요소를 사용한다는 것이 특징.
-<br>
+
+- `closest()`는 요소 트리에 있는 아무 조상을 선택하기 좋다. `querySelector`처럼 CSS 요소를 사용한다는 것이 특징.
+  <br>
 
 ## 📌 형제 요소 선택하기
+
 ```javascript
 const ul = li.parentElements;
-ul.previousElementSibling // header가 나옴
-ul.previousSibling // text 노드
-ul.nextSibling // text 노드
-ul.nextElementSibling // input이 나옴
+ul.previousElementSibling; // header가 나옴
+ul.previousSibling; // text 노드
+ul.nextSibling; // text 노드
+ul.nextElementSibling; // input이 나옴
 ```
+
 <br>
 
 ## 📌 DOM 탐색 vs. 쿼리 메서드
+
 DOM을 이용해서 탐색하는 것은 정말 신중하게 써야한다. 정말 바뀌지 않을 것들만 쓰자!
 <br>
 
 ## 📌 DOM 요소 스타일링하기
+
 ```javascript
-const section = document.querySelector('section');
-section.style.backgroundColor = 'green';
+const section = document.querySelector("section");
+section.style.backgroundColor = "green";
+
+section.classList.toggle("visible");
+section.classList.toggle("invisible");
 ```
+* classList에서 `visible`이 있으면 삭제하고 없으면 추가. `invisible`도 마찬가지임.
