@@ -7,6 +7,7 @@
 [📌 sort()와 reverse()](#📌-sort와-reverse)<br>
 [📌 filter()로 배열 필터링하기](#📌-filter로-배열-필터링하기)<br>
 [🔥 `reduce()` 메서드 🔥](#🔥-reduce-메서드-🔥)<br>
+[📌 배열 & 문자열 - split(), join()](#📌-배열--문자열---split-join)<br>
 
 ## 📌 반복과 유사 배열 객체
 
@@ -414,3 +415,27 @@ const sum = transformedArray.reduce((sumVal, curVal) => sumVal + curVal, 0); // 
 const originalArray = [{price: 10.99}, {price:5.99}, {prcie:29.99}];
 const sum = originalArray.map(obj=>obj.price).reduce((sumVal, curVal) => sumVal + curVal, 0); // => 46.97
 ```
+
+<br>
+
+## 📌 배열 & 문자열 - `split(), join()`
+
+```javascript
+// split()
+const data = 'new york;10.99;2000';
+const transformedData = data.split(';'); 
+console.log(transformedData) // ['new york', '10.99', '2000']
+
+// join()
+const nameFragements = ['Max', 'Schwarz'];
+// 아무것도 안넣었을 때
+const name = nameFragements.join()
+console.log(name) //Max,Schwarz
+
+// 구분자를 넣었을 때
+const name = nameFragements.join(' ')
+console.log(name) //Max Schwarz
+```
+
+- `split()` : 여러 조각의 배열로 나눔. 인자로는 구분자(seperator)를 넣음. 두번째 인자는 만들어질 요소의 개수를 제한하는 인자인데 이는 선택적인 요소이다.
+- `join()` : 구분자를 이용해서 요소를 합칠 때 사용. 항상 문자열로 생성.
