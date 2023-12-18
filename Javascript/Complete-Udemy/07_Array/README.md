@@ -9,6 +9,7 @@
 * 유사 배열 객체(Array-like Object)
   * 기술적 : 길이(length) 프로퍼티가 있고 아이템에 엑세스하기 위해 인덱스를 사용한다.
   * 모든 유사 배열 객체가 배열은 아니다. &rarr; 예시 : NodeList, String
+<br>
 
 ## 📌 배열 생성하기
 ```javascript
@@ -29,3 +30,21 @@ console.log(yetMoreNumbers);
 const moreNumbers = Array.from('Hi!'); // 이터러블이나 유사배열객체가 들어간다.
 console.log(moreNumbers) // ['H', 'i', '!']
 ```
+<br>
+
+### 📖 배열에는 어떤 데이터를 저장할 수 있을까?
+* 숫자, 문자열, 객체를 저장할 수 있다. 
+* 동일한 유형의 배열도 가능하다는 것도 알고 있자!
+  ```javascript
+  const hobbies = ['Cooking','Sports'];
+  const personalData = [30, 'Max', {moreDetail : []}];
+  ```
+* 중첩 배열이나 다차원 배열도 가능하다.
+  ```javascript
+  const analyticsData = [[1, 1.6], [-5.4, 2.1]];
+  for (const data of analyticsData){
+    for (const dataPoint of data){
+        console.log(dataPoint) // 1, 1.6, -5.4, 2.1
+    }
+  }
+  ```
