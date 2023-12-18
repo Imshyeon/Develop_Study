@@ -6,6 +6,7 @@
 [📌 map()으로 데이터 변환하기](#📌-map으로-데이터-변환하기)<br>
 [📌 sort()와 reverse()](#📌-sort와-reverse)<br>
 [📌 filter()로 배열 필터링하기](#📌-filter로-배열-필터링하기)<br>
+[🔥 `reduce()` 메서드 🔥](#🔥-reduce-메서드-🔥)<br>
 
 ## 📌 반복과 유사 배열 객체
 
@@ -355,3 +356,49 @@ console.log(filteredArray)  // [10.99, 6.59]
   - false : true와는 다르게 삭제된다.
 
 [filter() 함수 더 알아보기](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
+
+
+### 📖 (+) 화살표 함수
+```javascript
+const filteredArray = prices.filter(price => price > 6); // 화살표 함수로 짧고 간결하게 만들기.
+console.log(filteredArray)  // [10.99, 6.59]
+```
+
+<br>
+
+## 🔥 `reduce()` 메서드 🔥
+
+```javascript
+const prices = [10.99, 5.99, 3.99, 6.59];
+
+// let sum = 0;
+// prices.forEach((price) => {
+//     sum += price
+// });
+// console.log(sum)
+
+const sum = prices.reduce((prevValue, curValue, curIndex, prices) => {
+  // prevValue는 두번째 인수로 설정한 0 값임. 설정되어있지 않으면 undefined
+  // curValue 해당 배열의 첫번째 요소.
+  return prevValue + curValue;
+}, 0); // 0부터 시작
+console.log(sum) // 위에서 forEach를 사용한 값과 동일.
+
+// => 화살표함수로 줄이기
+const sum = prices.reduce((prev, cur) => prev + cur, 0);
+console.log(sum);
+```
+
+- `reduce()` : 배열을 더 단순한 값으로 줄인다. 예를 들어, 숫자의 배열을 숫자의 총합을 줄임. 주로 배열을 단일 숫자나 단일 문자열로 줄임.
+- `reduce()`의 인수 
+  - callbackfn
+    - previousValue **
+    - currentValue ** 
+    - currentIndex
+    - array
+  - 시작하려는 초깃값
+
+- 위의 코드 설명
+  1. prevValue = 0, curValue = 10.99 
+  2. 배열의 두번째 요소에서 실행. prevValue = 10.99, curValue = 5.99
+  3. ...
