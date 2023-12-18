@@ -295,6 +295,8 @@ console.log(prices, taxAdjustedPrices);
 - prices는 값이 동일하지만 taxAdjustedPrices는 `map()`으로 가격이 전환된다.
 - 배열 전환에는 `map()` 메서드가 유용하다. 왜냐하면 요소를 변경하기 쉽고 변경된 요소를 기반으로 새로운 배열을 얻기도 매우 쉽기 때문 
 
+[map 함수 더 자세히 보기](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
+
 <br>
 
 ## 📌 `sort()`와 `reverse()`
@@ -328,3 +330,5 @@ console.log(sortedPrices.reverse()) // 10.99, 6.59, 5.99, 3.99
 
 - `sort()` : 전체를 문자열로 변환 &rarr; 문자열 논리로 정렬
 - `reverse()` : 배열을 반전
+
+[sort() 함수 더 자세히 알아보기](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
