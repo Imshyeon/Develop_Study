@@ -5,6 +5,7 @@
 [📌 forEach() 메서드](#📌-반복문-대안--foreach-메서드)<br>
 [📌 map()으로 데이터 변환하기](#📌-map으로-데이터-변환하기)<br>
 [📌 sort()와 reverse()](#📌-sort와-reverse)<br>
+[📌 filter()로 배열 필터링하기](#📌-filter로-배열-필터링하기)<br>
 
 ## 📌 반복과 유사 배열 객체
 
@@ -332,3 +333,25 @@ console.log(sortedPrices.reverse()) // 10.99, 6.59, 5.99, 3.99
 - `reverse()` : 배열을 반전
 
 [sort() 함수 더 자세히 알아보기](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
+
+<br>
+
+## 📌 `filter()`로 배열 필터링하기
+
+```javascript
+const filteredArray = prices.filter((price, idx, prices)=>{
+  return price > 6; // 6보다 큰 항목은 그대로 유지. 그렇지 않으면 새롭게 생성된 배열에서 삭제된다.
+});
+console.log(filteredArray)  // [10.99, 6.59]
+```
+
+- `filter()`의 인수
+  - value
+  - index
+  - array
+
+- `filter`함수는 true/false를 반환한다.
+  - true : 현재 실행된 함수의 항목이 새로 생성된 배열에 저장된다.
+  - false : true와는 다르게 삭제된다.
+
+[filter() 함수 더 알아보기](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
