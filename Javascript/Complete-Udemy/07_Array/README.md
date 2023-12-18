@@ -142,3 +142,32 @@ console.log(storedResults, testResults)
 ```
 * `concat()` : 배열의 끝에 요소를 추가해서 연결할 수 있도록 한다. 각각의 숫자나 항목이 아니라 한 배열이나 여러 배열을 취한다. &rarr; 메모리의 새로운 주소를 반환
 * `concat()`은 배열의 데이터를 기존의 배열과 합칠 떄 유용.
+
+<br>
+
+### 📖 `indexOf()` & `lastIndexOf()`로 인덱스 회수하기
+```javascript
+const testResults = [1, 5.3, 1.5, 10.99, -5, 10];
+const storedResults = testResults.concat([3.99, 2]);
+testResults.push(5.3);
+console.log(storedResults, testResults) 
+// [1, 5.3, 1.5, 10.99, -5, 10, 3.99, 2], [1, 5.3, 1.5, 10.99, -5, 10, 5.3]
+console.log(testResults.indexof(1.5, 2)) // 1.5를 찾는데, 2번 인덱스 또는 그 이후의 요소만 검색하도록 함.
+console.log(testResults.indexof(1.5)) // 2
+
+
+const testResults = [1, 5.3, 1.5, 10.99, 1.5, -5, 10];
+const storedResults = testResults.concat([3.99, 2]);
+testResults.push(5.3);
+console.log(storedResults, testResults) 
+// [1, 5.3, 1.5, 10.99, -5, 10, 3.99, 2], [1, 5.3, 1.5, 10.99, -5, 10, 5.3]
+console.log(testResults.lastIndexOf(1.5)) // 4
+
+
+const personData = [{name:'Max'}, {name:'Manuel'}]
+console.log(personData.indexOf({name:'Manuel'})) // -1 => 주소값이 다르니까..
+```
+* `indexOf()` : 첫번째 매칭되는 인덱스 값을 리턴. 
+* `lastIndexOf()` : 마지막부터 검색
+* 만약 -1을 리턴한다면 그것은 어떤 요소를 찾지 못했을 때 반환되는 값이다.
+* `indexOf()`와 `lastIndexOf()`은 참조값(객체)은 다루지 않는다. 
