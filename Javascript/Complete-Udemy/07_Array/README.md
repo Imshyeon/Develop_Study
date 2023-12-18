@@ -227,3 +227,14 @@ console.log(personData.indexOf({ name: "Manuel" })); // -1 => 주소값이 다�
    console.log(maxIndex); // 0
    ```
    * `findIndex()` : 배열에서 일치하는 항목을 반환하는 것이 아니라 해당 항목의 인덱스를 반환하는 것이 차이점이다.
+
+<br>
+
+### 📖 `includes()` 메서드
+* 원시값이 가장 유용한 메서드이다. 그저 배열의 일부인지 확인하고 싶을 때 사용.
+```javascript
+const testResults = [1, 5.3, 1.5, 10.99, -5, 10];
+
+console.log(testResults.includes(10.99)) // true
+console.log(testResults.indexOf(10.99) !== -1) // true
+```
