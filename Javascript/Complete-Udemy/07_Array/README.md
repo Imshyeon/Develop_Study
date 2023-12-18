@@ -2,6 +2,7 @@
 
 [📌 반복과 유사 배열 객체](#📌-반복과-유사-배열-객체)<br>
 [📌 배열 생성하기](#📌-배열-생성하기)<br>
+[📌 forEach() 메서드](#📌-반복문-대안--foreach-메서드)<br>
 
 ## 📌 반복과 유사 배열 객체
 
@@ -222,19 +223,48 @@ console.log(personData.indexOf({ name: "Manuel" })); // -1 => 주소값이 다�
    ```javascript
    const personData = [{ name: "Max" }, { name: "Manuel" }];
    const maxIndex = personData.findIndex((person, idx, persons) => {
-    return person.name === 'Max';
+     return person.name === "Max";
    });
    console.log(maxIndex); // 0
    ```
-   * `findIndex()` : 배열에서 일치하는 항목을 반환하는 것이 아니라 해당 항목의 인덱스를 반환하는 것이 차이점이다.
+
+   - `findIndex()` : 배열에서 일치하는 항목을 반환하는 것이 아니라 해당 항목의 인덱스를 반환하는 것이 차이점이다.
 
 <br>
 
 ### 📖 `includes()` 메서드
-* 원시값이 가장 유용한 메서드이다. 그저 배열의 일부인지 확인하고 싶을 때 사용.
+
+- 원시값이 가장 유용한 메서드이다. 그저 배열의 일부인지 확인하고 싶을 때 사용.
+
 ```javascript
 const testResults = [1, 5.3, 1.5, 10.99, -5, 10];
 
-console.log(testResults.includes(10.99)) // true
-console.log(testResults.indexOf(10.99) !== -1) // true
+console.log(testResults.includes(10.99)); // true
+console.log(testResults.indexOf(10.99) !== -1); // true
 ```
+
+<br>
+
+## 📌 반복문 대안 : `forEach()` 메서드
+
+```javascript
+const prices = [10.99, 5.99, 3.99, 6.59];
+const tax = 0.19;
+const taxAdjustedPrices = [];
+
+// for (const price of prices){
+//     taxAdjustedPrices.push(price * (1 + tax));
+// }
+
+prices.forEach((price, idx, prices) => {
+  const priceObj = { index: idx, taxAdjustedPrice: price * (1 + tax) };
+  taxAdjustedPrices.push(priceObj);
+});
+console.log(taxAdjustedPrices);
+// 0 : index:0, taxAdjustedPrice:13.0781 ...
+```
+
+- `forEach()`의 인수
+  - value
+  - index
+  - array
