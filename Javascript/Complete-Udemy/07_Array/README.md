@@ -3,6 +3,7 @@
 [📌 반복과 유사 배열 객체](#📌-반복과-유사-배열-객체)<br>
 [📌 배열 생성하기](#📌-배열-생성하기)<br>
 [📌 forEach() 메서드](#📌-반복문-대안--foreach-메서드)<br>
+[📌 map()으로 데이터 변환하기](#📌-map으로-데이터-변환하기)<br>
 
 ## 📌 반복과 유사 배열 객체
 
@@ -268,3 +269,27 @@ console.log(taxAdjustedPrices);
   - value
   - index
   - array
+
+<br>
+
+## 📌 `map()`으로 데이터 변환하기
+
+```javascript
+const prices = [10.99, 5.99, 3.99, 6.59];
+const tax = 0.19;
+
+const taxAdjustedPrices = prices.map((price, idx, prices)=>{
+  const priceObj = { index: idx, taxAdjustedPrice: price * (1 + tax) };
+  return priceObj;
+});
+console.log(prices, taxAdjustedPrices);
+// [10.99, 5.99, 3.99, 6.59]
+// 0:
+//   index : 0
+//   taxAdjustedPrice : 13.0781
+// ...
+```
+
+- `map()` : 배열을 취하고 이런 형식의 배열에서 모든 항목에 함수를 실행한다. 또한 해당 함수는 배열의 각 요소에 관해 전환 가능한 새 요소를 반환해야 한다. 
+- prices는 값이 동일하지만 taxAdjustedPrices는 `map()`으로 가격이 전환된다.
+- 배열 전환에는 `map()` 메서드가 유용하다. 왜냐하면 요소를 변경하기 쉽고 변경된 요소를 기반으로 새로운 배열을 얻기도 매우 쉽기 때문 
