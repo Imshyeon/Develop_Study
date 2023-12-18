@@ -402,3 +402,15 @@ console.log(sum);
   1. prevValue = 0, curValue = 10.99 
   2. 배열의 두번째 요소에서 실행. prevValue = 10.99, curValue = 5.99
   3. ...
+
+### 📖 메서드 체인 형성하기
+```javascript
+// 방법 1
+const originalArray = [{price: 10.99}, {price:5.99}, {prcie:29.99}];
+const transformedArray = originalArray.map(obj => obj.price);
+const sum = transformedArray.reduce((sumVal, curVal) => sumVal + curVal, 0); // => 46.97
+
+// 방법 2
+const originalArray = [{price: 10.99}, {price:5.99}, {prcie:29.99}];
+const sum = originalArray.map(obj=>obj.price).reduce((sumVal, curVal) => sumVal + curVal, 0); // => 46.97
+```
