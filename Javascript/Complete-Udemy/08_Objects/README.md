@@ -536,3 +536,7 @@ const addMovieHandler = () => {
 
 ```
 - JavaScript가 특수 `get` 키워드를 감지하고 메서드와 결합해서 프로퍼티와 같이 엑세스할 수 있게 됨.
+
+<br>
+
+[this 더 자세히 알아보기](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
