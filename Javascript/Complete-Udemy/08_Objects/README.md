@@ -232,4 +232,84 @@ addMovieBtn.addEventListener("click", addMovieHandler);
 
 <br>
 
-### 📖 3. 
+### 📖 3. Search - filter 기능
+```javascript
+const addMovieBtn = document.querySelector("#add-movie-btn");
+const searchBtn = document.querySelector("#search-btn");
+
+const movies = [];
+
+const renderMovies = (filter = "") => {
+  const movieList = document.getElementById("movie-list");
+
+  if (movies.length === 0) {
+    movieList.classList.remove("visible");
+    return;
+  } else {
+    movieList.classList.add("visible");
+  }
+
+  movieList.innerHTML = ""; // 전체 목록 지우기
+
+  const filteredMovies = !filter // 만약 필터가 ''라면 전에 Movies를 표현
+    ? movies
+    : movies.filter((movie) => movie.info.title.includes(filter)); // 필터에 뭐가 전달되면 그 필터에 맞는 movie를 출력.
+
+  filteredMovies.forEach((movie) => {
+    const movieEl = document.createElement("li");
+    let text = movie.info.title + " - ";
+    for (const key in movie.info) {
+      if (key !== "title") {
+        text += `${key}: ${movie.info[key]}`;
+      }
+    }
+    movieEl.textContent = text;
+    movieList.append(movieEl);
+  });
+};
+
+const addMovieHandler = () => {
+...
+};
+
+const searchMovieHandler = () => {
+  const filterTerm = document.getElementById("filter-title").value;
+  renderMovies(filterTerm);
+};
+
+addMovieBtn.addEventListener("click", addMovieHandler);
+searchBtn.addEventListener("click", searchMovieHandler);
+```
+
+<br>
+
+---
+
+### ➕ 객체 분산 연산자 (...)
+```javascript
+const person = {name:'Max', hobbies:['Sports', 'Cooking']};
+const person2 = { ...person };
+
+person.hobbies.push('Coding')
+console.log(person2)
+// person2의 hobbies에도 Coding이 추가됨을 알 수 있다. 
+// 전개연산자(...)가 객체나 배열에 있는 모든 중첩 참조 값의 수준에 대해 깊은 복사는 제공하지 않는다.
+// 대신 최상위 수준에서의 키-값 쌍을 새로운 객체로 복사를 한다.
+// 배열에 있는 값도 새롭게 복사를 하고싶은 경우는 다음과 같다.
+const person3 = { ...person, age: 29, hobbies:[...person.hobbies]}; // 덮어쓰기
+person.hobbies.pop(); 
+console.log(person) // hobbies 2개
+consoel.log(person3) // hobbies 3개
+```
+
+### ➕ `Object.assign()` 이해하기
+```javascript
+const person = {name:'Max'};
+const person2 = Object.assign({}, person); 
+// 새로운 객체를 출력하고 person객체에 있는 모든 키-값 쌍을 새로운 객체에 병합
+person.name = 'Taemin';
+consoel.log(person) // Taemin
+console.log(person2) // Max
+```
+
+---

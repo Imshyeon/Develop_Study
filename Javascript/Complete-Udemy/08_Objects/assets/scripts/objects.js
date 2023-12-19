@@ -50,7 +50,7 @@ const addMovieHandler = () => {
       title, // title: title와 같이 해당 변수 이름과 키 값이 동일한 경우.
       [extraName]: extraValue,
     },
-    id: Math.random(),
+    id: Math.random().toString(),
   };
 
   movies.push(newMovie);
