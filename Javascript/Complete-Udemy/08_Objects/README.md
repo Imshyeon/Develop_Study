@@ -97,3 +97,32 @@ console.log(person[1])
 - 프로퍼티의 순서
   - 숫자로만 이뤄진 객체인 경우, 숫자가 자동으로 정렬되어 표시된다.
   - 문자열의 경우 추가된 순서대로 나온다.
+
+```javascript
+let person = {
+    'first name': 'Taemin',
+    age: 30,
+    hobbies: ['Dancing', 'Singing'],
+    greet: function () {
+        alert('Hi there!');
+    },
+    1 : 'hello'
+};
+
+const keyName = 'first name';
+console.log(person[keyName]); // 동적으로 프로퍼티에 엑세스
+
+// (+)
+const userChosenKeyName = 'level';
+
+let person = {
+    'first name': 'Taemin',
+    age: 30,
+    hobbies: ['Dancing', 'Singing'],
+    [userChosenKeyName] : '...', // 동적으로 프로퍼티 설정
+    greet: function () {
+        alert('Hi there!');
+    },
+    1 : 'hello'
+};
+```
