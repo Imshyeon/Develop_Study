@@ -403,7 +403,7 @@ const addMovieHandler = () => {
 
 <br>
 
-#### 2. this 적용 -2
+#### 2. this 적용 -2 | `bind()`
 
 **this가 자동으로 주위에 있는 객체를 참조하는 대신, 해당 함수를 호출한 주체를 참조한다.**
 
@@ -413,4 +413,21 @@ const addMovieHandler = () => {
 let { getFormattedTitle } = movie;
 getFormattedTitle = getFormattedTitle.bind(movie); // 본 함수에서 this가 참조로 할 대상을 가리킨다.
 let text = getFormattedTitle() + " - ";
+```
+
+<br>
+
+#### 3. this 적용 -3 | `call(), apply()`
+
+- `bind()` vs. `call()`
+  - `bind()` : 나중에 실행할 함수를 준비하고 마지막에는 새로운 함수 객체를 반환해서 `getFormattedTitle`에 저장
+  - `call()` : 바로 함수를 실행. 함수 내부의 this가 참조하는 내용을 덮어쓰기
+
+```javascript
+let text = getFormattedTitle.call(movie) + " - ";
+```
+
+- `apply()` : `call()`과 유사하게 함수를 바로 실행. 다만 첫번째 인자는 여전히 this가 나타내는 내용이지만 다음 인자를 무한하게 추가할 수는 없고 오직 하나의 인자만 추가 가능하다. 또한 이 인자는 배열이어야 한다. `call()`은 무한하게 추가 가능
+```javascript
+let text = getFormattedTitle.apply(movie) + " - ";
 ```

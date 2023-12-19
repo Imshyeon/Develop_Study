@@ -25,8 +25,8 @@ const renderMovies = (filter = "") => {
     console.log(otherProps);
     //   const { title:movieTitle } = info; // => title키를 movieTitle로 설정해서 쓸 수 있다.
     let { getFormattedTitle } = movie;
-    getFormattedTitle = getFormattedTitle.bind(movie); // 본 함수에서 this가 참조로 할 대상을 가리킨다.
-    let text = getFormattedTitle() + " - ";
+    // getFormattedTitle = getFormattedTitle.bind(movie); // 본 함수에서 this가 참조로 할 대상을 가리킨다.
+    let text = getFormattedTitle.call(movie) + " - ";
     for (const key in info) {
       if (key !== "title") {
         text += `${key}: ${info[key]}`;
