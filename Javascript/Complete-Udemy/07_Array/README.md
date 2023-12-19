@@ -536,6 +536,7 @@ console.log(firstName, lastName, otherInfo); // Max Schwarz ["Mr", 30]
 <br>
 
 ### 📖 Sets
+
 Set은 데이터 구조로 고유한 값을 관리할 때 유용하다.
 
 ```javascript
@@ -557,15 +558,101 @@ for (const entry of ids.entries()) {
   //(2) ['set!', 'set!']
 }
 
-if (ids.has('Hi')){
-    ids.delete('Hi');
+if (ids.has("Hi")) {
+  ids.delete("Hi");
 }
-console.log(ids); //  
+console.log(ids); //
 ```
 
 - `has()` : 데이터 저장소로부터 어떤 값을 포함하고 있는지 아닌지를 알려줌 &rarr; true/false 반환
 - `entries()` : Iterable을 반환. &rarr; for문에서 사용가능하다.
   - 리턴된 값을 보면, 값이 두 개씩 반환되었다. &rarr; entry 당 2개의 요소.
 - `delete()` : Set에서 요소 삭제
-  
+
 [Set 더 자세히 알아보기](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set)
+
+<br>
+
+### 📖 Maps
+
+```javascript
+const person1 = { name: "Max" };
+const person2 = { name: "Manuel" };
+
+const personData = new Map([[person1, [{ date: "yesterday", price: 10 }]]]);
+console.log(personData);
+// Map(1) {{…} => Array(1)}
+// [[Entries]]
+// 0: {Object => Array(1)}
+// key: {name: 'Max'}
+// value: Array(1)
+//     0: {date: 'yesterday', price: 10}
+//     length: 1
+//     [[Prototype]]: Array(0)
+// size: 1
+
+console.log(personData.get(person1));
+//[{…}]
+//0:
+//    date: "yesterday"
+//    price: 10
+//    [[Prototype]]: Object
+//length: 1
+//[[Prototype]]: Array(0)
+
+//========================== Map의 set() ==========================
+personData.set(person2, [{ date: "two weeks ago", price: 100 }]);
+console.log(personData);
+
+//========================== Map의 entries() ==========================
+for (const entry of personData.entries()) {
+  console.log(entry);
+}
+
+//========================== Map의 배열구조 분해 이용 ==========================
+for (const [key, value] of personData.entries()) {
+  console.log(key, value);
+}
+```
+
+<table>
+<tr>
+<td>
+<figure style="text-align: center;">
+<figcaption>Map의 set()</figcaption>
+<img src="./screenshot.png" width="400"><br>
+</figure>
+</td>
+<td>
+<figure style="text-align: center;">
+<figcaption>Map의 entries()</figcaption>
+<img src="./screenshot2.png" width="400"><br>
+</figure>
+</td>
+<td>
+<figure style="text-align: center;">
+<figcaption>Map의 배열구조분해</figcaption>
+<img src="./screenshot3.png" width="400"><br>
+</figure>
+</td>
+</tr>
+</table>
+
+```javascript
+for (const key of personData.keys()) {
+  console.log(key);
+}
+// {name: 'Max'}
+// {name: 'Manuel'}
+
+
+for (const value of personData.values()) {
+  console.log(value);
+} // value값만 나옴.
+
+console.log(personData.size) // 2 => Maps안에 키-쌍이 2개 있기 때문
+```
+
+<br>
+
+[Map 더 자세히 알아보기](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Map)
