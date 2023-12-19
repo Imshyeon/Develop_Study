@@ -9,6 +9,7 @@
 [🔥 `reduce()` 메서드 🔥](#🔥-reduce-메서드-🔥)<br>
 [📌 배열 & 문자열 - split(), join()](#📌-배열--문자열---split-join)<br>
 [📌 분산 연산자 (...)](#📌-분산-연산자)<br>
+[📌 배열 구조 분해 이해하기](#📌-배열-구조-분해-이해하기)<br>
 
 ## 📌 반복과 유사 배열 객체
 
@@ -494,4 +495,17 @@ const copiedPersons = persons.map((person) => ({
   age: person.age,
   hobbies: [...persons.hobbies],
 }));
+```
+
+<br>
+
+## 📌 배열 구조 분해 이해하기
+
+```javascript
+const nameData = ["Max", "Schwarz", "Mr", 30];
+// const firstName = nameData[0];
+// const lastName = nameData[1];
+
+const [firstName, lastName, ...otherInfo] = nameData; // Rest operator
+console.log(firstName, lastName, otherInfo); // Max Schwarz ["Mr", 30]
 ```
