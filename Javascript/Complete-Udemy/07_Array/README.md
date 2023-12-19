@@ -509,3 +509,63 @@ const nameData = ["Max", "Schwarz", "Mr", 30];
 const [firstName, lastName, ...otherInfo] = nameData; // Rest operator
 console.log(firstName, lastName, otherInfo); // Max Schwarz ["Mr", 30]
 ```
+
+<br>
+
+## 📌 Maps & Sets
+
+### 📖 개요
+
+1. Arrays
+
+   - Store (nested) data of any kind and length, 중첩된 데이터도 가질 수 있는데 종류, 길이 자료형 상관없다.
+   - Iterable이고 많은 특별한 배열 메서드를 사용할 수 있다.
+   - 요소의 순서가 보장된다. 중복도 허용하고 0에서부터 인덱스가 시작하여 요소에 접근이 가능하다.
+
+2. Sets
+
+   - Store (nested) data of any kind and length
+   - Iterable이고 몇 개의 특별한 set 메서드를 사용 가능하다. 배열 메서드는 sets에서 지원하지 않는다.
+   - 요소의 순서가 보장되지 않는다. 중복도 허용하지 않고 인덱스를 기반으로 접근하지 않는다.
+
+3. Maps
+   - Store key-value data of any kind and length, and key values are allowed.
+   - Iterable이고 특별한 map 메서드를 사용한다.
+   - 순서가 보장이 되고 중복된 키는 허용되지 않지만 Maps에서 값은 중복될 수 있다. 그리고 키를 이용해 값에 접근한다.
+
+<br>
+
+### 📖 Sets
+Set은 데이터 구조로 고유한 값을 관리할 때 유용하다.
+
+```javascript
+const ids = new Set([1, 2, 3]); // 어떤 Iterable도 가능. 배열, 또다른 Set, 노드리스트 등
+console.log(ids.has(1));
+
+for (const entry of ids.entries()) {
+  console.log(entry);
+  //(2) [1, 1]
+  //(2) [2, 2]
+  //(2) [3, 3]
+}
+// => ids의 값을 변경한 뒤 다시 확인해보자!
+const ids = new Set(["Hi", "from", "set!"]);
+for (const entry of ids.entries()) {
+  console.log(entry[0]);
+  //(2) ['Hi', 'Hi']
+  //(2) ['from', 'from']
+  //(2) ['set!', 'set!']
+}
+
+if (ids.has('Hi')){
+    ids.delete('Hi');
+}
+console.log(ids); //  
+```
+
+- `has()` : 데이터 저장소로부터 어떤 값을 포함하고 있는지 아닌지를 알려줌 &rarr; true/false 반환
+- `entries()` : Iterable을 반환. &rarr; for문에서 사용가능하다.
+  - 리턴된 값을 보면, 값이 두 개씩 반환되었다. &rarr; entry 당 2개의 요소.
+- `delete()` : Set에서 요소 삭제
+  
+[Set 더 자세히 알아보기](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set)
