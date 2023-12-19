@@ -4,10 +4,13 @@
 [📌 객체 프로퍼티](#📌-객체-프로퍼티)<br>
 
 ## 📌 객체란 무엇인가?
+
 - JavaScript에는 두가지의 값이 있는데 하나는 원시값(Primitive Values)이고 다른 하나는 참조값(Reference Values)이다.
-- 여기서 참조값이 바로 객체라고 볼 수 있다. 
+- 여기서 참조값이 바로 객체라고 볼 수 있다.
 - Primitive Values vs. Reference Values
+
   1. Primitive Values
+
      1. Numbers
      2. Strings
      3. Booleans
@@ -24,15 +27,15 @@
 
 ```javascript
 const person = {
-    name: 'Taemin',
-    age: 30,
-    hobbies: ['Dancing', 'Singing'],
-    greet: function () {
-        alert('Hi there!');
-    }
+  name: "Taemin",
+  age: 30,
+  hobbies: ["Dancing", "Singing"],
+  greet: function () {
+    alert("Hi there!");
+  },
 };
 
-person.greet()
+person.greet();
 ```
 
 <br>
@@ -43,20 +46,21 @@ person.greet()
 
 ```javascript
 let person = {
-    name: 'Taemin',
-    age: 30,
-    hobbies: ['Dancing', 'Singing'],
-    greet: function () {
-        alert('Hi there!');
-    }
+  name: "Taemin",
+  age: 30,
+  hobbies: ["Dancing", "Singing"],
+  greet: function () {
+    alert("Hi there!");
+  },
 };
-console.log(person.isAdmin) // undefined (초기값)
-person.isAdmin = true
-console.log(person)
+console.log(person.isAdmin); // undefined (초기값)
+person.isAdmin = true;
+console.log(person);
 
 delete person.age; // person 객체에서 age 프로퍼티 삭제
 console.log(person);
 ```
+
 - 가장 처음에 `person.isAdmin`은 초기화가 되지 않았기 때문에 해당 프로퍼티의 값은 `undefined`이다.
 - 프로퍼티를 삭제할 때마다 `undefined`상태로 돌아가게 된다.
 
@@ -66,12 +70,12 @@ console.log(person);
 
 ```javascript
 let person = {
-    'first name': 'Taemin',
-    age: 30,
-    hobbies: ['Dancing', 'Singing'],
-    greet: function () {
-        alert('Hi there!');
-    }
+  "first name": "Taemin",
+  age: 30,
+  hobbies: ["Dancing", "Singing"],
+  greet: function () {
+    alert("Hi there!");
+  },
 };
 console.log(person["first name"]); // key 이름이 들어감. 대신 ""를 넣어야 한다.
 console.log(person["age"]);
@@ -83,16 +87,17 @@ console.log(person["age"]);
 
 ```javascript
 let person = {
-    'first name': 'Taemin',
-    age: 30,
-    hobbies: ['Dancing', 'Singing'],
-    greet: function () {
-        alert('Hi there!');
-    },
-    1 : 'hello'
+  "first name": "Taemin",
+  age: 30,
+  hobbies: ["Dancing", "Singing"],
+  greet: function () {
+    alert("Hi there!");
+  },
+  1: "hello",
 };
-console.log(person[1])
+console.log(person[1]);
 ```
+
 - 숫자로 된 키 값에 접근할 시에 따옴표를 넣지 않아도 된다! (따옴표를 넣어도 엑세스할 수 있긴 함.)
 - 프로퍼티의 순서
   - 숫자로만 이뤄진 객체인 경우, 숫자가 자동으로 정렬되어 표시된다.
@@ -100,39 +105,41 @@ console.log(person[1])
 
 ```javascript
 let person = {
-    'first name': 'Taemin',
-    age: 30,
-    hobbies: ['Dancing', 'Singing'],
-    greet: function () {
-        alert('Hi there!');
-    },
-    1 : 'hello'
+  "first name": "Taemin",
+  age: 30,
+  hobbies: ["Dancing", "Singing"],
+  greet: function () {
+    alert("Hi there!");
+  },
+  1: "hello",
 };
 
-const keyName = 'first name';
+const keyName = "first name";
 console.log(person[keyName]); // 동적으로 프로퍼티에 엑세스
 
 // (+)
-const userChosenKeyName = 'level';
+const userChosenKeyName = "level";
 
 let person = {
-    'first name': 'Taemin',
-    age: 30,
-    hobbies: ['Dancing', 'Singing'],
-    [userChosenKeyName] : '...', // 동적으로 프로퍼티 설정
-    greet: function () {
-        alert('Hi there!');
-    },
-    1 : 'hello'
+  "first name": "Taemin",
+  age: 30,
+  hobbies: ["Dancing", "Singing"],
+  [userChosenKeyName]: "...", // 동적으로 프로퍼티 설정
+  greet: function () {
+    alert("Hi there!");
+  },
+  1: "hello",
 };
 ```
 
 <br>
 
 ## 📌 데모 앱
+
 [데모 앱 바로가기](https://github.com/Imshyeon/Develop_Study/blob/js/Javascript/Complete-Udemy/08_Objects/assets/scripts/objects.js)
 
 ### 📖 1. 데모 앱 구축 & addMovieHandler
+
 ```javascript
 const addMovieBtn = document.querySelector("#add-movie-btn");
 const searchBtn = document.querySelector("#search-btn");
@@ -164,13 +171,13 @@ const addMovieHandler = () => {
   console.log(newMovie);
 };
 
-
-addMovieBtn.addEventListener('click', addMovieHandler);
+addMovieBtn.addEventListener("click", addMovieHandler);
 ```
 
 <br>
 
 ### 📖 2. 프로퍼티 받아와서 출력하기
+
 ```javascript
 const addMovieBtn = document.querySelector("#add-movie-btn");
 const searchBtn = document.querySelector("#search-btn");
@@ -233,6 +240,7 @@ addMovieBtn.addEventListener("click", addMovieHandler);
 <br>
 
 ### 📖 3. Search - filter 기능
+
 ```javascript
 const addMovieBtn = document.querySelector("#add-movie-btn");
 const searchBtn = document.querySelector("#search-btn");
@@ -286,50 +294,60 @@ searchBtn.addEventListener("click", searchMovieHandler);
 ---
 
 ### ➕ 객체 분산 연산자 (...)
+
 ```javascript
-const person = {name:'Max', hobbies:['Sports', 'Cooking']};
+const person = { name: "Max", hobbies: ["Sports", "Cooking"] };
 const person2 = { ...person };
 
-person.hobbies.push('Coding')
-console.log(person2)
-// person2의 hobbies에도 Coding이 추가됨을 알 수 있다. 
+person.hobbies.push("Coding");
+console.log(person2);
+// person2의 hobbies에도 Coding이 추가됨을 알 수 있다.
 // 전개연산자(...)가 객체나 배열에 있는 모든 중첩 참조 값의 수준에 대해 깊은 복사는 제공하지 않는다.
 // 대신 최상위 수준에서의 키-값 쌍을 새로운 객체로 복사를 한다.
 // 배열에 있는 값도 새롭게 복사를 하고싶은 경우는 다음과 같다.
-const person3 = { ...person, age: 29, hobbies:[...person.hobbies]}; // 덮어쓰기
-person.hobbies.pop(); 
-console.log(person) // hobbies 2개
-consoel.log(person3) // hobbies 3개
+const person3 = { ...person, age: 29, hobbies: [...person.hobbies] }; // 덮어쓰기
+person.hobbies.pop();
+console.log(person); // hobbies 2개
+consoel.log(person3); // hobbies 3개
 ```
 
 ### ➕ `Object.assign()` 이해하기
+
 ```javascript
-const person = {name:'Max'};
-const person2 = Object.assign({}, person); 
+const person = { name: "Max" };
+const person2 = Object.assign({}, person);
 // 새로운 객체를 출력하고 person객체에 있는 모든 키-값 쌍을 새로운 객체에 병합
-person.name = 'Taemin';
-consoel.log(person) // Taemin
-console.log(person2) // Max
+person.name = "Taemin";
+consoel.log(person); // Taemin
+console.log(person2); // Max
 ```
 
 ---
 
 <br>
 
-### 📖 4. 객체 구조 분해 
+### 📖 4. 객체 구조 분해 & 프로퍼티 존재 확인하기
+
 ```javascript
-  filteredMovies.forEach((movie) => {
-    const movieEl = document.createElement("li");
-    const { info, ...otherProps } = movie;
-    console.log(otherProps);
-    const { title:movieTitle } = info; // => title키를 movieTitle로 설정해서 쓸 수 있다.
-    let text = movieTitle + " - ";
-    for (const key in info) {
-      if (key !== "title") {
-        text += `${key}: ${info[key]}`;
-      }
+filteredMovies.forEach((movie) => {
+  const movieEl = document.createElement("li");
+
+  // 프로퍼티 존재 확인하기
+  if (!("info" in movie)) {
+    // if (movie.info === undefined)
+    return;
+  }
+
+  const { info, ...otherProps } = movie;
+  console.log(otherProps);
+  const { title: movieTitle } = info; // => title키를 movieTitle로 설정해서 쓸 수 있다.
+  let text = movieTitle + " - ";
+  for (const key in info) {
+    if (key !== "title") {
+      text += `${key}: ${info[key]}`;
     }
-    movieEl.textContent = text;
-    movieList.append(movieEl);
-  });
+  }
+  movieEl.textContent = text;
+  movieList.append(movieEl);
+});
 ```
