@@ -8,6 +8,7 @@
 [📌 filter()로 배열 필터링하기](#📌-filter로-배열-필터링하기)<br>
 [🔥 `reduce()` 메서드 🔥](#🔥-reduce-메서드-🔥)<br>
 [📌 배열 & 문자열 - split(), join()](#📌-배열--문자열---split-join)<br>
+[📌 분산 연산자 (...)](#📌-분산-연산자)<br>
 
 ## 📌 반복과 유사 배열 객체
 
@@ -282,7 +283,7 @@ console.log(taxAdjustedPrices);
 const prices = [10.99, 5.99, 3.99, 6.59];
 const tax = 0.19;
 
-const taxAdjustedPrices = prices.map((price, idx, prices)=>{
+const taxAdjustedPrices = prices.map((price, idx, prices) => {
   const priceObj = { index: idx, taxAdjustedPrice: price * (1 + tax) };
   return priceObj;
 });
@@ -294,41 +295,41 @@ console.log(prices, taxAdjustedPrices);
 // ...
 ```
 
-- `map()` : 배열을 취하고 이런 형식의 배열에서 모든 항목에 함수를 실행한다. 또한 해당 함수는 배열의 각 요소에 관해 전환 가능한 새 요소를 반환해야 한다. 
+- `map()` : 배열을 취하고 이런 형식의 배열에서 모든 항목에 함수를 실행한다. 또한 해당 함수는 배열의 각 요소에 관해 전환 가능한 새 요소를 반환해야 한다.
 - prices는 값이 동일하지만 taxAdjustedPrices는 `map()`으로 가격이 전환된다.
-- 배열 전환에는 `map()` 메서드가 유용하다. 왜냐하면 요소를 변경하기 쉽고 변경된 요소를 기반으로 새로운 배열을 얻기도 매우 쉽기 때문 
+- 배열 전환에는 `map()` 메서드가 유용하다. 왜냐하면 요소를 변경하기 쉽고 변경된 요소를 기반으로 새로운 배열을 얻기도 매우 쉽기 때문
 
 [map 함수 더 자세히 보기](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
 
 <br>
 
 ## 📌 `sort()`와 `reverse()`
+
 ```javascript
 const prices = [10.99, 5.99, 3.99, 6.59];
 const tax = 0.19;
 
-const taxAdjustedPrices = prices.map((price, idx, prices)=>{
+const taxAdjustedPrices = prices.map((price, idx, prices) => {
   const priceObj = { index: idx, taxAdjustedPrice: price * (1 + tax) };
   return priceObj;
 });
 
 // 1번
 const sortedPrices = prices.sort();
-console.log(sortedPrices) // 10.99, 3.99, 5.99, 6.59
+console.log(sortedPrices); // 10.99, 3.99, 5.99, 6.59
 
 // 2번
-const sortedPrices = prices.sort((a, b)=>{
-    if(a>b){
-        return 1;
-    } else if (a===b){
-        return 0;
-    }else{
-        return -1;
-    }
+const sortedPrices = prices.sort((a, b) => {
+  if (a > b) {
+    return 1;
+  } else if (a === b) {
+    return 0;
+  } else {
+    return -1;
+  }
 });
-console.log(sortedPrices) // 3.99, 5.99, 6.59, 10.99
-console.log(sortedPrices.reverse()) // 10.99, 6.59, 5.99, 3.99
-
+console.log(sortedPrices); // 3.99, 5.99, 6.59, 10.99
+console.log(sortedPrices.reverse()); // 10.99, 6.59, 5.99, 3.99
 ```
 
 - `sort()` : 전체를 문자열로 변환 &rarr; 문자열 논리로 정렬
@@ -341,13 +342,14 @@ console.log(sortedPrices.reverse()) // 10.99, 6.59, 5.99, 3.99
 ## 📌 `filter()`로 배열 필터링하기
 
 ```javascript
-const filteredArray = prices.filter((price, idx, prices)=>{
+const filteredArray = prices.filter((price, idx, prices) => {
   return price > 6; // 6보다 큰 항목은 그대로 유지. 그렇지 않으면 새롭게 생성된 배열에서 삭제된다.
 });
-console.log(filteredArray)  // [10.99, 6.59]
+console.log(filteredArray); // [10.99, 6.59]
 ```
 
 - `filter()`의 인수
+
   - value
   - index
   - array
@@ -358,11 +360,11 @@ console.log(filteredArray)  // [10.99, 6.59]
 
 [filter() 함수 더 알아보기](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
 
-
 ### 📖 (+) 화살표 함수
+
 ```javascript
-const filteredArray = prices.filter(price => price > 6); // 화살표 함수로 짧고 간결하게 만들기.
-console.log(filteredArray)  // [10.99, 6.59]
+const filteredArray = prices.filter((price) => price > 6); // 화살표 함수로 짧고 간결하게 만들기.
+console.log(filteredArray); // [10.99, 6.59]
 ```
 
 <br>
@@ -383,7 +385,7 @@ const sum = prices.reduce((prevValue, curValue, curIndex, prices) => {
   // curValue 해당 배열의 첫번째 요소.
   return prevValue + curValue;
 }, 0); // 0부터 시작
-console.log(sum) // 위에서 forEach를 사용한 값과 동일.
+console.log(sum); // 위에서 forEach를 사용한 값과 동일.
 
 // => 화살표함수로 줄이기
 const sum = prices.reduce((prev, cur) => prev + cur, 0);
@@ -391,29 +393,33 @@ console.log(sum);
 ```
 
 - `reduce()` : 배열을 더 단순한 값으로 줄인다. 예를 들어, 숫자의 배열을 숫자의 총합을 줄임. 주로 배열을 단일 숫자나 단일 문자열로 줄임.
-- `reduce()`의 인수 
+- `reduce()`의 인수
+
   - callbackfn
-    - previousValue **
-    - currentValue ** 
+    - previousValue \*\*
+    - currentValue \*\*
     - currentIndex
     - array
   - 시작하려는 초깃값
 
 - 위의 코드 설명
-  1. prevValue = 0, curValue = 10.99 
+  1. prevValue = 0, curValue = 10.99
   2. 배열의 두번째 요소에서 실행. prevValue = 10.99, curValue = 5.99
   3. ...
 
 ### 📖 메서드 체인 형성하기
+
 ```javascript
 // 방법 1
-const originalArray = [{price: 10.99}, {price:5.99}, {prcie:29.99}];
-const transformedArray = originalArray.map(obj => obj.price);
+const originalArray = [{ price: 10.99 }, { price: 5.99 }, { prcie: 29.99 }];
+const transformedArray = originalArray.map((obj) => obj.price);
 const sum = transformedArray.reduce((sumVal, curVal) => sumVal + curVal, 0); // => 46.97
 
 // 방법 2
-const originalArray = [{price: 10.99}, {price:5.99}, {prcie:29.99}];
-const sum = originalArray.map(obj=>obj.price).reduce((sumVal, curVal) => sumVal + curVal, 0); // => 46.97
+const originalArray = [{ price: 10.99 }, { price: 5.99 }, { prcie: 29.99 }];
+const sum = originalArray
+  .map((obj) => obj.price)
+  .reduce((sumVal, curVal) => sumVal + curVal, 0); // => 46.97
 ```
 
 <br>
@@ -422,20 +428,70 @@ const sum = originalArray.map(obj=>obj.price).reduce((sumVal, curVal) => sumVal 
 
 ```javascript
 // split()
-const data = 'new york;10.99;2000';
-const transformedData = data.split(';'); 
-console.log(transformedData) // ['new york', '10.99', '2000']
+const data = "new york;10.99;2000";
+const transformedData = data.split(";");
+console.log(transformedData); // ['new york', '10.99', '2000']
 
 // join()
-const nameFragements = ['Max', 'Schwarz'];
+const nameFragments = ["Max", "Schwarz"];
 // 아무것도 안넣었을 때
-const name = nameFragements.join()
-console.log(name) //Max,Schwarz
+const name = nameFragments.join();
+console.log(name); //Max,Schwarz
 
 // 구분자를 넣었을 때
-const name = nameFragements.join(' ')
-console.log(name) //Max Schwarz
+const name = nameFragments.join(" ");
+console.log(name); //Max Schwarz
 ```
 
 - `split()` : 여러 조각의 배열로 나눔. 인자로는 구분자(seperator)를 넣음. 두번째 인자는 만들어질 요소의 개수를 제한하는 인자인데 이는 선택적인 요소이다.
 - `join()` : 구분자를 이용해서 요소를 합칠 때 사용. 항상 문자열로 생성.
+
+<br>
+
+## 📌 분산 연산자 (...)
+
+1. 배열의 모든 요소를 꺼내 개별 요소의 리스트로 변환
+
+```javascript
+const copiedNameFragments = [...nameFragments]; // 새로운 배열
+nameFragments.push("Mr");
+console.log(nameFragments, copiedNameFragments); // ['Max', 'Schwarz', 'Mr'], ['Max', 'Schwarz']
+```
+
+2. 개별 값의 리스트를 요구하는 어떤 함수나 메서드를 사용할 경우에 전개구문은 배열의 값을 꺼낼 때 유용하다.
+
+```javascript
+console.log(Math.min(...prices)); // 3.99
+```
+
+3. 메모리 공간의 주소를 복사. 객체를 해당 메모리 공간에 추가..
+
+```javascript
+const persons = [
+  { name: "Max", age: 30 },
+  { name: "Manuel", age: 31 },
+];
+const copiedPersons = [...persons]; // 주소를 복사해 새로운 배열을 만듦.
+persons.push({ name: "Anna", age: 29 });
+console.log(persons, copiedPersons);
+// (3) [{...}, {...}, {...}]
+// (2) [{...}, {...}]
+
+persons[0].age = 31;
+console.log(persons, copiedPersons);
+// persons와 copiedPersons의 Max의 나이가 31로 변경.
+
+// =========================
+// 원본 배열의 모든 객체를 새로운 객체로 매핑.
+// 메모리에 새로운 공간을 차지
+// map()이 이미 새 배열을 반환하기 때문에 []는 필요없음
+const persons = [
+  { name: "Max", age: 30, hobbies: [] },
+  { name: "Manuel", age: 31 },
+];
+const copiedPersons = persons.map((person) => ({
+  name: person.name,
+  age: person.age,
+  hobbies: [...persons.hobbies],
+}));
+```
