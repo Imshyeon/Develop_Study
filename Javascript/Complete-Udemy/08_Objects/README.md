@@ -1,8 +1,7 @@
 # Objects
 
 [📌 객체란 무엇인가?](#📌-객체란-무엇인가)<br>
-[📌 프로퍼티 추가 & 삭제](#📌-프로퍼티-추가-수정--삭제)<br>
-[📌 특수 키 이름 & 대괄호 프로퍼티 엑세스](#📌-특수-키-이름--대괄호-프로퍼티-엑세스)<br>
+[📌 객체 프로퍼티](#📌-객체-프로퍼티)<br>
 
 ## 📌 객체란 무엇인가?
 - JavaScript에는 두가지의 값이 있는데 하나는 원시값(Primitive Values)이고 다른 하나는 참조값(Reference Values)이다.
@@ -38,7 +37,9 @@ person.greet()
 
 <br>
 
-## 📌 프로퍼티 추가, 수정 & 삭제
+## 📌 객체 프로퍼티
+
+### 📖 프로퍼티 추가, 수정 & 삭제
 
 ```javascript
 let person = {
@@ -61,4 +62,38 @@ console.log(person);
 
 <br>
 
-## 📌 특수 키 이름 & 대괄호 프로퍼티 엑세스
+### 📖 특수 키 이름 & 대괄호 프로퍼티 엑세스
+
+```javascript
+let person = {
+    'first name': 'Taemin',
+    age: 30,
+    hobbies: ['Dancing', 'Singing'],
+    greet: function () {
+        alert('Hi there!');
+    }
+};
+console.log(person["first name"]); // key 이름이 들어감. 대신 ""를 넣어야 한다.
+console.log(person["age"]);
+```
+
+<br>
+
+### 📖 프로퍼티 유형 & 프로퍼티 순서
+
+```javascript
+let person = {
+    'first name': 'Taemin',
+    age: 30,
+    hobbies: ['Dancing', 'Singing'],
+    greet: function () {
+        alert('Hi there!');
+    },
+    1 : 'hello'
+};
+console.log(person[1])
+```
+- 숫자로 된 키 값에 접근할 시에 따옴표를 넣지 않아도 된다! (따옴표를 넣어도 엑세스할 수 있긴 함.)
+- 프로퍼티의 순서
+  - 숫자로만 이뤄진 객체인 경우, 숫자가 자동으로 정렬되어 표시된다.
+  - 문자열의 경우 추가된 순서대로 나온다.
