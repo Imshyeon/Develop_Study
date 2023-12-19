@@ -24,7 +24,9 @@ const renderMovies = (filter = "") => {
     const { info, ...otherProps } = movie;
     console.log(otherProps);
     //   const { title:movieTitle } = info; // => title키를 movieTitle로 설정해서 쓸 수 있다.
-    let text = info.title + " - ";
+    let { getFormattedTitle } = movie;
+    getFormattedTitle = getFormattedTitle.bind(movie); // 본 함수에서 this가 참조로 할 대상을 가리킨다.
+    let text = getFormattedTitle() + " - ";
     for (const key in info) {
       if (key !== "title") {
         text += `${key}: ${info[key]}`;
@@ -54,6 +56,9 @@ const addMovieHandler = () => {
       [extraName]: extraValue,
     },
     id: Math.random().toString(),
+    getFormattedTitle() {
+      return this.info.title.toUpperCase();
+    },
   };
 
   movies.push(newMovie);

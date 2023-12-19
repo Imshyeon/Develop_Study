@@ -2,6 +2,7 @@
 
 [📌 객체란 무엇인가?](#📌-객체란-무엇인가)<br>
 [📌 객체 프로퍼티](#📌-객체-프로퍼티)<br>
+[📌 데모 앱](#📌-데모-앱)<br>
 
 ## 📌 객체란 무엇인가?
 
@@ -350,4 +351,66 @@ filteredMovies.forEach((movie) => {
   movieEl.textContent = text;
   movieList.append(movieEl);
 });
+```
+
+<br>
+
+### 🔥 5. this 🔥
+
+JavaScript에는 객체의 일부인 함수 내부 뿐만 아니라 코드의 모든 곳에서 사용할 수 있는 특정 키워드가 있는데 그것이 바로 `this`이다.
+
+- 함수 내에서, 즉 해당 함수가 객체의 일부인지와 상관없이 `this`는 해당 함수를 호출한 모든 항목을 참조한다. 해당 함수를 실행시켰던 모든 항목!
+
+#### 1. this 적용 -1
+
+```javascript
+const renderMovies = (filter = "") => {
+  ...
+  filteredMovies.forEach((movie) => {
+    const movieEl = document.createElement("li");
+    const { info, ...otherProps } = movie;
+    console.log(otherProps);
+      //   const { title:movieTitle } = info; // => title키를 movieTitle로 설정해서 쓸 수 있다.
+    //   const { getFormattedTitle } = movie;
+    let text = movie.getFormattedTitle() + " - ";
+    for (const key in info) {
+      if (key !== "title") {
+        text += `${key}: ${info[key]}`;
+      }
+    }
+    movieEl.textContent = text;
+    movieList.append(movieEl);
+  });
+};
+
+const addMovieHandler = () => {
+  ...
+  const newMovie = {
+    info: {
+      title, // title: title와 같이 해당 변수 이름과 키 값이 동일한 경우.
+      [extraName]: extraValue,
+    },
+    id: Math.random().toString(),
+    getFormattedTitle() {
+      return this.info.title.toUpperCase();
+    },
+  };
+
+  movies.push(newMovie);
+  renderMovies();
+};
+```
+
+<br>
+
+#### 2. this 적용 -2
+
+**this가 자동으로 주위에 있는 객체를 참조하는 대신, 해당 함수를 호출한 주체를 참조한다.**
+
+- `bind()`를 이용해서 this가 참조할 사항을 미리 구성하자!
+
+```javascript
+let { getFormattedTitle } = movie;
+getFormattedTitle = getFormattedTitle.bind(movie); // 본 함수에서 this가 참조로 할 대상을 가리킨다.
+let text = getFormattedTitle() + " - ";
 ```
