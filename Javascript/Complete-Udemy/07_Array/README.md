@@ -12,6 +12,9 @@
 [📌 배열 구조 분해 이해하기](#📌-배열-구조-분해-이해하기)<br>
 [📌 Maps & Sets](#📌-maps--sets)<br>
 
+---
+[MDN Array 자세히 보기](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)
+
 ## 📌 반복과 유사 배열 객체
 
 - Iterable : for-of 반복문을 사용할 수 있는 것.
