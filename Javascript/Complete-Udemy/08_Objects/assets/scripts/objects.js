@@ -28,7 +28,7 @@ const renderMovies = (filter = "") => {
     // getFormattedTitle = getFormattedTitle.bind(movie); // 본 함수에서 this가 참조로 할 대상을 가리킨다.
     let text = getFormattedTitle.call(movie) + " - ";
     for (const key in info) {
-      if (key !== "title") {
+      if (key !== "title" && key !== '_title') {
         text += `${key}: ${info[key]}`;
       }
     }
@@ -42,17 +42,22 @@ const addMovieHandler = () => {
   const extraName = document.getElementById("extra-name").value;
   const extraValue = document.getElementById("extra-value").value;
 
-  if (
-    title.trim() === "" ||
-    extraName.trim() === "" ||
-    extraValue.trim() === ""
-  ) {
+  if (extraName.trim() === "" || extraValue.trim() === "") {
     return;
   }
 
   const newMovie = {
     info: {
-      title, // title: title와 같이 해당 변수 이름과 키 값이 동일한 경우.
+      set title(val) {
+        if (val.trim() === "") {
+          this._title = "DEFAULT";
+          return;
+        }
+        this._title = val; // internal value
+      },
+      get title() {
+        return this._title;
+      }, //getter 생성
       [extraName]: extraValue,
     },
     id: Math.random().toString(),
@@ -60,6 +65,9 @@ const addMovieHandler = () => {
       return this.info.title.toUpperCase();
     },
   };
+
+  newMovie.info.title = title; // setter가 트리거
+  console.log(newMovie.info.title); //getter가 트리거
 
   movies.push(newMovie);
   renderMovies();

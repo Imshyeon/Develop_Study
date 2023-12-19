@@ -493,3 +493,46 @@ console.log(members.getTeamMembers());
 ```
 
 - 함수를 트리거하는 것은 객체 자체가 아닌 `forEach`. 즉 브라우저가 함수를 트리거를 하는 것이라서 `function` 키워드를 이용하면 `undefined`가 나온 것이다.
+
+<br>
+
+### 📖 6. getter & setter
+```javascript
+const addMovieHandler = () => {
+  const title = document.getElementById("title").value;
+  const extraName = document.getElementById("extra-name").value;
+  const extraValue = document.getElementById("extra-value").value;
+
+  if (extraName.trim() === "" || extraValue.trim() === "") {
+    return;
+  }
+
+  const newMovie = {
+    info: {
+      set title(val) {
+        if (val.trim() === "") {
+          this._title = "DEFAULT";
+          return;
+        }
+        this._title = val; // internal value
+      },
+      get title() {
+        return this._title;
+      }, //getter 생성
+      [extraName]: extraValue,
+    },
+    id: Math.random().toString(),
+    getFormattedTitle() {
+      return this.info.title.toUpperCase();
+    },
+  };
+
+  newMovie.info.title = title; // setter가 트리거
+  console.log(newMovie.info.title); //getter가 트리거
+
+  movies.push(newMovie);
+  renderMovies();
+};
+
+```
+- JavaScript가 특수 `get` 키워드를 감지하고 메서드와 결합해서 프로퍼티와 같이 엑세스할 수 있게 됨.
