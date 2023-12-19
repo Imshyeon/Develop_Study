@@ -14,3 +14,5 @@
 🚀 [04_BTS_of_JavaScript](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/04_Background) : 백그라운드 & JavaScript의 특이한 과거(ES3, ES5, ES6+) <br>
 🚀 [05_Function](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/05_Function) : 함수 더보기 <br>
 🚀 [06_DOM](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/06_DOM) : JavaScript에서 DOM으로 작업하기 <br>
+🚀 [07_Array](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/07_Array) : JavaScript에서 DOM으로 작업하기 <br>
+🚀 [08_Objects](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/08_Objects) : JavaScript에서 DOM으로 작업하기 <br>

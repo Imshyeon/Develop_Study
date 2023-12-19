@@ -1,22 +1,32 @@
-const userChosenKeyName = 'level';
+const addMovieBtn = document.querySelector("#add-movie-btn");
+const searchBtn = document.querySelector("#search-btn");
 
-let person = {
-    'first name': 'Taemin',
-    age: 30,
-    hobbies: ['Dancing', 'Singing'],
-    [userChosenKeyName] : '...',
-    greet: function () {
-        alert('Hi there!');
+const movies = [];
+
+const addMovieHandler = () => {
+  const title = document.getElementById("title").value;
+  const extraName = document.getElementById("extra-name").value;
+  const extraValue = document.getElementById("extra-value").value;
+
+  if (
+    title.trim() === "" ||
+    extraName.trim() === "" ||
+    extraValue.trim() === ""
+  ) {
+    return;
+  }
+
+  const newMovie = {
+    info: {
+      title, // title: title와 같이 해당 변수 이름과 키 값이 동일한 경우.
+      [extraName]: extraValue,
     },
-    1 : 'hello'
+    id: Math.random(),
+  };
+
+  movies.push(newMovie);
+  console.log(newMovie);
 };
-console.log(person.isAdmin) // undefined (초기값)
-person.isAdmin = true
-console.log(person)
 
-delete person.age; // person 객체에서 age 프로퍼티 삭제
 
-const keyName = 'first name';
-console.log(person[keyName]);
-console.log(person[1])
-// person.greet()
+addMovieBtn.addEventListener('click', addMovieHandler);

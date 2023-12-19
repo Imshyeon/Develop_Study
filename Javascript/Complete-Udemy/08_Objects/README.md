@@ -126,3 +126,8 @@ let person = {
     1 : 'hello'
 };
 ```
+
+<br>
+
+## 📌 데모 앱
+[데모 앱 바로가기](https://github.com/Imshyeon/Develop_Study/blob/js/Javascript/Complete-Udemy/08_Objects/assets/scripts/objects.js)
