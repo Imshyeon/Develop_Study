@@ -656,3 +656,16 @@ console.log(personData.size) // 2 => Maps안에 키-쌍이 2개 있기 때문
 <br>
 
 [Map 더 자세히 알아보기](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Map)
+
+<br>
+
+### 📖 Maps vs. 객체
+1. Maps
+   - 어떤 값, 자료형이라도 키로 사용할 수 있다. 객체, 문자열, 숫자 등을 키로 사용 가능
+   - 큰 데이터에서의 성능이 객체보다 좋다.
+   - 데이터를 자주 추가하거나 삭제할 때 더 좋은 성능을 지닌다.
+
+2. Objects
+   - 문자열, 숫자, 심볼형만 키로 사용가능 &rarr; 유연성이 떨어짐
+   - 작거나 중간 크기의 데이터에 적합
+   - 일반적으로 더 쉽고 빠르게 만들 수 있다. 
