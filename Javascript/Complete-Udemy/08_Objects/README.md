@@ -428,6 +428,68 @@ let text = getFormattedTitle.call(movie) + " - ";
 ```
 
 - `apply()` : `call()`과 유사하게 함수를 바로 실행. 다만 첫번째 인자는 여전히 this가 나타내는 내용이지만 다음 인자를 무한하게 추가할 수는 없고 오직 하나의 인자만 추가 가능하다. 또한 이 인자는 배열이어야 한다. `call()`은 무한하게 추가 가능
+
 ```javascript
 let text = getFormattedTitle.apply(movie) + " - ";
 ```
+
+<br>
+
+#### 4. this 적용 -4
+
+```javascript
+const searchMovieHandler = function () {
+  console.log(this);
+  // 이 경우, 이벤트 리스너를 기반으로 트리거되는 함수 내부의 this는 이 이벤트를 트리거하는 데에 책임이 있는 주체인 요소(buttton)이 된다.
+  const filterTerm = document.getElementById("filter-title").value;
+  renderMovies(filterTerm);
+};
+searchBtn.addEventListener("click", searchMovieHandler);
+```
+
+그러나 화살표함수는 조금 다르다!
+
+```javascript
+const searchMovieHandler = () => {
+  console.log(this);
+  // window가 this가 된다.
+  const filterTerm = document.getElementById("filter-title").value;
+  renderMovies(filterTerm);
+};
+searchBtn.addEventListener("click", searchMovieHandler);
+```
+
+- 화살표 함수에는 this가 어느 것에도 바인딩이 되지 않는다. 화살표함수는 this를 모른다!
+
+```javascript
+const members = {
+  teamName: "Blue Rockets",
+  people: ["Zoe", "Taemin"],
+  getTeamMembers() {
+    this.people.forEach((p) => {
+      console.log(p + " - " + this.teamName);
+    });
+  },
+};
+
+console.log(members.getTeamMembers());
+// Zoe - Blue Rockets
+// Taemin - Blue Rockets
+
+const members = {
+  teamName: "Blue Rockets",
+  people: ["Zoe", "Taemin"],
+  getTeamMembers() {
+    this.people.forEach(function (p) {
+      console.log(this); // window
+      console.log(p + " - " + this.teamName);
+    });
+  },
+};
+
+console.log(members.getTeamMembers());
+// Zoe - undefined
+// Taemin - undefined
+```
+
+- 함수를 트리거하는 것은 객체 자체가 아닌 `forEach`. 즉 브라우저가 함수를 트리거를 하는 것이라서 `function` 키워드를 이용하면 `undefined`가 나온 것이다.
