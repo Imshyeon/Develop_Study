@@ -313,3 +313,23 @@ console.log(person2) // Max
 ```
 
 ---
+
+<br>
+
+### 📖 4. 객체 구조 분해 
+```javascript
+  filteredMovies.forEach((movie) => {
+    const movieEl = document.createElement("li");
+    const { info, ...otherProps } = movie;
+    console.log(otherProps);
+    const { title:movieTitle } = info; // => title키를 movieTitle로 설정해서 쓸 수 있다.
+    let text = movieTitle + " - ";
+    for (const key in info) {
+      if (key !== "title") {
+        text += `${key}: ${info[key]}`;
+      }
+    }
+    movieEl.textContent = text;
+    movieList.append(movieEl);
+  });
+```

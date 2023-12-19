@@ -21,10 +21,13 @@ const renderMovies = (filter = "") => {
 
   filteredMovies.forEach((movie) => {
     const movieEl = document.createElement("li");
-    let text = movie.info.title + " - ";
-    for (const key in movie.info) {
+    const { info, ...otherProps } = movie;
+    console.log(otherProps);
+    //   const { title:movieTitle } = info; // => title키를 movieTitle로 설정해서 쓸 수 있다.
+    let text = info.title + " - ";
+    for (const key in info) {
       if (key !== "title") {
-        text += `${key}: ${movie.info[key]}`;
+        text += `${key}: ${info[key]}`;
       }
     }
     movieEl.textContent = text;
