@@ -10,34 +10,48 @@
 // console.log(ids);
 
 // ========================== Maps ==========================
-const person1 = { name: "Max" };
-const person2 = { name: "Manuel" };
+// const person1 = { name: "Max" };
+// const person2 = { name: "Manuel" };
 
-const personData = new Map([[person1, [{ date: "yesterday", price: 10 }]]]);
-console.log(personData);
-console.log(personData.get(person1));
+// const personData = new Map([[person1, [{ date: "yesterday", price: 10 }]]]);
+// console.log(personData);
+// console.log(personData.get(person1));
 
-personData.set(person2, [{ date: "two weeks ago", price: 100 }]);
-console.log(personData);
+// personData.set(person2, [{ date: "two weeks ago", price: 100 }]);
+// console.log(personData);
 
-for (const entry of personData.entries()) {
-    console.log(entry);
-}
+// for (const entry of personData.entries()) {
+//     console.log(entry);
+// }
 
-console.log('====')
+// console.log('====')
 
-for (const [key, value] of personData.entries()) {
-  console.log(key, value);
-}
+// for (const [key, value] of personData.entries()) {
+//   console.log(key, value);
+// }
 
-console.log("====");
+// console.log("====");
 
-for (const key of personData.keys()) {
-    console.log(key)
-}
+// for (const key of personData.keys()) {
+//     console.log(key)
+// }
 
-for (const value of personData.values()) {
-  console.log(value);
-}
+// for (const value of personData.values()) {
+//   console.log(value);
+// }
 
-console.log(personData.size)
+// console.log(personData.size)
+
+// ========================== WeakSet ==========================
+let person = { name: 'Max' };
+const persons = new WeakSet();
+persons.add(person);
+
+console.log(persons)
+
+// ========================== WeakMap ==========================
+const personData = new WeakMap();
+personData.set(person, 'Extra info')
+
+person = null;
+console.log(personData)

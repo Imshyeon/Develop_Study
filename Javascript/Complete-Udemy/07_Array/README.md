@@ -10,6 +10,7 @@
 [📌 배열 & 문자열 - split(), join()](#📌-배열--문자열---split-join)<br>
 [📌 분산 연산자 (...)](#📌-분산-연산자)<br>
 [📌 배열 구조 분해 이해하기](#📌-배열-구조-분해-이해하기)<br>
+[📌 Maps & Sets](#📌-maps--sets)<br>
 
 ## 📌 반복과 유사 배열 객체
 
@@ -669,3 +670,44 @@ console.log(personData.size) // 2 => Maps안에 키-쌍이 2개 있기 때문
    - 문자열, 숫자, 심볼형만 키로 사용가능 &rarr; 유연성이 떨어짐
    - 작거나 중간 크기의 데이터에 적합
    - 일반적으로 더 쉽고 빠르게 만들 수 있다. 
+
+<br>
+
+### 📖 WeakSet 이해하기
+
+- WeakSet의 경우 정확히 객체 데이터를 저장해야 한다.
+- WeakSet은 `entries()`가 보이지 않는데, 이는 WeakMap과 같이 내부적으로만 객체를 저장할 수 있으므로 실제로는 해당 객체를 지우는 것이다.
+- ChatGPT
+  - 한 참조(Weak References): WeakSet은 객체에 대한 약한 참조만을 유지합니다. 이는 객체가 WeakSet에 저장되어 있는 동안 다른 곳에서 해당 객체에 대한 참조가 없다면, 해당 객체는 가비지 컬렉션의 대상이 될 수 있습니다.
+  - 반복 가능성(Iterable) 제한: WeakSet은 반복 가능한(iterable) 메서드를 제공하지 않습니다. 따라서 WeakSet 내부의 객체 목록에 직접적으로 접근하거나 반복할 수 없습니다. WeakSet은 단순히 객체의 존재 여부를 확인하거나 제거하는 데 사용됩니다.
+  - 삭제 없음: WeakSet에는 요소를 직접적으로 제거하는 메서드가 없습니다. 객체가 가비지 컬렉션의 대상이 되면 자동으로 제거됩니다.
+```javascript
+let person = { name: 'Max' };
+const persons = new WeakSet();
+persons.add(person);
+
+console.log(persons)
+```
+
+- 왜 이런 기능을 쓰는가?
+  - 데이터를 더이상 사용하지 않을 때에는 해당 데이터가 가비지 컬렉션으로 수거하도록 해야한다. 
+  - 만약 Set을 사용한다면, 어떤 객체를 Set에 포인터로 입력을 하게 되면 그 객체를 더이상 사용하지 않아도 메모리에서 지울 수 없다.
+  - WeakSet을 사용하는데 해당 객체를 지정해 놓은 모든 위치를 리셋했다면 더이상 Set도 해당 객체를 저장하지 않고 삭제한다. &rarr; WeakSet은 가비지 컬렉션을 Set에 포함되어 있는 해당 항목을 직접 삭제해서 더 이상 코드의 일부로 남아있지 않게 한다.
+
+[WeakSet 더 자세히 알아보기](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/WeakSet)
+
+<br>
+
+### 📖 WeakMap 이해하기
+
+- 메모리를 좀 더 효과적으로 관리할 수 있는 방법이며 특정 시점에 삭제되어도 무방한 메모리가 있다고 판단한는 경우에 WeakMap, WeakSet을 사용하면 된다.
+  
+```javascript
+const personData = new WeakMap();
+personData.set(person, 'Extra info')
+
+person = null;
+console.log(personData)
+```
+
+[WeakMap 더 자세히 알아보기](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)
