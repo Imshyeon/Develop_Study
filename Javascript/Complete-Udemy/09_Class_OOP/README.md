@@ -2,6 +2,8 @@
 
 [📌 객체 지향 프로그래밍(OOP)이란 무엇인가?](#📌-객체-지향-프로그래밍oop이란-무엇인가)<br>
 [📌 상속](#📌-상속)<br>
+[📌 private 프로퍼티](#📌-private-프로퍼티)<br>
+[📌 instance 연산자](#📌-instance-연산자)<br>
 <br>
 
 ## 📌 객체 지향 프로그래밍(OOP)이란 무엇인가?
@@ -551,7 +553,7 @@ class ShoppingCart {
 
 ## 📌 상속
 
-## 📖 1. 상속 구현하기
+### 📖 1. 상속 구현하기
 ```javascript
 class Product {
   constructor(title, image, desc, price) {
@@ -742,7 +744,7 @@ App.init(); // init 메서드를 클래스에 바로 실행. 클래스에서 바
 
 <br>
 
-## 📖 2. 메서드 덮어쓰기와 super() 생성자 + 실행 순서
+### 📖 2. 메서드 덮어쓰기와 super() 생성자 + 실행 순서
 ```javascript
 class Product {
   constructor(title, image, desc, price) {
@@ -943,7 +945,7 @@ App.init(); // init 메서드를 클래스에 바로 실행. 클래스에서 바
 
 <br>
 
-## 📖 3. 메서드를 추가하는 다양한 방법
+### 📖 3. 메서드를 추가하는 다양한 방법
 ```javascript
 // =============== 방법 1 =================
 class ShoppingCart extends Component {
@@ -1001,7 +1003,7 @@ class ShoppingCart extends Component {
 
 <br>
 
-## 📖 4. Private 프로퍼티
+## 📌 Private 프로퍼티
 
 1. Public
    - 클래스와 객체 외부에서 접근 가능
@@ -1053,3 +1055,31 @@ class ProductList extends Component {
   }
 }
 ```
+
+<br>
+
+## 📌 instance 연산자
+
+```javascript
+class Person{
+    name = 'Max';
+}
+const p = Person();;
+connsole.log(p, typeof p) // Person {name:'Max'}    "object"
+console.log(p instanceof Person) // true => p가 Person에 근거하여 만들어졌는가?
+```
+- `instanceof` : 어떤 객체가 어떤 클래스나 청사진에 근거해서 만들어졌는지 확인.
+
+<br>
+
+```javascript
+const btn = document.querySelector('button');
+console.dir(btn)
+console.log(btn instanceof HTMLButtonElement) // true
+console.log(btn instanceof HTMLElement) // true
+```
+- `HTMLButtonElement` : JavaScript 빌트인 클래스 또는 브라우저 빌트인 클래스가 JavaScript에 노출되는 것. `HTMLButtonElement`는 `HTMLElement`(기본클래스)에서 확장된다.
+
+<br>
+
+
