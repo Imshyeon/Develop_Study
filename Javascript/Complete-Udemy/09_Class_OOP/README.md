@@ -1,6 +1,7 @@
 # Class와 OOP(객체지향 프로그래밍)
 
 [📌 객체 지향 프로그래밍(OOP)이란 무엇인가?](#📌-객체-지향-프로그래밍oop이란-무엇인가)<br>
+[📌 상속](#📌-상속)<br>
 <br>
 
 ## 📌 객체 지향 프로그래밍(OOP)이란 무엇인가?
@@ -545,3 +546,395 @@ class ShoppingCart {
   constructor() {}
 }
 ```
+
+<br>
+
+## 📌 상속
+
+## 📖 1. 상속 구현하기
+```javascript
+class Product {
+  constructor(title, image, desc, price) {
+    this.title = title; // this = 클래스
+    this.imageUrl = image;
+    this.description = desc;
+    this.price = price;
+  } // 생성자에 넣은 값으로 속성의 값이 초기화.
+}
+
+class ElementAttribute {
+  constructor(attrName, attrValue) {
+    this.name = attrName;
+    this.value = attrValue;
+  }
+}
+
+class Component {
+  constructor(renderHookId) {
+    this.hookId = renderHookId;
+  }
+
+  createRootElement(tag, cssClasses, attributes) {
+    const rootElement = document.createElement(tag);
+    if (cssClasses) {
+      rootElement.className = cssClasses;
+    }
+    if (attributes && attributes.length > 0) {
+      for (const attr of attributes) {
+        rootElement.setAttribute(attr.name, attr.value);
+      }
+    }
+    document.getElementById(this.hookId).append(rootElement);
+    return rootElement;
+  }
+}
+
+class ProductItem extends Component {
+  constructor(product, renderHookId) {
+    super(renderHookId);
+    this.product = product;
+  }
+
+  addToCart() {
+    App.addProductToCart(this.product);
+  }
+
+  render() {
+    const prodEl = this.createRootElement("li", "product-item");
+    prodEl.innerHTML = `
+                <div>
+                    <img src="${this.product.imageUrl}" alt="${this.product.title}" >
+                    <div class="product-item__content">
+                        <h2>${this.product.title}</h2>
+                        <h3>\$${this.product.price}</h3>
+                        <p>${this.product.description}</p>
+                        <button>Add to Cart</button>
+                    </div>
+                </div>
+            `;
+    const addCartButton = prodEl.querySelector("button"); // 단일 상품을 생성하는 단일 클래스이기 때문에 해당 코드를 통해서 정확한 버튼에 엑세스 가능
+    addCartButton.addEventListener("click", this.addToCart.bind(this)); // bind(this)에서 this는 전체 객체
+  }
+}
+
+// 한 개의 클래스만 상속 가능.
+class ShoppingCart extends Component {
+  items = [];
+
+  set cartItems(value) {
+    this.items = value;
+    this.totalOutput.innerHTML = `<h2>Total: \$${this.totalAmount.toFixed(
+      2
+    )}</h2>`; //소수점 이하 2자리까지만 표시
+  }
+
+  get totalAmount() {
+    const sum = this.items.reduce(
+      (prevValue, curItem) => prevValue + curItem.price,
+      0
+    );
+    return sum;
+  }
+
+  constructor(renderHookId) {
+    super(renderHookId);
+  }
+
+  addProduct(product) {
+    const updatedItems = [...this.items];
+    updatedItems.push(product);
+    this.cartItems = updatedItems;
+  }
+
+  render() {
+    const cartEl = this.createRootElement("section", "cart");
+    cartEl.innerHTML = `
+        <h2>Total: \$${0}</h2>
+        <button>Order Now!</button>
+        `;
+    cartEl.className = "cart";
+    this.totalOutput = cartEl.querySelector("h2"); // 객체에 새 프로퍼티를 언제든 동적으로 추가 가능
+  }
+}
+
+class ProductList extends Component {
+  products = [
+    new Product(
+      "A Pillow",
+      "https://i.namu.wiki/i/BkYYZlR90zQhgRZxXY1eDgRGO9RwOq_vMk1LOO2FdMxxHjcGml5-B8R10Y5RalGf9YIXV6YLAxR0M8DO-8b-dw.webp",
+      "A soft pillow!",
+      19.99
+    ),
+    new Product(
+      "A Carpet",
+      "https://post-phinf.pstatic.net/MjAyMzExMDFfMjM0/MDAxNjk4ODE2NzM1OTc0.y3BvOwThLelXn8FB4Q8NwYt-L0XskUey-PY8YvwPemgg.SUk02UQLxFxju312e8oIevXl3eYibZsEpKUPkPM6uq4g.JPEG/06_레전드_페스티벌_시작.jpg?type=w800_q75",
+      "A carpet which you might like.",
+      89.99
+    ),
+  ];
+
+    constructor(renderHookId) {
+        super(renderHookId);
+  }
+
+  render() {
+    const prodList = this.createRootElement("ul", "product-list", [
+      new ElementAttribute("id", "prod-list"),
+    ]);
+    for (const prod of this.products) {
+      const product = new ProductItem(prod, "prod-list");
+      product.render();
+    }
+  }
+}
+
+class Shop {
+  render() {
+    this.cart = new ShoppingCart("app");
+    this.cart.render();
+    const productList = new ProductList('app');
+    productList.render();
+  }
+}
+
+class App {
+  static cart;
+
+  static init() {
+    const shop = new Shop();
+    shop.render();
+    this.cart = shop.cart;
+    // this.cart는 Shop 클래스의 render 함수 안에서 인스턴스화가 되어있기 때문에 호출되는 순서는 shop.render() -> this.cart = shop.cart();가 된다.
+  }
+
+  static addProductToCart(product) {
+    this.cart.addProduct(product); // this.cart 는 ShoppingCart 클래스에 근거한 인스턴스를 나타낸다.
+  }
+}
+
+App.init(); // init 메서드를 클래스에 바로 실행. 클래스에서 바로 작동
+```
+
+1. `Component`클래스 생성 &larr; 상속을 위한 부모 노드
+    - 해당 클래스의 역할
+      1. 어디에 렌더링을 할 것인지 요소의 id를 받는다.
+      2. `createRootElement` 메서드를 이용해 만들고자 하는 요소의 tag와 css클래스 이름, 속성값을 받아온다.
+      3. 해당 메서드에서 요소 생성 후, 렌더링을 위해 받아온 id에 생성된 요소를 `append`한다.
+      4. 생성된 요소를 리턴하여 해당 요소에 대한 innerHTML을 작성할 수 있도록 한다.
+
+2. `ProductList`, `ProductItem`, `ShoppingCart` 클래스에 `extends` 키워드를 이용해 `Component` 클래스를 상속받음.
+   1. `ShoppinCart`
+      1. `constructor` 생성자에서 `super(renderHookId)`를 이용해 상속받은 `Component` 클래스의 생성자에게 렌더링하고자 하는 요소의 id를 전달
+      2. `render`메서드에서 상속받은 클래스내의 메서드(createRootElement)를 이용하여 생성된 요소를 받아온다.
+      3. 생성된 요소에 innerHTML을 이용해 HTML 작성.
+
+   2. `ProductList`
+      1. `constructor` 생성자에서 `super(renderHookId)`를 이용해 상속받은 `Component` 클래스의 생성자에게 렌더링하고자 하는 요소의 id를 전달
+      2. `render`메서드에서 상속받은 클래스내의 메서드(createRootElement)를 이용하여 생성된 요소를 받아온다.
+      3. `ProductItem`클래스에 product와 요소의 id를 전달한다.
+
+   3. `ProductItem`
+      1. `constructor` 생성자에서 ProductList를 통해 생성하고자 하는 product를 받아온다. 또한 `super(renderHookId)`를 이용해 상속받은 `Component` 클래스의 생성자에게 렌더링하고자 하는 요소의 id를 전달한다. 
+      2. `render`메서드에서 상속받은 클래스내의 메서드(createRootElement)를 이용하여 생성된 요소를 받아온다.
+      3. 생성된 요소에 innerHTML을 이용해 HTML 작성.
+
+3. `Shop` 클래스의 `render`메서드에서 `ShoppingCart`와 `ProductList`클래스를 new 키워드를 이용해 인스턴스화. 이때, 두 클래스에게 렌더링하고자 하는 요소의 id인 'app'을 전달.
+
+<br>
+
+## 📖 2. 메서드 덮어쓰기와 super() 생성자 + 실행 순서
+```javascript
+class Product {
+  constructor(title, image, desc, price) {
+    this.title = title; // this = 클래스
+    this.imageUrl = image;
+    this.description = desc;
+    this.price = price;
+  } // 생성자에 넣은 값으로 속성의 값이 초기화.
+}
+
+class ElementAttribute {
+  constructor(attrName, attrValue) {
+    this.name = attrName;
+    this.value = attrValue;
+  }
+}
+
+class Component {
+  constructor(renderHookId, shouldRender = true) {
+    this.hookId = renderHookId;
+    if (shouldRender) {
+      this.render();
+    }
+  }
+
+  render() {}
+
+  createRootElement(tag, cssClasses, attributes) {
+    const rootElement = document.createElement(tag);
+    if (cssClasses) {
+      rootElement.className = cssClasses;
+    }
+    if (attributes && attributes.length > 0) {
+      for (const attr of attributes) {
+        rootElement.setAttribute(attr.name, attr.value);
+      }
+    }
+    document.getElementById(this.hookId).append(rootElement);
+    return rootElement;
+  }
+}
+
+class ProductItem extends Component {
+  constructor(product, renderHookId) {
+    super(renderHookId, false);
+      this.product = product;
+      this.render();
+  }
+
+  addToCart() {
+    App.addProductToCart(this.product);
+  }
+
+  render() {
+    const prodEl = this.createRootElement("li", "product-item");
+    prodEl.innerHTML = `
+                <div>
+                    <img src="${this.product.imageUrl}" alt="${this.product.title}" >
+                    <div class="product-item__content">
+                        <h2>${this.product.title}</h2>
+                        <h3>\$${this.product.price}</h3>
+                        <p>${this.product.description}</p>
+                        <button>Add to Cart</button>
+                    </div>
+                </div>
+            `;
+    const addCartButton = prodEl.querySelector("button"); // 단일 상품을 생성하는 단일 클래스이기 때문에 해당 코드를 통해서 정확한 버튼에 엑세스 가능
+    addCartButton.addEventListener("click", this.addToCart.bind(this)); // bind(this)에서 this는 전체 객체
+  }
+}
+
+// 한 개의 클래스만 상속 가능.
+class ShoppingCart extends Component {
+  items = [];
+
+  set cartItems(value) {
+    this.items = value;
+    this.totalOutput.innerHTML = `<h2>Total: \$${this.totalAmount.toFixed(
+      2
+    )}</h2>`; //소수점 이하 2자리까지만 표시
+  }
+
+  get totalAmount() {
+    const sum = this.items.reduce(
+      (prevValue, curItem) => prevValue + curItem.price,
+      0
+    );
+    return sum;
+  }
+
+  constructor(renderHookId) {
+    super(renderHookId);
+  }
+
+  addProduct(product) {
+    const updatedItems = [...this.items];
+    updatedItems.push(product);
+    this.cartItems = updatedItems;
+  }
+
+  render() {
+    const cartEl = this.createRootElement("section", "cart");
+    cartEl.innerHTML = `
+        <h2>Total: \$${0}</h2>
+        <button>Order Now!</button>
+        `;
+    cartEl.className = "cart";
+    this.totalOutput = cartEl.querySelector("h2"); // 객체에 새 프로퍼티를 언제든 동적으로 추가 가능
+  }
+}
+
+class ProductList extends Component {
+  products = [];    
+
+  constructor(renderHookId) {
+    super(renderHookId);
+    this.fetchProducts();
+  }
+
+  fetchProducts() {
+    this.products = [
+      new Product(
+        "A Pillow",
+        "https://i.namu.wiki/i/BkYYZlR90zQhgRZxXY1eDgRGO9RwOq_vMk1LOO2FdMxxHjcGml5-B8R10Y5RalGf9YIXV6YLAxR0M8DO-8b-dw.webp",
+        "A soft pillow!",
+        19.99
+      ),
+      new Product(
+        "A Carpet",
+        "https://post-phinf.pstatic.net/MjAyMzExMDFfMjM0/MDAxNjk4ODE2NzM1OTc0.y3BvOwThLelXn8FB4Q8NwYt-L0XskUey-PY8YvwPemgg.SUk02UQLxFxju312e8oIevXl3eYibZsEpKUPkPM6uq4g.JPEG/06_레전드_페스티벌_시작.jpg?type=w800_q75",
+        "A carpet which you might like.",
+        89.99
+      ),
+    ];
+    this.renderProducts();
+  }
+
+  renderProducts() {
+    for (const prod of this.products) {
+      new ProductItem(prod, "prod-list");
+    }
+  }
+
+  render() {
+    const prodList = this.createRootElement("ul", "product-list", [
+      new ElementAttribute("id", "prod-list"),
+    ]);
+    if (this.products && this.products.length > 0) {
+      this.renderProducts();
+    }
+  }
+}
+
+class Shop {
+  constructor() {
+    this.render();
+  }
+
+  render() {
+    this.cart = new ShoppingCart("app");
+    new ProductList("app");
+  }
+}
+
+class App {
+  static cart;
+  static init() {
+    const shop = new Shop();
+    this.cart = shop.cart;
+    // this.cart는 Shop 클래스의 render 함수 안에서 인스턴스화가 되어있기 때문에 호출되는 순서는 shop.render() -> this.cart = shop.cart();가 된다.
+  }
+
+  static addProductToCart(product) {
+    this.cart.addProduct(product); // this.cart 는 ShoppingCart 클래스에 근거한 인스턴스를 나타낸다.
+  }
+}
+
+App.init(); // init 메서드를 클래스에 바로 실행. 클래스에서 바로 작동
+```
+
+1. 부모 생성자의 constructor에서 `this.render()`를 추가함으로써, 자식 생성자에서 `render()`코드를 줄이도록 함. 이때, 부모 클래스에서 `render()` 메서드를 추가함으로써 자식 클래스에서 override할 수 있도록 함.
+   1. App에서 `shop.render()` 삭제 &rarr; Shop의 constructor 추가하여, `this.render()`를 통해 렌더링하도록 실행
+   2. Shop의 render 메서드에서 ShoppingCart와 ProductList를 render하는 코드 삭제 &rarr; 단순히 두 클래스를 생성하는 코드만 작성
+   3. 부모 생성자의 constructor에서 `this.render()`를 추가했으므로 ProductList에서 `product.render()`코드 삭제.
+
+
+🚨 에러 발생 : render의 순서 🚨
+- Override 전 : App &rarr; Shop &rarr; ShoppingCart, ProductList &rarr; ProductItem 순으로 render
+- Override 후 : product를 불러오는데 너무 빨리 불러오게 됨.
+- 해결
+  1. ProductList에서 products의 배열을 빈 배열로 설정
+  2. fetchProducts()라는 메서드 생성 &rarr; 기존의 products 배열의 정보를 이동. constructor에서 fetchProducts()를 실행하도록 작성
+  3. `this.product`가 존재할 때 렌더링이 되도록 함.
+  4. 부모 클래스의 constructor에서 렌더링 가능여부를 판단하기 위해 sholudRender 속성을 추가 (default=true) &rarr; shouldRender가 truthy일 때 자식 클래스의 render 메서드가 실행되도록 함.
+  5. ProductItem을 렌더링하는데 약간의 시간차를 두기 위해서 ProductItem의 constructor에서 shouldRender값을 false로 둠. &rarr; ProductItem의 constructor에서 ProductItem의 render 메서드를 직접 수행토록 함.

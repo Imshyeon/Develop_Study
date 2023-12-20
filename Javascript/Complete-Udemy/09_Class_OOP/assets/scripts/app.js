@@ -7,9 +7,43 @@ class Product {
   } // 생성자에 넣은 값으로 속성의 값이 초기화.
 }
 
-class ProductItem {
-  constructor(product) {
+class ElementAttribute {
+  constructor(attrName, attrValue) {
+    this.name = attrName;
+    this.value = attrValue;
+  }
+}
+
+class Component {
+  constructor(renderHookId, shouldRender = true) {
+    this.hookId = renderHookId;
+    if (shouldRender) {
+      this.render();
+    }
+  }
+
+  render() {}
+
+  createRootElement(tag, cssClasses, attributes) {
+    const rootElement = document.createElement(tag);
+    if (cssClasses) {
+      rootElement.className = cssClasses;
+    }
+    if (attributes && attributes.length > 0) {
+      for (const attr of attributes) {
+        rootElement.setAttribute(attr.name, attr.value);
+      }
+    }
+    document.getElementById(this.hookId).append(rootElement);
+    return rootElement;
+  }
+}
+
+class ProductItem extends Component {
+  constructor(product, renderHookId) {
+    super(renderHookId, false);
     this.product = product;
+    this.render();
   }
 
   addToCart() {
@@ -17,8 +51,7 @@ class ProductItem {
   }
 
   render() {
-    const prodEl = document.createElement("li");
-    prodEl.className = "product-item";
+    const prodEl = this.createRootElement("li", "product-item");
     prodEl.innerHTML = `
                 <div>
                     <img src="${this.product.imageUrl}" alt="${this.product.title}" >
@@ -32,16 +65,18 @@ class ProductItem {
             `;
     const addCartButton = prodEl.querySelector("button"); // 단일 상품을 생성하는 단일 클래스이기 때문에 해당 코드를 통해서 정확한 버튼에 엑세스 가능
     addCartButton.addEventListener("click", this.addToCart.bind(this)); // bind(this)에서 this는 전체 객체
-    return prodEl;
   }
 }
 
-class ShoppingCart {
+// 한 개의 클래스만 상속 가능.
+class ShoppingCart extends Component {
   items = [];
 
   set cartItems(value) {
     this.items = value;
-    this.totalOutput.innerHTML = `<h2>Total: \$${this.totalAmount.toFixed(2)}</h2>`; //소수점 이하 2자리까지만 표시
+    this.totalOutput.innerHTML = `<h2>Total: \$${this.totalAmount.toFixed(
+      2
+    )}</h2>`; //소수점 이하 2자리까지만 표시
   }
 
   get totalAmount() {
@@ -52,6 +87,10 @@ class ShoppingCart {
     return sum;
   }
 
+  constructor(renderHookId) {
+    super(renderHookId);
+  }
+
   addProduct(product) {
     const updatedItems = [...this.items];
     updatedItems.push(product);
@@ -59,68 +98,73 @@ class ShoppingCart {
   }
 
   render() {
-    const cartEl = document.createElement("section");
+    const cartEl = this.createRootElement("section", "cart");
     cartEl.innerHTML = `
         <h2>Total: \$${0}</h2>
         <button>Order Now!</button>
         `;
     cartEl.className = "cart";
     this.totalOutput = cartEl.querySelector("h2"); // 객체에 새 프로퍼티를 언제든 동적으로 추가 가능
-    return cartEl;
   }
-
-  constructor() {}
 }
 
-class ProductList {
-  products = [
-    new Product(
-      "A Pillow",
-      "https://i.namu.wiki/i/BkYYZlR90zQhgRZxXY1eDgRGO9RwOq_vMk1LOO2FdMxxHjcGml5-B8R10Y5RalGf9YIXV6YLAxR0M8DO-8b-dw.webp",
-      "A soft pillow!",
-      19.99
-    ),
-    new Product(
-      "A Carpet",
-      "https://post-phinf.pstatic.net/MjAyMzExMDFfMjM0/MDAxNjk4ODE2NzM1OTc0.y3BvOwThLelXn8FB4Q8NwYt-L0XskUey-PY8YvwPemgg.SUk02UQLxFxju312e8oIevXl3eYibZsEpKUPkPM6uq4g.JPEG/06_레전드_페스티벌_시작.jpg?type=w800_q75",
-      "A carpet which you might like.",
-      89.99
-    ),
-  ];
+class ProductList extends Component {
+  products = [];
 
-  constructor() {}
+  constructor(renderHookId) {
+    super(renderHookId);
+    this.fetchProducts();
+  }
+
+  fetchProducts() {
+    this.products = [
+      new Product(
+        "A Pillow",
+        "https://i.namu.wiki/i/BkYYZlR90zQhgRZxXY1eDgRGO9RwOq_vMk1LOO2FdMxxHjcGml5-B8R10Y5RalGf9YIXV6YLAxR0M8DO-8b-dw.webp",
+        "A soft pillow!",
+        19.99
+      ),
+      new Product(
+        "A Carpet",
+        "https://post-phinf.pstatic.net/MjAyMzExMDFfMjM0/MDAxNjk4ODE2NzM1OTc0.y3BvOwThLelXn8FB4Q8NwYt-L0XskUey-PY8YvwPemgg.SUk02UQLxFxju312e8oIevXl3eYibZsEpKUPkPM6uq4g.JPEG/06_레전드_페스티벌_시작.jpg?type=w800_q75",
+        "A carpet which you might like.",
+        89.99
+      ),
+    ];
+    this.renderProducts();
+  }
+
+  renderProducts() {
+    for (const prod of this.products) {
+      new ProductItem(prod, "prod-list");
+    }
+  }
 
   render() {
-    const prodList = document.createElement("ul");
-    prodList.className = "product-list";
-    for (const prod of this.products) {
-      const product = new ProductItem(prod);
-      const prodEl = product.render();
-      prodList.append(prodEl);
+    const prodList = this.createRootElement("ul", "product-list", [
+      new ElementAttribute("id", "prod-list"),
+    ]);
+    if (this.products && this.products.length > 0) {
+      this.renderProducts();
     }
-    return prodList;
   }
 }
 
 class Shop {
-  render() {
-    const renderHook = document.getElementById("app");
+  constructor() {
+    this.render();
+  }
 
-    this.cart = new ShoppingCart();
-    const cartEl = this.cart.render();
-    const productList = new ProductList();
-    const prodListEl = productList.render();
-    renderHook.append(cartEl);
-    renderHook.append(prodListEl);
+  render() {
+    this.cart = new ShoppingCart("app");
+    new ProductList("app");
   }
 }
 
 class App {
   static cart;
-
   static init() {
     const shop = new Shop();
-    shop.render();
     this.cart = shop.cart;
     // this.cart는 Shop 클래스의 render 함수 안에서 인스턴스화가 되어있기 때문에 호출되는 순서는 shop.render() -> this.cart = shop.cart();가 된다.
   }
