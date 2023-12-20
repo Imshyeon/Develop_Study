@@ -928,6 +928,7 @@ App.init(); // init 메서드를 클래스에 바로 실행. 클래스에서 바
    2. Shop의 render 메서드에서 ShoppingCart와 ProductList를 render하는 코드 삭제 &rarr; 단순히 두 클래스를 생성하는 코드만 작성
    3. 부모 생성자의 constructor에서 `this.render()`를 추가했으므로 ProductList에서 `product.render()`코드 삭제.
 
+<br>
 
 🚨 에러 발생 : render의 순서 🚨
 - Override 전 : App &rarr; Shop &rarr; ShoppingCart, ProductList &rarr; ProductItem 순으로 render
@@ -938,3 +939,65 @@ App.init(); // init 메서드를 클래스에 바로 실행. 클래스에서 바
   3. `this.product`가 존재할 때 렌더링이 되도록 함.
   4. 부모 클래스의 constructor에서 렌더링 가능여부를 판단하기 위해 sholudRender 속성을 추가 (default=true) &rarr; shouldRender가 truthy일 때 자식 클래스의 render 메서드가 실행되도록 함.
   5. ProductItem을 렌더링하는데 약간의 시간차를 두기 위해서 ProductItem의 constructor에서 shouldRender값을 false로 둠. &rarr; ProductItem의 constructor에서 ProductItem의 render 메서드를 직접 수행토록 함.
+
+
+<br>
+
+## 📖 3. 메서드를 추가하는 다양한 방법
+```javascript
+// =============== 방법 1 =================
+class ShoppingCart extends Component {
+  items = [];
+
+  constructor(renderHookId) {
+    super(renderHookId);
+  }
+
+  orderProduct {
+    console.log("Ordering...");
+    console.log(this.items);
+  }
+
+  render() {
+    const cartEl = this.createRootElement("section", "cart");
+    cartEl.innerHTML = `
+        <h2>Total: \$${0}</h2>
+        <button>Order Now!</button>
+        `;
+    const orderButton = cartEl.querySelector("button");
+    orderButton.addEventListener("click", () => this.orderProduct()); // 방법 1
+  }
+}
+
+// =============== 방법 2 =================
+class ShoppingCart extends Component {
+  items = [];
+
+  constructor(renderHookId) {
+    super(renderHookId, false);
+    this.orderProduct = () => {
+      console.log("Ordering...");
+      console.log(this.items);
+    };
+    this.render();
+  }
+
+  render() {
+    const cartEl = this.createRootElement("section", "cart");
+    cartEl.innerHTML = `
+        <h2>Total: \$${0}</h2>
+        <button>Order Now!</button>
+        `;
+    const orderButton = cartEl.querySelector("button");
+    // orderButton.addEventListener("click", () => this.orderProduct()); // 방법 1
+    orderButton.addEventListener("click", this.orderProduct);
+    this.totalOutput = cartEl.querySelector("h2"); // 객체에 새 프로퍼티를 언제든 동적으로 추가 가능
+  }
+}
+
+// =============== 방법 2 =================
+// bind 사용하는 방법
+```
+
+<br>
+

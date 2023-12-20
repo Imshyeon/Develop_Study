@@ -88,7 +88,12 @@ class ShoppingCart extends Component {
   }
 
   constructor(renderHookId) {
-    super(renderHookId);
+    super(renderHookId, false);
+    this.orderProduct = () => {
+      console.log("Ordering...");
+      console.log(this.items);
+    };
+    this.render();
   }
 
   addProduct(product) {
@@ -103,7 +108,9 @@ class ShoppingCart extends Component {
         <h2>Total: \$${0}</h2>
         <button>Order Now!</button>
         `;
-    cartEl.className = "cart";
+    const orderButton = cartEl.querySelector("button");
+    // orderButton.addEventListener("click", () => this.orderProduct()); // 방법 1
+    orderButton.addEventListener("click", this.orderProduct);
     this.totalOutput = cartEl.querySelector("h2"); // 객체에 새 프로퍼티를 언제든 동적으로 추가 가능
   }
 }
