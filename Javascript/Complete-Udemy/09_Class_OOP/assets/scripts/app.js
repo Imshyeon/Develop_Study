@@ -116,15 +116,16 @@ class ShoppingCart extends Component {
 }
 
 class ProductList extends Component {
-  products = [];
+  #products = []; // private property
 
   constructor(renderHookId) {
-    super(renderHookId);
-    this.fetchProducts();
+    super(renderHookId, false);
+    this.render();
+    this.#fetchProducts();
   }
 
-  fetchProducts() {
-    this.products = [
+  #fetchProducts() {
+    this.#products = [
       new Product(
         "A Pillow",
         "https://i.namu.wiki/i/BkYYZlR90zQhgRZxXY1eDgRGO9RwOq_vMk1LOO2FdMxxHjcGml5-B8R10Y5RalGf9YIXV6YLAxR0M8DO-8b-dw.webp",
@@ -142,7 +143,7 @@ class ProductList extends Component {
   }
 
   renderProducts() {
-    for (const prod of this.products) {
+    for (const prod of this.#products) {
       new ProductItem(prod, "prod-list");
     }
   }
@@ -151,7 +152,7 @@ class ProductList extends Component {
     const prodList = this.createRootElement("ul", "product-list", [
       new ElementAttribute("id", "prod-list"),
     ]);
-    if (this.products && this.products.length > 0) {
+    if (this.#products && this.#products.length > 0) {
       this.renderProducts();
     }
   }

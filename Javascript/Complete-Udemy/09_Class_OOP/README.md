@@ -1001,3 +1001,55 @@ class ShoppingCart extends Component {
 
 <br>
 
+## 📖 4. Private 프로퍼티
+
+1. Public
+   - 클래스와 객체 외부에서 접근 가능
+  
+2. Private(`#`)
+   - 클래스나 객체의 내부에서만 접근 가능
+
+```javascript
+class ProductList extends Component {
+  #products = []; // private property
+
+  constructor(renderHookId) {
+    super(renderHookId, false);
+    this.render();
+    this.#fetchProducts();
+  }
+
+  #fetchProducts() {
+    this.#products = [
+      new Product(
+        "A Pillow",
+        "https://i.namu.wiki/i/BkYYZlR90zQhgRZxXY1eDgRGO9RwOq_vMk1LOO2FdMxxHjcGml5-B8R10Y5RalGf9YIXV6YLAxR0M8DO-8b-dw.webp",
+        "A soft pillow!",
+        19.99
+      ),
+      new Product(
+        "A Carpet",
+        "https://post-phinf.pstatic.net/MjAyMzExMDFfMjM0/MDAxNjk4ODE2NzM1OTc0.y3BvOwThLelXn8FB4Q8NwYt-L0XskUey-PY8YvwPemgg.SUk02UQLxFxju312e8oIevXl3eYibZsEpKUPkPM6uq4g.JPEG/06_레전드_페스티벌_시작.jpg?type=w800_q75",
+        "A carpet which you might like.",
+        89.99
+      ),
+    ];
+    this.renderProducts();
+  }
+
+  renderProducts() {
+    for (const prod of this.#products) {
+      new ProductItem(prod, "prod-list");
+    }
+  }
+
+  render() {
+    const prodList = this.createRootElement("ul", "product-list", [
+      new ElementAttribute("id", "prod-list"),
+    ]);
+    if (this.#products && this.#products.length > 0) {
+      this.renderProducts();
+    }
+  }
+}
+```
