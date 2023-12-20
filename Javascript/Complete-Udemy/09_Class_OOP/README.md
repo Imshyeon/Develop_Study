@@ -4,6 +4,8 @@
 [📌 상속](#📌-상속)<br>
 [📌 private 프로퍼티](#📌-private-프로퍼티)<br>
 [📌 instance 연산자](#📌-instance-연산자)<br>
+[📌 빌트인 클래스](#📌-빌트인-클래스)<br>
+[📌 객체 설명자](#📌-객체-설명자)<br>
 <br>
 
 ## 📌 객체 지향 프로그래밍(OOP)이란 무엇인가?
@@ -1082,4 +1084,51 @@ console.log(btn instanceof HTMLElement) // true
 
 <br>
 
+## 📌 빌트인 클래스
 
+```javascript
+const obj = new Object();
+console.log(obj) // {}
+// 다음과 같다.
+const obj2 = {};
+```
+
+<br>
+
+## 📌 객체 설명자
+
+```javascript
+const person = {
+    name:'Max',
+    greet(){
+        console.log(this.name);
+    }
+};
+
+console.log(person.greet()); //Max
+
+Object.getOwnPropertyDescriptors(person) // 프로퍼티 설명자
+//{name: {…}, greet: {…}}
+// greet: {writable: true, enumerable: true, configurable: true, value: ƒ}
+// name: {value: 'Max', writable: true, enumerable: true, configurable: true}
+//[[Prototype]]: Object
+```
+- 프로퍼티 설명자 : JavaScript가 이면에서 저장하는 메타데이터. 프로퍼티가 어떻게 사용될 수 있는지에 영향을 준다.
+  - configurable : 삭제할 수 있다.
+  - enumerable : for-in 에 나타날 수 있다.
+
+<br>
+
+```javascript
+Object.defineProperty(person, 'name', {
+    configurable : true,
+    enumerable: true,
+    value: person.name,
+    writable: false
+}) // person의 name 프로퍼티에 대한 메타데이터 수정 => 프로퍼티 잠금
+
+person.name = 'Taemin';
+console.log(person) // {name:'Max', greet: f}
+```
+
+[Class 더 알아보기](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
