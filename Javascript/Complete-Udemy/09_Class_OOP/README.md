@@ -139,6 +139,7 @@ class Product {
   }
 }
 ```
+
 - **Fields define properties for classes**
 - 클래스 기반을 객체를 생성하면 필드가 속성이 된다.
 - 나중엔 필드나 속성(Property)이나 같아지게 된다...!
@@ -146,6 +147,7 @@ class Product {
 <br>
 
 ### 📖 4. 다수의 클래스를 사용하고 연결하기
+
 ```javascript
 class Product {
   constructor(title, image, desc, price) {
@@ -217,3 +219,146 @@ productList.render();
 - `Product` 클래스 : 제품에 대한 기본 요소 정보를 담는 클래스
 - `ProductItem` 클래스 : 화면에 제품 요소를 렌더링을 하기 위한 클래스
 - `ProductList` 클래스 : Product 클래스를 이용하여 제품 정보를 입력 &rarr; ProductItem 클래스를 이용해서 화면 렌더링
+
+<br>
+
+### 📖 5. 클래스 메서드 바인딩 & this로 작업하기
+
+```javascript
+class ProductItem {
+  constructor(product) {
+    this.product = product;
+  }
+
+  addToCart() {
+    console.log("Adding product to cart...");
+    console.log(this.product);
+  }
+
+  render() {
+    const prodEl = document.createElement("li");
+    prodEl.className = "product-item";
+    prodEl.innerHTML = `
+                <div>
+                    <img src="${this.product.imageUrl}" alt="${this.product.title}" >
+                    <div class="product-item__content">
+                        <h2>${this.product.title}</h2>
+                        <h3>\$${this.product.price}</h3>
+                        <p>${this.product.description}</p>
+                        <button>Add to Cart</button>
+                    </div>
+                </div>
+            `;
+    const addCartButton = prodEl.querySelector("button"); // 단일 상품을 생성하는 단일 클래스이기 때문에 해당 코드를 통해서 정확한 버튼에 엑세스 가능
+    addCartButton.addEventListener("click", this.addToCart.bind(this)); // bind(this)에서 this는 전체 객체
+    return prodEl;
+  }
+}
+```
+
+<br>
+
+### 📖 6. 장바구니와 Shop 클래스 추가
+
+```javascript
+class Product {
+  constructor(title, image, desc, price) {
+    this.title = title;
+    this.imageUrl = image;
+    this.description = desc;
+    this.price = price;
+  }
+}
+
+class ProductItem {
+  constructor(product) {
+    this.product = product;
+  }
+
+  addToCart() {
+    console.log("Adding product to cart...");
+    console.log(this.product);
+  }
+
+  render() {
+    const prodEl = document.createElement("li");
+    prodEl.className = "product-item";
+    prodEl.innerHTML = `
+                <div>
+                    <img src="${this.product.imageUrl}" alt="${this.product.title}" >
+                    <div class="product-item__content">
+                        <h2>${this.product.title}</h2>
+                        <h3>\$${this.product.price}</h3>
+                        <p>${this.product.description}</p>
+                        <button>Add to Cart</button>
+                    </div>
+                </div>
+            `;
+    const addCartButton = prodEl.querySelector("button");
+    addCartButton.addEventListener("click", this.addToCart.bind(this));
+    return prodEl;
+  }
+}
+
+// 추가
+class ShoppingCart {
+  items = [];
+
+  render() {
+    const cartEl = document.createElement("section");
+    cartEl.innerHTML = `
+        <h2>Total: \$${0}</h2>
+        <button>Order Now!</button>
+        `;
+    cartEl.className = "cart";
+    return cartEl;
+  }
+}
+
+class ProductList {
+  products = [
+    new Product(
+      "A Pillow",
+      "https://i.namu.wiki/i/BkYYZlR90zQhgRZxXY1eDgRGO9RwOq_vMk1LOO2FdMxxHjcGml5-B8R10Y5RalGf9YIXV6YLAxR0M8DO-8b-dw.webp",
+      "A soft pillow!",
+      19.99
+    ),
+    new Product(
+      "A Carpet",
+      "https://post-phinf.pstatic.net/MjAyMzExMDFfMjM0/MDAxNjk4ODE2NzM1OTc0.y3BvOwThLelXn8FB4Q8NwYt-L0XskUey-PY8YvwPemgg.SUk02UQLxFxju312e8oIevXl3eYibZsEpKUPkPM6uq4g.JPEG/06_레전드_페스티벌_시작.jpg?type=w800_q75",
+      "A carpet which you might like.",
+      89.99
+    ),
+  ];
+
+  constructor() {}
+
+  // 변경
+  render() {
+    const prodList = document.createElement("ul");
+    prodList.className = "product-list";
+    for (const prod of this.products) {
+      const product = new ProductItem(prod);
+      const prodEl = product.render();
+      prodList.append(prodEl);
+    }
+    return prodList; // prodList를 반환
+  }
+}
+
+// 추가 : 전체적인 화면을 렌더링하는 역할
+class Shop {
+  render() {
+    const renderHook = document.getElementById("app");
+    const cart = new ShoppingCart();
+    const cartEl = cart.render();
+    const productList = new ProductList();
+    const prodListEl = productList.render();
+    renderHook.append(cartEl);
+    renderHook.append(prodListEl);
+  }
+}
+
+const shop = new Shop();
+shop.render();
+```
