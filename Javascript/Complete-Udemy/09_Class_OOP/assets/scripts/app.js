@@ -13,8 +13,7 @@ class ProductItem {
   }
 
   addToCart() {
-    console.log("Adding product to cart...");
-    console.log(this.product);
+    App.addProductToCart(this.product);
   }
 
   render() {
@@ -40,6 +39,11 @@ class ProductItem {
 class ShoppingCart {
   items = [];
 
+  addProduct(product) {
+    this.items.push(product);
+    this.totalOutput.innerHTML = `<h2>Total: \$${1}</h2>`;
+  }
+
   render() {
     const cartEl = document.createElement("section");
     cartEl.innerHTML = `
@@ -47,6 +51,7 @@ class ShoppingCart {
         <button>Order Now!</button>
         `;
     cartEl.className = "cart";
+    this.totalOutput = cartEl.querySelector("h2"); // 객체에 새 프로퍼티를 언제든 동적으로 추가 가능
     return cartEl;
   }
 
@@ -86,8 +91,9 @@ class ProductList {
 class Shop {
   render() {
     const renderHook = document.getElementById("app");
-    const cart = new ShoppingCart();
-    const cartEl = cart.render();
+
+    this.cart = new ShoppingCart();
+    const cartEl = this.cart.render();
     const productList = new ProductList();
     const prodListEl = productList.render();
     renderHook.append(cartEl);
@@ -95,5 +101,19 @@ class Shop {
   }
 }
 
-const shop = new Shop();
-shop.render();
+class App {
+  static cart;
+
+  static init() {
+    const shop = new Shop();
+    shop.render();
+    this.cart = shop.cart;
+    // this.cart는 Shop 클래스의 render 함수 안에서 인스턴스화가 되어있기 때문에 호출되는 순서는 shop.render() -> this.cart = shop.cart();가 된다.
+  }
+
+  static addProductToCart(product) {
+    this.cart.addProduct(product); // this.cart 는 ShoppingCart 클래스에 근거한 인스턴스를 나타낸다.
+  }
+}
+
+App.init(); // init 메서드를 클래스에 바로 실행. 클래스에서 바로 작동
