@@ -499,3 +499,49 @@ class App {
 
 App.init(); // init 메서드를 클래스에 바로 실행. 클래스에서 바로 작동
 ```
+
+- `App`클래스 : 전체적인 application을 다루는 클래스 + 정적 메서드를 이용해서 클래스 간의 통신
+- `Shop`클래스 : 전반적인 product와 productlist를 렌더링
+
+<br>
+
+### 📖 8. Getter & Setter
+
+```javascript
+class ShoppingCart {
+  items = [];
+
+  set cartItems(value) {
+    this.items = value;
+    this.totalOutput.innerHTML = `<h2>Total: \$${this.totalAmount.toFixed(2)}</h2>`;
+    // toFixed() : 소수점 이하 2자리까지만 표시
+  }
+
+  get totalAmount() {
+    const sum = this.items.reduce(
+      (prevValue, curItem) => prevValue + curItem.price,
+      0
+    );
+    return sum;
+  }
+
+  addProduct(product) {
+    const updatedItems = [...this.items];
+    updatedItems.push(product);
+    this.cartItems = updatedItems;
+  }
+
+  render() {
+    const cartEl = document.createElement("section");
+    cartEl.innerHTML = `
+        <h2>Total: \$${0}</h2>
+        <button>Order Now!</button>
+        `;
+    cartEl.className = "cart";
+    this.totalOutput = cartEl.querySelector("h2"); // 객체에 새 프로퍼티를 언제든 동적으로 추가 가능
+    return cartEl;
+  }
+
+  constructor() {}
+}
+```
