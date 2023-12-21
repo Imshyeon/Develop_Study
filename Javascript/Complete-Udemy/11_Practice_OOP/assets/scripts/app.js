@@ -12,9 +12,35 @@ class DOMHelper {
   }
 }
 
-class Tooptip {
+class Component {
+  constructor(hostElementId, insertBefore = false) {
+    if (hostElementId) {
+      this.hostElementId = document.getElementById(hostElementId);
+    } else {
+      this.hostElementId = document.body;
+    }
+    this.insertBefore = insertBefore;
+  }
+
+  remove() {
+    if (this.element) {
+      this.element.remove();
+    }
+  }
+
+  show() {
+    this.hostElementId.insertAdjacentElement(
+      this.insertBefore ? "afterbegin" : "beforeend",
+      this.element
+    );
+  }
+}
+
+class Tooptip extends Component {
   constructor(closeNotifierFunction) {
+    super(); //super('active-projects',true);
     this.closeNotifierHandler = closeNotifierFunction;
+    this.create();
   }
 
   closeTooltip = () => {
@@ -22,17 +48,12 @@ class Tooptip {
     this.closeNotifierHandler(); // Remove가 되면 다시 hasActiveTooptip을 false로 바꿈.
   };
 
-  remove() {
-    this.element.remove();
-  }
-
-  show() {
+  create() {
     const tooltipElement = document.createElement("div");
     tooltipElement.className = "card";
     tooltipElement.textContent = "DUMMY!";
     tooltipElement.addEventListener("click", this.closeTooltip);
     this.element = tooltipElement;
-    document.body.append(tooltipElement);
   }
 }
 
