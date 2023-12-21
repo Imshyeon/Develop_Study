@@ -331,3 +331,6 @@ console.log(student);
 
 - `Object.setPrototypeOf` : 프로토타입을 설정할 객체, 사용할 프로토타입 을 입력
   - 두번째 매개변수에 들어가는 값은 객체가 생성된 후에 객에체 할당된 프로토타입을 여기서 덮어쓸 수 있다.
+
+💙 [생성자 함수 더 알아보기](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects#using_a_constructor_function)<br>
+💙 [프로토타입 더 알아보기](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Object_prototypes)
