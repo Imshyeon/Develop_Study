@@ -143,7 +143,7 @@ person.printAge(); // 30
 ### 📖 프로토타입 체인과 전역 객체
 
 - 모든 객체에 있는 기본 프로토타입은 모든 생성자 함수에 기본적으로 프로토타입으로 할당되기 때문에 전역 객체 클래스(객체 생성자 함수)에서 찾을 수 있다.
-- `Object`는 생성자 함수로 많은 빌트인 프로퍼티 혹은 메서드를 호출할 수 있다. 
+- `Object`는 생성자 함수로 많은 빌트인 프로퍼티 혹은 메서드를 호출할 수 있다.
 - 객체 자체가 폴백 객체나 폴백 프로토타입이 아니다.
 - 모든 객체의 폴백 값은 `Object.prototype` &larr; 기본 프로토타입
 - `Object.prototype`이 프로토타입 체인이 끝나는 지점이다.
@@ -162,6 +162,7 @@ console.dir(Object);
 - `__proto__` : 생성자 함수나 함수 객체 뿐만 아니라 모든 객체에서 사용 가능하다. 이는 결국 객체에 할당된 프로토타입을 가리키는데 즉 객체에 할당된 폴백 객체를 가리킨다.
 
 ### 📖 클래스 & 생성자 내의 메서드
+
 ```javascript
 class AgedPerson {
   printAge() {
@@ -176,18 +177,19 @@ class Person extends AgedPerson {
     this.age = 30;
   }
 
-  greet() { // 이렇게 축약형으로 쓰면 JavaScript에서 자동적으로 최적화 진행..
+  greet() {
+    // 이렇게 축약형으로 쓰면 JavaScript에서 자동적으로 최적화 진행..
     console.log(
       "Hi, I am " + this.name + " and I am " + this.age + " years old."
     );
   }
 
-//   greet = function(){...}  이렇게나 greet = () => {...} 이런식으로 쓰면 해당 객체 안에서 greet이라는 property가 생성이 된다. 즉, JavaScript에서 최적화를 진행하지 X.
-// => 성능이 떨어지고 메모리 영향이 있음. 그렇지만 크게 대단한 영향은 아니다..!
+  //   greet = function(){...}  이렇게나 greet = () => {...} 이런식으로 쓰면 해당 객체 안에서 greet이라는 property가 생성이 된다. 즉, JavaScript에서 최적화를 진행하지 X.
+  // => 성능이 떨어지고 메모리 영향이 있음. 그렇지만 크게 대단한 영향은 아니다..!
 }
 
 const p = new Person();
-console.log(p)
+console.log(p);
 //Person {name: 'Max', age: 30}
 //  age: 30
 //  name: "Max"
@@ -199,6 +201,7 @@ console.log(p)
 //          printAge: ƒ printAge()
 //          [[Prototype]]: Object
 ```
+
 - 메서드 자체는 Person 객체의 일부가 아니다.
 - 메서드는 객체 프로토타입의 일부로 들어가게 된다.
 - 메서드는 일반적으로 모든 객체에서 동일하게 동작. 데이터를 참조를 할 수는 있지만 여러 데이터가 자동으로 반영이 되는 방식으로 이뤄진다.
@@ -206,52 +209,125 @@ console.log(p)
 
 ```javascript
 const p2 = new Person();
-console.log(p.__proto__ === p2.__proto__)   // true => 메모리에 있는 완전히 동일한 객체를 사용하므로 true 리턴.
+console.log(p.__proto__ === p2.__proto__); // true => 메모리에 있는 완전히 동일한 객체를 사용하므로 true 리턴.
 
 // =============
 
-function Person(){
-    this.age = 30;
-    this.name = 'Max';
+function Person() {
+  this.age = 30;
+  this.name = "Max";
 }
 
-Person.prototype.greet = function(){
-    console.log(
-      "Hi, I am " + this.name + " and I am " + this.age + " years old."
-    );
-} // 이렇게 생성자함수를 통해서 만드는 것과 같은 결과.
+Person.prototype.greet = function () {
+  console.log(
+    "Hi, I am " + this.name + " and I am " + this.age + " years old."
+  );
+}; // 이렇게 생성자함수를 통해서 만드는 것과 같은 결과.
 ```
 
 <br>
 
 (+) 추가
+
 ```javascript
-class Person{
+class Person {
   name = "Max";
   constructor() {
     this.age = 30;
   }
 
-  greet = () =>{
-    console.log("Hi, I am " + this.name + " and I am " + this.age + " years old.")
-  }
+  greet = () => {
+    console.log(
+      "Hi, I am " + this.name + " and I am " + this.age + " years old."
+    );
+  };
 }
 
 const p = new Person();
-const button = document.querySelector('button');
-button.addEventListener('click',p.greet);
+const button = document.querySelector("button");
+button.addEventListener("click", p.greet);
 ```
+
 `addEventListener`와 같이 화살표함수를 이용하면 this를 이용(?)하기에 좋다. 만약 화살표가 아니라 축약형으로 greet을 작성한다면 다음과 같이 작성해야한다.
+
 ```javascript
-button.addEventListener('click',p.greet.bind(p));
+button.addEventListener("click", p.greet.bind(p));
 ```
+
 이렇게 함으로써 this가 p임을 인식하도록 해야한다.
 
 <br>
 
 ## 📌 JavaScript 내장 프로토타입
+
 Array와 String에도 prototype이 있다.
 
 <br>
 
 ## 📌 프로토타입 Setting & Getting
+
+```javascript
+class Person {
+  name = "Max";
+  constructor() {
+    this.age = 30;
+  }
+
+  greet = () => {
+    console.log(
+      "Hi, I am " + this.name + " and I am " + this.age + " years old."
+    );
+  };
+}
+
+const course = {
+  title: "JavaScript",
+  rating: 5,
+};
+
+console.log(Object.getPrototypeOf(course)); // course.__proto__ 를 한 값과 동일.
+
+Object.setPrototypeOf(course, {
+  ...Object.getPrototypeOf(course), // 해당 코드는 이전의 __proto__에 있던 기존의 메서드를 포함하고 싶을 때 사용.
+  printRating: function () {
+    console.log(`${this.rating}/5`);
+  },
+});
+
+course.printRating(); // 5/5
+
+// 객체 생성2
+const student = Object.create({
+  printProgress: function () {
+    console.log(this.progress);
+  },
+}, {
+    name: {
+        configurable: true,
+        enumerabe: true,
+        value: 'Max',
+        writable:true
+    }
+});
+
+// student.name = 'Max';
+
+Object.defineProperty(student, 'progress', {
+    configurable: true,
+    enumerable: true,
+    value: 0.8,
+    writable: true
+})
+
+student.printProgress(); //0.8
+console.log(student); 
+// {name: 'Max', progress: 0.8}
+// name: 'Max'
+// progress: 0.8
+//  __proto__: Object
+//      printProgress: f ()
+//      __proto__: Object
+```
+
+- `Object.setPrototypeOf` : 프로토타입을 설정할 객체, 사용할 프로토타입 을 입력
+  - 두번째 매개변수에 들어가는 값은 객체가 생성된 후에 객에체 할당된 프로토타입을 여기서 덮어쓸 수 있다.
