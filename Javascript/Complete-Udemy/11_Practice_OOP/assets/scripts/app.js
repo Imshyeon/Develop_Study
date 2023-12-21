@@ -1,5 +1,3 @@
-class Tooptip {}
-
 class DOMHelper {
   static clearEventListener(element) {
     const clonedElement = element.cloneNode(true);
@@ -14,7 +12,33 @@ class DOMHelper {
   }
 }
 
+class Tooptip {
+  constructor(closeNotifierFunction) {
+    this.closeNotifierHandler = closeNotifierFunction;
+  }
+
+  closeTooltip = () => {
+    this.remove();
+    this.closeNotifierHandler(); // Remove가 되면 다시 hasActiveTooptip을 false로 바꿈.
+  };
+
+  remove() {
+    this.element.remove();
+  }
+
+  show() {
+    const tooltipElement = document.createElement("div");
+    tooltipElement.className = "card";
+    tooltipElement.textContent = "DUMMY!";
+    tooltipElement.addEventListener("click", this.closeTooltip);
+    this.element = tooltipElement;
+    document.body.append(tooltipElement);
+  }
+}
+
 class ProjectItem {
+  hasActiveTooltip = false;
+
   constructor(id, updateProjectListsFunction, type) {
     this.id = id;
     this.updateProjectListsHandler = updateProjectListsFunction;
@@ -23,7 +47,24 @@ class ProjectItem {
     this.connectSwitchButton(type);
   }
 
-  connectMoreInfoButton() {}
+  showMoreInfoHandler() {
+    if (this.hasActiveTooltip) {
+      return; // 이미 한 요소의 툴팁 하나가 있다면 더이상 추가하지 않음. 즉, 같은 요소의 툴팁을 중복으로 열지 않음.
+    }
+    const tooltip = new Tooptip(() => {
+      this.hasActiveTooltip = false;
+    });
+    tooltip.show();
+    this.hasActiveTooltip = true;
+  }
+
+  connectMoreInfoButton() {
+    const projectItemElement = document.getElementById(this.id);
+    const moreInfoButton = projectItemElement.querySelector(
+      "button:first-of-type"
+    );
+    moreInfoButton.addEventListener("click", this.showMoreInfoHandler);
+  }
 
   connectSwitchButton(type) {
     const projectItemElement = document.getElementById(this.id);
