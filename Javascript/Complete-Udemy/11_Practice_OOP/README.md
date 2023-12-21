@@ -1,6 +1,7 @@
 # Practice: Object-Oriented Programming
 [📌 Demo-1](#📌-demo-1)<br>
-[📌 Demo-2](#📌-demo-2)<br>
+[📌 Demo-2 | tooltip 추가하기](#📌-demo-2--tooptip-추가하기)<br>
+[📌 Demo-3 | 상속 추가하기](#📌-demo-3--상속-추가하기)<br>
 <br>
 
 ## 📌 Demo-1
@@ -274,7 +275,7 @@ App.init();
 
 <br>
 
-## 📌 상속 추가하기
+## 📌 Demo-3 | 상속 추가하기
 
 ```javascript
 class DOMHelper {
