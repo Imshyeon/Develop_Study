@@ -173,10 +173,15 @@ class App {
       activeProjectsList.addProject.bind(activeProjectsList)
     );
 
-    document.getElementById('start-analytics-btn').addEventListener('click',this.startAnalytics)
-    // const someScript = document.createElement('script');
-    // someScript.textContent = 'alert("Hi there")';
-    // document.head.append(someScript);
+    // timer 1
+    const timerId = setTimeout(this.startAnalytics, 3000); // 3초 뒤 startAnalytics를 실행한다.
+
+    // timer 중지
+    document
+      .getElementById("stop-analytics-btn")
+      .addEventListener("click", () => {
+        clearTimeout(timerId);
+      });
   }
   static startAnalytics() {
     const analyticsScript = document.createElement('script');

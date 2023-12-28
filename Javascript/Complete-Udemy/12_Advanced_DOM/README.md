@@ -5,6 +5,7 @@
 [📌 툴팁 위치시키기](#📌-툴팁-위치시키기)<br>
 [📌 스크롤 다루기](#📌-스크롤-다루기)<br>
 [📌 스크립트 동적으로 로딩하기](#📌-스크립트-동적으로-로딩하기)<br>
+[📌 타이머 & 간격 설정하기](#📌-타이머--간격-설정하기)<br>
 <br>
 
 ## 📌 Dataset 사용하기
@@ -324,4 +325,44 @@ class App {
     document.head.append(analyticsScript);
   }
 }
+```
+
+<br>
+
+## 📌 타이머 & 간격 설정하기
+
+1. timer 1
+
+```javascript
+setTimeout(this.startAnalytics, 3000); // 3초 뒤 startAnalytics를 실행한다.
+```
+
+- `setTimeout` : 스크립트 실행을 중지하지 않지만 브라우저가 스크립트가 계속 작동하도록 관리.
+
+2. timer 2
+
+```javascript
+setInterval(() => {
+  console.log("sending analytics data...");
+}, 2000); // 2초마다 console에 문장 출력.
+```
+
+3. timer 중지
+
+```javascript
+//timer 1
+const timerId = setTimeout(this.startAnalytics, 3000); // 3초 뒤 startAnalytics를 실행한다.
+
+document.getElementById("stop-analytics-btn").addEventListener("click", () => {
+  clearTimeout(timerId);
+});
+
+// timer 2
+const intervalId = setInterval(() => {
+  console.log("sending analytics data...");
+}, 2000); // 2초마다 console에 문장 출력.
+
+document.getElementById("stop-analytics-btn").addEventListener("click", () => {
+  clearInterval(intervalId);
+});
 ```
