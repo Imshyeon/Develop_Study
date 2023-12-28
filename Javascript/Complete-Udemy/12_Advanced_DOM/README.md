@@ -2,6 +2,7 @@
 [📌 Dataset 사용하기](#📌-dataset-사용하기)<br>
 [📌 요소](#📌-요소)<br>
 [📌 툴팁 위치시키기](#📌-툴팁-위치시키기)<br>
+[📌 스크롤 다루기](#📌-스크롤-다루기)<br>
 <br>
 
 ## 📌 Dataset 사용하기
@@ -116,7 +117,7 @@ document.documentElement.clientHeight
 - `window.innerHeight` : 높이. window~를 사용하면 스크롤바도 포함하여 나타나기 때문에 실제로 사용 가능한 범위보다 더 많이 제공.
 - `document.documentElement.clientWidth` : 스크롤바를 제외한 너비를 리턴. 현재 문서에는 스크롤이 없기 때문에 window~와 동일한 결과값을 리턴한다.
 - `document.documentElement.clientHeight`
-<br>
+<br><br>
 
 ## 📌 툴팁 위치시키기
 ```javascript
@@ -127,7 +128,7 @@ class Tooltip extends Component {
     this.text = text;
     this.create();
   }
-  
+
   create() {
     const tooltipElement = document.createElement("div");
     tooltipElement.className = "card";
@@ -180,3 +181,32 @@ class ProjectItem {
   ...
 }
 ```
+<br>
+
+## 📌 스크롤 다루기
+```javascript
+// ul 선택
+$0.scrollTo(0,50) // y 축으로 50 픽셀만큼 이동 (절대)
+$0.scrollBy(0,50) // y 축으로 50 픽셀만큼 이동 (상대) -> 다시한번 scollBy(0,50)을 하면 스크롤된 위치에서 50만큼 아래로 스크롤됨.
+$0.scrollTo({top: 50, behavior:'smooth'})
+$0.scrollBy({top: 50, behavior:'smooth'})
+```
+
+```javascript
+class DOMHelper {
+  static clearEventListeners(element) {
+    const clonedElement = element.cloneNode(true);
+    element.replaceWith(clonedElement);
+    return clonedElement;
+  }
+
+  static moveElement(elementId, newDestinationSelector) {
+    const element = document.getElementById(elementId);
+    const destinationElement = document.querySelector(newDestinationSelector);
+    destinationElement.append(element);
+    // element.scrollIntoView(); // 애니메이션 없이 즉시 이동.
+    element.scrollIntoView({behavior: 'smooth'}); // 약간의 애니메이션.
+  }
+}
+```
+- `scrollIntoView` : 자동으로 해당 뷰로 스크롤 이동.
