@@ -116,6 +116,31 @@ buttons.forEach((btn) => {
 - mouseenter : 마우스 또는 커서가 요소 위로 지나가는 경우
 - scroll : 페이지를 스클로 하는 경우
 - 거의 모든 DOM 요소는 모든 이벤트를 지원한다.
+
+<br>
+
+### 📖 무한 스크롤링
+
+```javascript
+let curElementNumber = 0;
+
+function scrollHandler() {
+  const pageBottom = document.body.getBoundingClientRect().bottom;
+
+  if (pageBottom < document.documentElement.clientHeight + 150) {
+    const newDataElement = document.createElement("div");
+    curElementNumber++;
+    newDataElement.innerHTML = `<p>Element ${curElementNumber}</p>`;
+    document.body.append(newDataElement);
+  }
+}
+
+window.addEventListener("scroll", scrollHandler);
+```
+
+- pageBottom 변수에 뷰포트(현재 보고 있는 페이지의 왼쪽 상단 모서리)와 (단순히 현재 보이는 영역 사이의 총 길이가 아닌) 페이지 끝 사이의 총 길이를 측정하여 저장.
+- 콘텐츠의 하단까지의 길이(pageBottom)과 창 높이 + 특정 임계값을 비교. &rarr; `document.documentElement.clientHeight`는 잠재적인 스크롤바도 고려하므로 `window.innerHeight`보다 선호된다.
+
 <br>
 
 ### 더 알아보기
