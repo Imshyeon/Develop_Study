@@ -4,6 +4,7 @@
 [📌 요소](#📌-요소)<br>
 [📌 툴팁 위치시키기](#📌-툴팁-위치시키기)<br>
 [📌 스크롤 다루기](#📌-스크롤-다루기)<br>
+[📌 스크립트 동적으로 로딩하기](#📌-스크립트-동적으로-로딩하기)<br>
 <br>
 
 ## 📌 Dataset 사용하기
@@ -242,4 +243,85 @@ const tooltipTemplate = document.getElementById("tooltip");
 const tooltipBody = document.importNode(tooltipTemplate.content, true); // template 태그의 콘텐츠를 제공. - h2, p 태그
 tooltipBody.querySelector("p").textContent = this.text;
 tooltipElement.append(tooltipBody);
+```
+
+<br>
+
+## 📌 스크립트 동적으로 로딩하기
+
+1. `document.createElement`를 이용해서 script 만들기
+
+```javascript
+class App {
+  static init() {
+    const activeProjectsList = new ProjectList("active");
+    const finishedProjectsList = new ProjectList("finished");
+    activeProjectsList.setSwitchHandlerFunction(
+      finishedProjectsList.addProject.bind(finishedProjectsList)
+    );
+    finishedProjectsList.setSwitchHandlerFunction(
+      activeProjectsList.addProject.bind(activeProjectsList)
+    );
+
+    const someScript = document.createElement("script");
+    someScript.textContent = 'alert("Hi there")';
+    document.head.append(someScript);
+  }
+}
+```
+
+1. `document.createElement`를 이용해서 script 만들기
+
+```javascript
+class App {
+  static init() {
+    const activeProjectsList = new ProjectList("active");
+    const finishedProjectsList = new ProjectList("finished");
+    activeProjectsList.setSwitchHandlerFunction(
+      finishedProjectsList.addProject.bind(finishedProjectsList)
+    );
+    finishedProjectsList.setSwitchHandlerFunction(
+      activeProjectsList.addProject.bind(activeProjectsList)
+    );
+
+    const someScript = document.createElement("script");
+    someScript.textContent = 'alert("Hi there")';
+    document.head.append(someScript);
+  }
+}
+```
+
+2. 다른 스크립트 파일을 특정 시간에 다운로드 할 수 있게 하기.
+
+```html
+<body>
+  <footer>
+    <button id="start-analytics-btn">Start Analytics</button>
+  </footer>
+</body>
+```
+
+```javascript
+class App {
+  static init() {
+    const activeProjectsList = new ProjectList("active");
+    const finishedProjectsList = new ProjectList("finished");
+    activeProjectsList.setSwitchHandlerFunction(
+      finishedProjectsList.addProject.bind(finishedProjectsList)
+    );
+    finishedProjectsList.setSwitchHandlerFunction(
+      activeProjectsList.addProject.bind(activeProjectsList)
+    );
+
+    document
+      .getElementById("start-analytics-btn")
+      .addEventListener("click", this.startAnalytics);
+  }
+  static startAnalytics() {
+    const analyticsScript = document.createElement("script");
+    analyticsScript.src = "assets/scripts/analytics.js";
+    analyticsScript.defer = true;
+    document.head.append(analyticsScript);
+  }
+}
 ```
