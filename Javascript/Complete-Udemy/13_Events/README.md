@@ -232,16 +232,98 @@ button.addEventListener("click", (e) => {
 ```
 
 **만약 event 프로퍼티에서 bubbles 속성이 false라면 버블링해서 올라가지 않는다는 것을 의미한다. &rarr; 전파가 없다.**
+
 <br>
 
-### 📌 이벤트 위임 사용하기
+## 📌 이벤트 위임 사용하기
 
+```css
+.highlight {
+  background-color: red;
+  color: white;
+}
+```
 
+<br>
 
+### 📖 이벤트 위임 -1
 
+```html
+<body>
+  <ul>
+    <li>Item 1</li>
+    <li>Item 2</li>
+    <li>Item 3</li>
+    <li>Item 4</li>
+    <li>Item 5</li>
+  </ul>
+</body>
+```
 
+```javascript
+const listItems = document.querySelectorAll("li");
+listItems.forEach((listItem) => {
+  listItem.addEventListener("click", (e) => {
+    e.target.classList.toggle("highlight");
+  });
+});
+```
 
+이런식으로 하면 이벤트 리스너가 너무 많아서 성능, 메모리 측면에서 좋지 않다. 따라서 위임 패턴을 써보자!
 
+```javascript
+const list = document.querySelector("ul");
+
+list.addEventListener("click", (e) => {
+  e.target.classList.toggle("highlight");
+});
+```
+
+리스너가 목록(ul)으로 등록되어도 `e.target`은 클릭이 되어진 실제 타겟을 참조한다.
+
+<br>
+
+### 📖 이벤트 위임 -2
+
+이벤트 위임의 경우, 조금만 복잡해지면 쓰기가 애매해진다. `e.target`이 클릭한 DOM의 요소이자 가장 하위의 요소이기 때문이다.
+
+```html
+<ul>
+  <li>
+    <h2>Item 1</h2>
+    <p>text</p>
+  </li>
+  <li>
+    <h2>Item 2</h2>
+    <p>text</p>
+  </li>
+  <li>
+    <h2>Item 3</h2>
+    <p>text</p>
+  </li>
+  <li>
+    <h2>Item 4</h2>
+    <p>text</p>
+  </li>
+  <li>
+    <h2>Item 5</h2>
+    <p>text</p>
+  </li>
+</ul>
+```
+
+이 경우 li, h2, p를 클릭했을 때 각각 요소의 `.highlight`가 토글이 된다.
+
+```javascript
+list.addEventListener("click", (e) => {
+  console.log(e.currentTarget); // ul
+  // e.target.classList.toggle('highlight');
+  e.target.closest("li").classList.toggle('highlight');
+});
+```
+
+- `e.currentTarget` : 클릭할 수 있는 실제 요소가 아니라 그 위에 **리스너를 추가한 요소**이다
+- `closest()` : 모든 DOM 객체에 존재하고 조상 트리를 위쪽으로 탐색. 가장 가까운 li 를 찾는다. => 이 메서드는 자신을 호출하는 요소 자체도 포함한다.
 
 <br>
 
