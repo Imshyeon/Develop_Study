@@ -339,7 +339,7 @@ setTimeout(this.startAnalytics, 3000); // 3초 뒤 startAnalytics를 실행한�
 ```
 
 - `setTimeout` : 스크립트 실행을 중지하지 않지만 브라우저가 스크립트가 계속 작동하도록 관리.
-<br><br>
+  <br><br>
 
 2. timer 2
 
@@ -348,6 +348,7 @@ setInterval(() => {
   console.log("sending analytics data...");
 }, 2000); // 2초마다 console에 문장 출력.
 ```
+
 <br>
 
 3. timer 중지
@@ -377,63 +378,66 @@ document.getElementById("stop-analytics-btn").addEventListener("click", () => {
 1. location 객체
 
 ```javascript
-location
+location;
 // Location {ancestorOrigins: DOMStringList, href: 'http://127.0.0.1:5500/Javascript/Complete-Udemy/12_Advanced_DOM/index.html', origin: 'http://127.0.0.1:5500', protocol: 'http:', host: '127.0.0.1:5500', …}
-    //ancestorOrigins: DOMStringList {length: 0}
-    //assign: ƒ assign()
-    //hash: ""host: "127.0.0.1:5500"
-    //hostname: "127.0.0.1"
-    //href: "http://127.0.0.1:5500/Javascript/Complete-Udemy/12_Advanced_DOM/index.html"
-    //origin: "http://127.0.0.1:5500"
-    //pathname: "/Javascript/Complete-Udemy/12_Advanced_DOM/index.html"
-    //port: "5500"
-    //protocol: "http:"
-    //reload: ƒ reload()
-    //replace: ƒ replace()
-    //search: ""
-    //toString: ƒ toString()
-    //valueOf: ƒ valueOf()
-    //Symbol(Symbol.toPrimitive): undefined
-    //[[Prototype]]: Location
+//ancestorOrigins: DOMStringList {length: 0}
+//assign: ƒ assign()
+//hash: ""host: "127.0.0.1:5500"
+//hostname: "127.0.0.1"
+//href: "http://127.0.0.1:5500/Javascript/Complete-Udemy/12_Advanced_DOM/index.html"
+//origin: "http://127.0.0.1:5500"
+//pathname: "/Javascript/Complete-Udemy/12_Advanced_DOM/index.html"
+//port: "5500"
+//protocol: "http:"
+//reload: ƒ reload()
+//replace: ƒ replace()
+//search: ""
+//toString: ƒ toString()
+//valueOf: ƒ valueOf()
+//Symbol(Symbol.toPrimitive): undefined
+//[[Prototype]]: Location
 
-location.href = 'https://google.com';
-location.replace('') // Replace로 이동할 경우, 이동 저의 페이지로 되돌아갈 수 없다.
-location.assign('') // href와 같다.
-location.host // "" => 우리는 로컬에서 하고 있어서 따로 뭐 받지는 않는다.
+location.href = "https://google.com";
+location.replace(""); // Replace로 이동할 경우, 이동 저의 페이지로 되돌아갈 수 없다.
+location.assign(""); // href와 같다.
+location.host; // "" => 우리는 로컬에서 하고 있어서 따로 뭐 받지는 않는다.
 
 // udemy
-location.host // "www.udemy.com"
-location.origin // "https://www.udemy.com"
-location.pathname // "/course/javascript-zw/learn/lecture/30291526" => 도메인의 뒷 부분.
+location.host; // "www.udemy.com"
+location.origin; // "https://www.udemy.com"
+location.pathname; // "/course/javascript-zw/learn/lecture/30291526" => 도메인의 뒷 부분.
 ```
+
 - `location` : 사용자를 이동시킬 수 있다.
-<br><br>
+  <br><br>
 
 2. history 객체
 
 ```javascript
-history
+history;
 // History {length: 2, scrollRestoration: 'auto', state: null}
-    // length: 2
-    // scrollRestoration: "auto"
-    // state: null
-    // [[Prototype]]: History
+// length: 2
+// scrollRestoration: "auto"
+// state: null
+// [[Prototype]]: History
 
-history.back() // 이전 페이지, 뒤로 감.
-history.forward() // 앞 페이지로 감
-history.length() // 사용자가 브라우저의 이 탭에서 몇 개의 단계를 거쳤는지, 새 페이지로 얼마나 자주 이동했는지와 얼마나 자주 뒤로 갔는지를 알 수 있다.
-history.go(5) // 5단계 이전 페이지로 돌아감.
+history.back(); // 이전 페이지, 뒤로 감.
+history.forward(); // 앞 페이지로 감
+history.length(); // 사용자가 브라우저의 이 탭에서 몇 개의 단계를 거쳤는지, 새 페이지로 얼마나 자주 이동했는지와 얼마나 자주 뒤로 갔는지를 알 수 있다.
+history.go(5); // 5단계 이전 페이지로 돌아감.
 ```
-- `history` : 기록과 상호작용. 
+
+- `history` : 기록과 상호작용.
 
 <br>
 
 3. navigator 객체
 
 ```javascript
-navigator
-navigator.userAgent // 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-navigator.geolocation.getCurrentPosition(data=>console.log(data)) // 사용자 위치.
+navigator;
+navigator.userAgent; // 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+navigator.geolocation.getCurrentPosition((data) => console.log(data)); // 사용자 위치.
 ```
+
 - `navigator` : 유저의 운영체제와 상호작용이 가능하도록 함.
-  - `navigator.userAgent` : 사용 기록. 과거의 브라우저 업체들이 웹사이트가 스크립트에서 사용하는 모든 기능에 대한 액세스를 갖는 다는 것을 확실히 하기 위해서 이것을 조작함. 
+  - `navigator.userAgent` : 사용 기록. 과거의 브라우저 업체들이 웹사이트가 스크립트에서 사용하는 모든 기능에 대한 액세스를 갖는 다는 것을 확실히 하기 위해서 이것을 조작함.
