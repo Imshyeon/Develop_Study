@@ -27,4 +27,5 @@ list.addEventListener('click', e => {
     // console.log(e.currentTarget)
     // e.target.classList.toggle('highlight');
     e.target.closest("li").classList.toggle("highlight"); // 모든 DOM 객체에 존재하고 조상 트리를 위쪽으로 탐색. 가장 가까운 li 를 찾는다. => 이 메서드는 자신을 호출하는 요소 자체도 포함한다.
+    form.querySelector('button').click();
 })
