@@ -1,29 +1,21 @@
-const buttons = document.querySelectorAll('button')
+const button = document.querySelector("button");
 
-const buttonClickHandler = e => {
-    e.target.disabled = true;
-    console.log(e);
-}
-
-buttons.forEach(btn => {
-    btn.addEventListener('mouseenter', buttonClickHandler)
+const form = document.querySelector("form");
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  console.log(e);
 });
-// button.addEventListener('click', buttonClickHandler)
-// setTimeout(() => {
-//     button.removeEventListener('click', buttonClickHandler);
-// }, 2000);
 
-let curElementNumber = 0;
+const div = document.querySelector("div");
 
-function scrollHandler() {
-    const pageBottom = document.body.getBoundingClientRect().bottom;
-    
-    if (pageBottom < document.documentElement.clientHeight + 150) {
-        const newDataElement = document.createElement('div')
-        curElementNumber++;
-        newDataElement.innerHTML = `<p>Element ${curElementNumber}</p>`;
-        document.body.append(newDataElement);
-    }
-}
+div.addEventListener("click", (e) => {
+  console.log("CLICKED DIV");
+  console.log(e);
+});
 
-window.addEventListener('scroll', scrollHandler)
+button.addEventListener("click", (e) => {
+  e.stopPropagation(); // button의 클릭 이벤트가 전파하지 않도록 만듦.
+  e.stopImmediatePropagation(); // 같은 요소에 이벤트 리스너가 여럿 있을 때 유용.
+  console.log("CLICKED BUTTON");
+  console.log(e);
+});
