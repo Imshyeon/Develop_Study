@@ -7,6 +7,8 @@
 [📌 스크립트 동적으로 로딩하기](#📌-스크립트-동적으로-로딩하기)<br>
 [📌 타이머 & 간격 설정하기](#📌-타이머--간격-설정하기)<br>
 [📌 location, history, navigator 객체](#📌-location-history-navigator-객체)<br>
+[📌 날짜로 작업하기](#📌-날짜로-작업하기)<br>
+[📌 Error 객체 & 생성자 함수](#📌-error-객체--생성자-함수)<br>
 <br>
 
 ## 📌 Dataset 사용하기
@@ -441,3 +443,43 @@ navigator.geolocation.getCurrentPosition((data) => console.log(data)); // 사용
 
 - `navigator` : 유저의 운영체제와 상호작용이 가능하도록 함.
   - `navigator.userAgent` : 사용 기록. 과거의 브라우저 업체들이 웹사이트가 스크립트에서 사용하는 모든 기능에 대한 액세스를 갖는 다는 것을 확실히 하기 위해서 이것을 조작함.
+
+<br>
+
+## 📌 날짜로 작업하기
+
+```javascript
+new Date() // Thu Dec 28 2023 15:09:11 GMT+0900 (한국 표준시)
+const date = new Date();
+date.getDate() // 28
+date.getDay() // 4 
+date.getTime() // 1703743810318 => javascript가 나온 뒤 얼만큼 시간이 흘렀는가를 밀리초로 나타냄.
+
+const date2 = new Date('07/11/19')
+date2 // Thu Jul 11 2019 00:00:00 GMT+0900 (한국 표준시)
+
+date - date2 // 140973010318 => 밀리 초
+140973010318 / 1000 / 60 / 60 / 24 //1631.6320638657405 => 며칠이 차이가 나는지.
+```
+
+<br>
+
+## 📌 Error 객체 & 생성자 함수
+
+```javascript
+throw new Error('Something went wrong')
+
+const customError = new Error('Something went wrong')
+customError.code = 404
+console.dir(customError)
+console.log(customError) // Error의 메시지에 접근
+```
+
+<br>
+
+### 더 알아보기
+
+🔗 [getBoundingClientRect()](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect) <br>
+🔗 [location 객체](https://developer.mozilla.org/en-US/docs/Web/API/Location) <br>
+🔗 [window 객체](https://developer.mozilla.org/en-US/docs/Web/API/Window) <br>
+🔗 [navigator 객체](https://developer.mozilla.org/en-US/docs/Web/API/Navigator) 
