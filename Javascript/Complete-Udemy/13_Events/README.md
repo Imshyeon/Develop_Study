@@ -319,7 +319,7 @@ list.addEventListener("click", (e) => {
 list.addEventListener("click", (e) => {
   console.log(e.currentTarget); // ul
   // e.target.classList.toggle('highlight');
-  e.target.closest("li").classList.toggle('highlight');
+  e.target.closest("li").classList.toggle("highlight");
 });
 ```
 
@@ -331,25 +331,168 @@ list.addEventListener("click", (e) => {
 ## 📌 프로그래밍적으로 DOM 요소 트리거하기
 
 ```javascript
-list.addEventListener('click', e => {
-    e.target.closest("li").classList.toggle("highlight"); 
-    form.querySelector('button').click();
-})
+list.addEventListener("click", (e) => {
+  e.target.closest("li").classList.toggle("highlight");
+  form.querySelector("button").click();
+});
 ```
+
 <br>
 
 ## 📌 이벤트 핸들러 함수 & this
 
 ```javascript
-button.addEventListener('click', function(e){
-    event.stopPropagation();
-    console.log('BUTTON CLICKED')
-    console.log(e)
-    console.log(this); // <button>Click me</button>  ==> 클릭했던 명확한 대상이 아니라 이벤트 리스너가 등록된 요소를 가리킨다.
-})
+button.addEventListener("click", function (e) {
+  event.stopPropagation();
+  console.log("BUTTON CLICKED");
+  console.log(e);
+  console.log(this); // <button>Click me</button>  ==> 클릭했던 명확한 대상이 아니라 이벤트 리스너가 등록된 요소를 가리킨다.
+});
 ```
 
+<br><br><br>
 
+# Drag & Drop
+
+[📌 Drag & Drop 이론](#📌-drag--drop-이론)<br>
+[📌 Drag & Drop 구현하기](#📌-drag--drop-구현하기)<br>
+<br>
+
+## 📌 Drag & Drop 이론
+
+1. Mark Elements as "draggable"
+2. Listen to "dragstart" Event
+3. Accept Drop via "dragenter" & "dragover" Events &rarr; preventDefault() : 기본값은 드롭 작업을 취소하기 때문에!
+4. (Optional : Listen to "dravleave" Event) &rarr; 스타일 변경
+5. Listen to "drop" Event & Update Data/UI
+6. (Optional : Listen to "dragend" Event & Update Data/UI) &rarr; 드래그된 요소 자체에서 가능하다.
+
+<br>
+
+## 📌 Drag & Drop 구현하기
+
+### 📖 드래깅 가능한 요소 구성하기
+
+1. HTML
+
+```html
+<li
+  id="p1"
+  data-extra-info="Got lifetime access, but would be nice to finish it soon!"
+  class="card"
+  draggable="true"
+></li>
+```
+
+2. JavaScript
+
+```javascript
+class ProjectItem {
+  hasActiveTooltip = false;
+
+  constructor(id, updateProjectListsFunction, type) {
+    this.id = id;
+    this.updateProjectListsHandler = updateProjectListsFunction;
+    this.connectMoreInfoButton();
+    this.connectSwitchButton(type);
+    this.connectDrag();
+  }
+
+  connectDrag() {
+    document.getElementById(this.id).addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", this.id);
+      e.dataTransfer.effectAllowed = "move"; // 어떤 종류의 드래그 앤 드롭 작업이 처리되는지를 설명한다.
+    });
+  }
+}
+```
+
+<br>
+
+### 📖 드롭 구간 만들기
+
+1. JavaScript
+
+```javascript
+class ProjectList {
+
+  constructor(type) {
+    ...
+    this.connectDroppable();
+  }
+
+  connectDroppable() {
+    const list = document.querySelector(`#${this.type}-projects ul`); // 리스트 요소에 대한 엑세스
+
+    list.addEventListener("dragenter", (e) => {
+      if (e.dataTransfer.types[0] === "text/plain") {
+        list.parentElement.classList.add("droppable");
+        e.preventDefault();
+      }
+    });
+
+    list.addEventListener("dragover", (e) => {
+      if (e.dataTransfer.types[0] === "text/plain") {
+        e.preventDefault();
+      }
+    });
+
+    list.addEventListener("dragleave", (e) => {
+      // 리스트와 일치하지 않으면 리스트 안에 있지 않는 것.
+      if (e.relatedTarget.closest(`#${this.type}-projects ul`) !== list) {
+        list.parentElement.classList.remove("droppable");
+      }
+    });
+  }
+}
+```
+
+2. CSS
+
+```css
+.droppable {
+  background-color: #f9ccdd;
+}
+```
+
+<br>
+
+### 📖 데이터 + 요소 드롭핑 & 이동
+
+```javascript
+class ProjectList {
+  connectDroppable() {
+    const list = document.querySelector(`#${this.type}-projects ul`); // 리스트 요소에 대한 엑세스
+
+    list.addEventListener("drop", (e) => {
+      const prjId = e.dataTransfer.getData("text/plain");
+      if (this.projects.find((p) => p.id === prjId)) {
+        return;
+      }
+      document
+        .getElementById(prjId)
+        .querySelector("button:last-of-type")
+        .click();
+      list.parentElement.classList.remove("droppable");
+      e.preventDefault(); // 필수는 아니다..
+    });
+  }
+}
+
+class ProjectItem {
+  connectDrag() {
+    const item = document.getElementById(this.id);
+    item.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", this.id);
+      e.dataTransfer.effectAllowed = "move"; // 어떤 종류의 드래그 앤 드롭 작업이 처리되는지를 설명한다.
+    });
+
+    item.addEventListener("dragend", (e) => {
+      console.log(e);
+    });
+  }
+}
+```
 
 <br>
 
