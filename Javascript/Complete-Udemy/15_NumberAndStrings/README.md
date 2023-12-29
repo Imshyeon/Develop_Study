@@ -81,3 +81,17 @@ Number.isFinite(Infinity) // false
 Math.E  // 2.718281828459045
 Math.PI // 3.141592653589793
 ```
+
+<br>
+
+### 📖 최소/최대 사이에서 무작위 숫자 생성하기
+
+```javascript
+function randomIntBetween(min, max) {
+  // min : 5, max: 10
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+console.log(randomIntBetween(5, 10));
+console.log(randomIntBetween(1, 10));
+```
