@@ -498,4 +498,8 @@ class ProjectItem {
 
 ### 더 알아보기
 
-🔗 [Event](https://developer.mozilla.org/ko/docs/Web/API/Event)
+🔗 [Introduction to Events](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events)<br>
+🔗 [이벤트 참조](https://developer.mozilla.org/en-US/docs/Web/Events)<br>
+🔗 [이벤트 객체](https://developer.mozilla.org/ko/docs/Web/API/Event)<br>
+🔗 [Drag & Drop](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API)
+
