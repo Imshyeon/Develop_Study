@@ -210,35 +210,42 @@ function powerOf(x, n) {
 
 ```javascript
 const myself = {
-    name : 'Taemin',
-    friends : [
+  name: "Taemin",
+  friends: [
+    {
+      name: "Kai",
+      friends: [
         {
-            name: 'Kai',
-            friends:[
-                {
-                    name: 'Moongyu'
-                }
-            ]
+          name: "Moongyu",
         },
-        {
-            name:'Euisoo'
-        }
-    ]
-}
+      ],
+    },
+    {
+      name: "Euisoo",
+    },
+  ],
+};
 
 function getFriendNames(person) {
-    const collectedNames = [];
+  const collectedNames = [];
 
-    if (!person.friends) {
-        return [];
-    }
+  if (!person.friends) {
+    return [];
+  }
 
-    for (const friend of person.friends) {
-        collectedNames.push(friend.name)
-        collectedNames.push(...getFriendNames(friend))
-    }
-    return collectedNames;
+  for (const friend of person.friends) {
+    collectedNames.push(friend.name);
+    collectedNames.push(...getFriendNames(friend));
+  }
+  return collectedNames;
 }
 
-console.log(getFriendNames(myself)) // ['Kai', 'Moongyu', 'Euisoo']
+console.log(getFriendNames(myself)); // ['Kai', 'Moongyu', 'Euisoo']
 ```
+
+<br>
+
+### 더 알아보기
+
+🔗 [클로저](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
+🔗 [재귀](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#recursion)
