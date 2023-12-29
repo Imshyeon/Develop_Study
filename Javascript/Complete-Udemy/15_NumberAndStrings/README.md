@@ -177,3 +177,77 @@ const productOutput = productDescription`This product (${prodName}) is ${prodPri
 console.log(productOutput); // {name: 'JavaScript Course', price: 29.99}
 ```
 처럼 활용 가능하다.
+
+<br>
+
+### 📖 정규 표현식(`RegEx`) 소개
+
+정규 표현식은 문자열을 작업할 떄에 사용된다.
+```javascript
+const userInput = 'testtest.com';
+userInput.includes('@') // false ==> 유효하지 않은 주소
+
+const regex = /^\S+@\S+\.\S+$/
+regex.test(userInput) // false
+regex.test('test@test.com') // true
+```
+
+- `/^\S+@\S+\.\S+$/`
+- `^` : 문자열의 시작에서 오는 단어는 무슨 단어이든 수용한다.
+- 전체 문자열에서 @가 있는지 확인한다.
+- 그 뒤에 어떤 단어가 오든(`\S+`) 수용하고, . 표시가 존재한다.(\.)
+- 그 뒤에 나오는 단어를 모두 수용한다.(`\S+$`)
+
+<br>
+
+```javascript
+const regex = /hello/
+regex.test('hello')    // true
+regex.test('hi there, hello')  //true
+regex.test('Hello') // false
+```
+문자열에 hello가 있기만 하면 `true`
+
+<br>
+
+```javascript
+const regex = /(h|H)ello/ // 대문자 H, 소문자 h던지 상관하지 않는다.
+regex.test('hello') // true
+regex.test('Hello') // true
+```
+
+<br>
+
+```javascript
+const regex = /.ello/   // 가장 첫번째로 오는 문자는 신경쓸 필요가 없고 뒤에 ello가 있는가?
+regex.test('Hello') // true
+regex.test('ello')  // false
+regex.test('Jello') // true
+```
+
+<br>
+
+```javascript
+const emailRegex = /^\S+@\S+\./
+```
+- `\S` : 모든 단어
+- `\.` : 정규 표현식에는 이미 `.`이 있기 때문에 `\`를 통해서 이것이 문자열 `.`을 표현한 것이다! 를 의미한다.
+
+<br>
+
+```javascript
+const regex = /.ello/
+regex.exec('jello') // ['jello', index: 0, input: 'jello', groups: undefined]
+regex.exec('Hi! jello') // ['jello', index: 4, input: 'Hi! jello', groups: undefined]
+
+'hi jello'.match(regex) // ['jello', index: 3, input: 'hi jello', groups: undefined]
+```
+
+- `regex.exec('Hi! jello')`의 index가 4인 것은.. regex와 부합하는 것이 인덱스 4번부터 시작하기 때문이다.
+
+<br>
+
+### 더 알아보기
+
+🔗 [Numbers](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)<br>
+🔗 [Tagged Template](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates)

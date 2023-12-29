@@ -32,3 +32,16 @@ const prodPrice = 29.99;
 
 const productOutput = productDescription`This product (${prodName}) is ${prodPrice}.`;
 console.log(productOutput); // {name: 'JavaScript Course', price: 29.99}
+
+
+// ======== RegEx ========
+// const userInput = 'testtest.com';
+// userInput.includes('@') // false ==> 유효하지 않은 주소
+
+// const regex = /^\S+@\S+\.\S+$/
+// regex.test(userInput) // false
+// regex.test('test@test.com') // true
+
+// const regex2 = /hello/
+// regex2.test('hello')    // true
+// regex2.test('hi there, hello')  //true
