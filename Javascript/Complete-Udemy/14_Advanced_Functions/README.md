@@ -2,6 +2,7 @@
 
 [📌 순수 함수 & 부작용](#📌-순수-함수--부작용)<br>
 [📌 팩토리 함수](#📌-팩토리-함수)<br>
+[📌 클로저](#📌-클로저)<br>
 <br>
 
 ## 📌 순수 함수 & 부작용
@@ -87,3 +88,92 @@ console.log(calculateVatAmount(200)); // 38
 ```
 
 어플리케이션의 다른 부분에서 여러 번 호출되는 어떤 함수가 있을 때, 어떤 방식으로 사전 설정하여 쉽게 호출 가능.
+
+<br>
+
+## 📌 클로저
+
+### 🔥 JavaScript의 모든 함수는 클로저다! 🔥
+
+변수의 스코프라는 개념과 밀접하다. 블록 범위 안에 있는 변수는 해당 함수에서만 사용가능한 반면, 전역변수나 상수는 다 사용할 수 있다.
+
+- 함수 내의 함수, 내부 함수는 외부 함수의 모든 변수와 매개변수, 전역으로 정의된 변수를 사용할 수 있다.
+- 외부 함수는 내부 함수의 특정한 상수와 변수에 접근할 수 없다.
+- 각 함수는 자체 렉시컬(Lexical) 환경을 가지고 전역 환경을 가진다. 함수가 만들어질 때 `function`은 새로운 렉시컬 환경을 만들어 환경 내부에서 접근할 수 있는 변수를 등록한다.
+
+```javascript
+let multiplier = 1.1;
+
+function createTaxCalculator(tax) {
+  function calculateTax(amount) {
+    console.log(multiplier); // 1.2
+    return amount * tax * multiplier;
+  }
+  return calculateTax; // 해당 함수에 대한 주소를 리턴
+}
+
+const calculateVatAmount = createTaxCalculator(0.19);
+const calculateIncomeTaxAmount = createTaxCalculator(0.25);
+
+multiplier = 1.2;
+
+console.log(calculateVatAmount(100)); // 22.8
+console.log(calculateVatAmount(200)); // 45.6
+```
+
+각 함수는 주변 환경을 등록한다. 만약 변수가 바뀌고 해당 함수가 그 변수를 사용한다면 가장 마지막 값을 이용한다.<br>
+
+그렇다면 왜 클로저라고 부르는가? 그 이유는 각 함수는 주변 함수에 닫혀있기 때문이다. 이 말은 주변 함수를 등록하고 거기에 변수를 등록, 해당 변수의 값을 기억한다는 의미이다.
+
+> JavaScript의 모든 환경은 클로저다. 환경에 정의된 변수가 닫혀있기 때문이고 이를 기억하기 때문이다. 따라서 주변 맥락에서 더는 필요하지 않더라도 어디론가 버려지지 않는다.
+
+<br>
+
+### 📖 클로저 실습
+
+```javascript
+// ===== 클로저 -1 ====
+let userName = 'TM'
+function greetUser() {
+    console.log('Hi ' + userName);
+}
+
+greetUser(); // Hi TM
+
+
+// ===== 클로저 -2 ====
+let userName = 'TM'
+function greetUser() {
+    console.log('Hi ' + userName);
+}
+
+userName = 'Taemin'
+
+greetUser(); // Hi Taemin
+
+
+// ===== 클로저 -3 ====
+let userName = 'TM'
+function greetUser() {
+    let name = userName // name은 해당 함수의 렉시컬 환경에 존재... 그러나 userName은 외부 렉시컬 환경에 존재.
+    console.log('Hi ' + name);
+}
+
+userName = 'Taemin'
+
+greetUser(); // Hi Taemin
+
+
+// ===== 클로저 -4 ====
+let userName = 'TM'
+function greetUser() {
+    let name = 'Anna' // 내부함수 혹은 내부 환경은 외부 환경보다 우선시 ==> 섀도우
+    console.log('Hi ' + name);
+}
+
+let name = 'Zoe'
+
+userName = 'Taemin'
+
+greetUser(); // Hi Anna
+```
