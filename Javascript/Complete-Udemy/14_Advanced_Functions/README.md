@@ -3,6 +3,7 @@
 [📌 순수 함수 & 부작용](#📌-순수-함수--부작용)<br>
 [📌 팩토리 함수](#📌-팩토리-함수)<br>
 [📌 클로저](#📌-클로저)<br>
+[📌 재귀 함수](#📌-재귀-함수)<br>
 <br>
 
 ## 📌 순수 함수 & 부작용
@@ -133,47 +134,111 @@ console.log(calculateVatAmount(200)); // 45.6
 
 ```javascript
 // ===== 클로저 -1 ====
-let userName = 'TM'
+let userName = "TM";
 function greetUser() {
-    console.log('Hi ' + userName);
+  console.log("Hi " + userName);
 }
 
 greetUser(); // Hi TM
 
-
 // ===== 클로저 -2 ====
-let userName = 'TM'
+let userName = "TM";
 function greetUser() {
-    console.log('Hi ' + userName);
+  console.log("Hi " + userName);
 }
 
-userName = 'Taemin'
+userName = "Taemin";
 
 greetUser(); // Hi Taemin
-
 
 // ===== 클로저 -3 ====
-let userName = 'TM'
+let userName = "TM";
 function greetUser() {
-    let name = userName // name은 해당 함수의 렉시컬 환경에 존재... 그러나 userName은 외부 렉시컬 환경에 존재.
-    console.log('Hi ' + name);
+  let name = userName; // name은 해당 함수의 렉시컬 환경에 존재... 그러나 userName은 외부 렉시컬 환경에 존재.
+  console.log("Hi " + name);
 }
 
-userName = 'Taemin'
+userName = "Taemin";
 
 greetUser(); // Hi Taemin
 
-
 // ===== 클로저 -4 ====
-let userName = 'TM'
+let userName = "TM";
 function greetUser() {
-    let name = 'Anna' // 내부함수 혹은 내부 환경은 외부 환경보다 우선시 ==> 섀도우
-    console.log('Hi ' + name);
+  let name = "Anna"; // 내부함수 혹은 내부 환경은 외부 환경보다 우선시 ==> 섀도우
+  console.log("Hi " + name);
 }
 
-let name = 'Zoe'
+let name = "Zoe";
 
-userName = 'Taemin'
+userName = "Taemin";
 
 greetUser(); // Hi Anna
+```
+
+<br>
+
+## 📌 재귀 함수
+
+```javascript
+function powerOf(x, n) {
+  // let result = 1;
+  // for (let i = 0; i < n; i++){
+  //     result *= x;
+  // }
+  // return result;
+
+  if (n == 1) {
+    return x;
+  }
+  return x * powerOf(x, n - 1);
+}
+console.log(powerOf(2, 3)); //8
+```
+
+위의 함수는 다음으로 줄일 수 있다.
+
+```javascript
+function powerOf(x, n) {
+  return n === 1 ? x : x * powerOf(x, n - 1);
+}
+```
+
+<br>
+
+### 📖 고급 재귀
+
+```javascript
+const myself = {
+    name : 'Taemin',
+    friends : [
+        {
+            name: 'Kai',
+            friends:[
+                {
+                    name: 'Moongyu'
+                }
+            ]
+        },
+        {
+            name:'Euisoo'
+        }
+    ]
+}
+
+function getFriendNames(person) {
+    const collectedNames = [];
+
+    if (!person.friends) {
+        return [];
+    }
+
+    for (const friend of person.friends) {
+        collectedNames.push(friend.name)
+        collectedNames.push(...getFriendNames(friend))
+    }
+    return collectedNames;
+}
+
+console.log(getFriendNames(myself)) // ['Kai', 'Moongyu', 'Euisoo']
 ```

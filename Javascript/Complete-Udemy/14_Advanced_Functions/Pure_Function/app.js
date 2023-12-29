@@ -51,6 +51,8 @@ const calculateIncomeTaxAmount = createTaxCalculator(0.25);
 console.log(calculateVatAmount(100)); // 19
 console.log(calculateVatAmount(200)); // 38
 
+
+
 // =========================================================
 // ==== closure ====
 let userName = 'TM'
@@ -64,3 +66,57 @@ let name = 'Zoe';
 userName = 'Taemin'
 
 greetUser(); // 1. Hi TM -> 2. Hi Taemin -> 3. Hi Taemin
+
+
+
+// =========================================================
+// ==== recursion -1 ====
+function powerOf(x, n) {
+    // let result = 1;
+    // for (let i = 0; i < n; i++){
+    //     result *= x;
+    // }
+    // return result;
+
+    // if (n == 1) {
+    //     return x;
+    // }
+    // return x * powerOf(x, n - 1);
+
+    return n === 1 ? x : x * powerOf(x, n - 1);
+};
+console.log(powerOf(2, 3)); //8
+
+// ==== recursion -2 ====
+const myself = {
+    name : 'Taemin',
+    friends : [
+        {
+            name: 'Kai',
+            friends:[
+                {
+                    name: 'Moongyu'
+                }
+            ]
+        },
+        {
+            name:'Euisoo'
+        }
+    ]
+}
+
+function getFriendNames(person) {
+    const collectedNames = [];
+
+    if (!person.friends) {
+        return [];
+    }
+
+    for (const friend of person.friends) {
+        collectedNames.push(friend.name)
+        collectedNames.push(...getFriendNames(friend))
+    }
+    return collectedNames;
+}
+
+console.log(getFriendNames(myself))
