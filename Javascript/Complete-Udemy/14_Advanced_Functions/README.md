@@ -247,5 +247,5 @@ console.log(getFriendNames(myself)); // ['Kai', 'Moongyu', 'Euisoo']
 
 ### 더 알아보기
 
-🔗 [클로저](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
+🔗 [클로저](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)<br>
 🔗 [재귀](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#recursion)
