@@ -221,7 +221,7 @@ button.addEventListener("click", (e) => {
 });
 ```
 
-3. `stopPropagation()` : button 클릭 &rarr; CLICKED BUTTON
+3. `stopPropagation()` : button 클릭 &rarr; CLICKED BUTTON => (다른 요소에 대해) 다른 이벤트 핸들러가 동일한 이벤트를 처리하지 못하도록 한다.
 
 ```javascript
 button.addEventListener("click", (e) => {
@@ -330,7 +330,24 @@ list.addEventListener("click", (e) => {
 
 ## 📌 프로그래밍적으로 DOM 요소 트리거하기
 
+```javascript
+list.addEventListener('click', e => {
+    e.target.closest("li").classList.toggle("highlight"); 
+    form.querySelector('button').click();
+})
+```
+<br>
 
+## 📌 이벤트 핸들러 함수 & this
+
+```javascript
+button.addEventListener('click', function(e){
+    event.stopPropagation();
+    console.log('BUTTON CLICKED')
+    console.log(e)
+    console.log(this); // <button>Click me</button>  ==> 클릭했던 명확한 대상이 아니라 이벤트 리스너가 등록된 요소를 가리킨다.
+})
+```
 
 
 
