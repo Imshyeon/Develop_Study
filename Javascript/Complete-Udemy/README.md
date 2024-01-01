@@ -23,3 +23,4 @@
 🚀 [13_Events](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/13_Events) : Event <br>
 🚀 [14_Advanced_Functions](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/14_Advanced_Functions) : 고급 함수 <br>
 🚀 [15_NumberAndStrings](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/15_NumberAndStrings) : 숫자 & 문자열 <br>
+🚀 [16_AsynchronousCode](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/16_AsynchronousCode) : 비동기 JavaScript - 프로미스 & 콜백 <br>
