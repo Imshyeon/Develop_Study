@@ -319,3 +319,27 @@ function trackUserHandler() {
 
 만약 이렇게 되어있고 오류가 발생했다면, 첫번째 then은 실행되지 않고 catch가 실행. 그리고 catch 다음의 then이 실행된다. <br>
 **❗따라서 catch의 위치가 중요** : 만약 프로미스는 종료하고 싶다면 가장 마지막으로 catch.
+
+<br>
+
+### 📖 프로미스 상태 & finally
+
+- PENDING : 프로미스가 작동 중. then()이나 catch()가 실행되지 않는다.
+- RESOLVED : 프로미스가 해결 &rarr; then() 실행
+- REJECTED : 프로미스가 거절됨 &rarr; catch() 실행
+- SETTLED : 특수 블록인 `finally()`로 최종 정리 작업을 수행. 이전에 해결됐던 거부됐든 상관없이 `finally`에 도달.
+
+catch()나 then() 블록 다음에 또 다른 then() 블록이 있으면 프로미스가 PENDING모드로 다시 들어간다. (**_참고 : then() catch()가 항상 새로운 프로미스를 반환한다. 어떤 것으로도 해결되지 않거나 then() 내부에서 return한 것으로 해결됨_**)<br>
+더이상 then() 블록이 남아 있지 않은 경우에만 아래의 최종 모드로 들어간다. SETTLED
+
+```javascript
+somePromiseCreatingCode()
+  .then((firstResult) => {
+    return "done with first promise";
+  })
+  .catch((err) => {})
+  .finally(() => {
+    // finally는 새로운 프로미스를 리턴하지 않는다.
+    // finally는 굳이 추가할 필요는 없다!
+  });
+```
