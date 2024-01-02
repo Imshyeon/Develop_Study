@@ -90,3 +90,30 @@ console.log(result);
 <br>
 
 ## 📌 다수의 콜백 & setTimeout(0)
+
+```javascript
+const button = document.querySelector("button");
+const output = document.querySelector("p");
+
+function trackUserHandler() {
+  navigator.geolocation.getCurrentPosition(
+    (posData) => {
+      setTimeout(() => {
+        console.log(posData);
+      }, 2000);
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+  setTimeout(() => {
+    console.log("Timer done");
+  }, 0);
+  console.log("Getting position..."); // click 했을 때 해당 코드가 먼저 실행이 된다.
+}
+
+button.addEventListener("click", trackUserHandler);
+```
+
+- `trackUserHandler` 함수 안에 `setTimeout(0)`로 설정. &rarr; 콘솔에는 'Getting Position...' &rarr; 'Timer done' 순으로 출력.
+- 브라우저가 콜백 함수를 실행하려면 항상 메시지 대기열(메시지 큐)과 이벤트 루프에 대한 경로를 취해야 하기 떄문에 위의 설명처럼 출력이 된다.
