@@ -1,10 +1,12 @@
 # Network Requests
 
-[GET](#-get)<br>
-[POST](#-post)<br>
+[📌 GET](#-get)<br>
+[📌 POST](#-post)<br>
+[📌 DELETE](#-delete)<br>
 <br>
 
-[JSONPlaceholder](https://jsonplaceholder.typicode.com)를 이용하여 배워보자!
+[JSONPlaceholder](https://jsonplaceholder.typicode.com)를 이용하여 배워보자!<br>
+**브라우저 검사 - network 창을 통해서 확인!**
 
 ## 📌 GET
 
@@ -262,3 +264,33 @@ form.addEventListener('submit', event => {
 })
 ```
 
+<br>
+
+## 📌 DELETE
+
+```javascript
+const postList = document.querySelector("ul");
+
+async function fetchPost() {
+  const responseData = await sendHttpRequest(
+    "GET",
+    "https://jsonplaceholder.typicode.com/posts"
+  );
+
+  const listOfPosts = responseData;
+  for (const post of listOfPosts) {
+    const postEl = document.importNode(postTemplate.content, true);
+    postEl.querySelector("h2").textContent = post.title.toUpperCase();
+    postEl.querySelector("p").textContent = post.body;
+    postEl.querySelector("li").id = post.id;    // 추가
+    listElement.append(postEl);
+  }
+}
+
+postList.addEventListener('click', e => {
+    if (e.target.tagName === 'BUTTON') {
+        const postId = e.target.closest('li').id;
+        sendHttpRequest("DELETE", `https://jsonplaceholder.typicode.com/posts/${postId}`);
+    } 
+});
+```
