@@ -7,7 +7,9 @@ const getPosition = (opts) => {
       (success) => {
         resolve(success);
       },
-      (error) => {},
+      (error) => {
+        reject(error); // reject는 프로미스가 실패했다고 표기할 것.
+      },
       opts
     );
   });
@@ -26,6 +28,9 @@ const setTimer = (duration) => {
 function trackUserHandler() {
   let positionData;
   getPosition()
+    .catch((err) => {
+      console.log(err);
+    })
     .then((posData) => {
       positionData = posData;
       return setTimer(2000);
@@ -33,7 +38,7 @@ function trackUserHandler() {
     .then((data) => {
       console.log(data, positionData);
     });
-    
+
   setTimer(0).then(() => {
     console.log("Timer done!");
   });

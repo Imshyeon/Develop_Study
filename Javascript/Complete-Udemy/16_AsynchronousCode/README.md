@@ -223,7 +223,7 @@ function trackUserHandler() {
     .then((data) => {
       console.log(data, positionData);
     });
-// ======================== Promise Chaining...
+  // ======================== Promise Chaining...
 
   setTimer(0).then(() => {
     console.log("Timer done!");
@@ -233,3 +233,89 @@ function trackUserHandler() {
 
 button.addEventListener("click", trackUserHandler);
 ```
+
+- Promise는 보류 중이거나 해결 상태. 프로미스가 해결되기를 기다리는 동안 보류가 된다.
+- 프로미스가 해결되면 then 블록에서 무언가를 리턴함으로써 보류 중으로 다시 설정한다.
+
+<br>
+
+### 📖 프로미스 오류 처리하기
+
+1. 방법 -1
+
+```javascript
+const getPosition = (opts) => {
+  const promise = new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (success) => {
+        resolve(success);
+      },
+      (error) => {
+        reject(error); // reject는 프로미스가 실패했다고 표기할 것.
+      },
+      opts
+    );
+  });
+  return promise;
+};
+
+function trackUserHandler() {
+  let positionData;
+  getPosition()
+    .then(
+      (posData) => {
+        positionData = posData;
+        return setTimer(2000);
+      },
+      (err) => {
+        // 에러가 발생한 경우!!
+        console.log(err);
+      }
+    )
+    .then((data) => {
+      console.log(data, positionData);
+    });
+}
+```
+
+2. 방법 -2
+
+```javascript
+function trackUserHandler() {
+  let positionData;
+  getPosition()
+    .catch((err) => {
+      console.log(err);
+    })
+    .then((posData) => {
+      positionData = posData;
+      return setTimer(2000);
+    })
+    .then((data) => {
+      console.log(data, positionData);
+    });
+}
+```
+
+- `catch`는 사실 어디에든지 넣을 수 있다. 가장 처음이나 끝에, 중간에도 넣을 수 있다.
+- catch는 then 블록 중 하나에 두번째 인자를 전달하는 것과 동일하다.
+
+```javascript
+function trackUserHandler() {
+  let positionData;
+  getPosition()
+    .then((posData) => {
+      positionData = posData;
+      return setTimer(2000);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .then((data) => {
+      console.log(data, positionData);
+    });
+}
+```
+
+만약 이렇게 되어있고 오류가 발생했다면, 첫번째 then은 실행되지 않고 catch가 실행. 그리고 catch 다음의 then이 실행된다. <br>
+**❗따라서 catch의 위치가 중요** : 만약 프로미스는 종료하고 싶다면 가장 마지막으로 catch.
