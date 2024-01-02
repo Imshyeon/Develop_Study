@@ -210,7 +210,7 @@ createPost("DUMMY", "A dummy post!");
 ```javascript
 const listElement = document.querySelector(".posts");
 const postTemplate = document.getElementById("single-post");
-const form = document.querySelector('#new-post form');
+const form = document.querySelector("#new-post form");
 const fetchButton = document.querySelector("#available-posts button");
 
 function sendHttpRequest(method, url, data) {
@@ -255,13 +255,13 @@ async function createPost(title, content) {
   sendHttpRequest("POST", "https://jsonplaceholder.typicode.com/posts", post); // 서버에 데이터를 생성하려는 POST 요청의 경우 생성하고자하는 데이터를 나가는 요청에 추가해야한다.
 }
 
-fetchButton.addEventListener('click', fetchPost)
-form.addEventListener('submit', event => {
-    event.preventDefault();
-    const enteredTitle = event.currentTarget.querySelector('#title').value;
-    const enteredContent = event.currentTarget.querySelector('#content').value;
-    createPost(enteredTitle, enteredContent);
-})
+fetchButton.addEventListener("click", fetchPost);
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const enteredTitle = event.currentTarget.querySelector("#title").value;
+  const enteredContent = event.currentTarget.querySelector("#content").value;
+  createPost(enteredTitle, enteredContent);
+});
 ```
 
 <br>
@@ -282,15 +282,70 @@ async function fetchPost() {
     const postEl = document.importNode(postTemplate.content, true);
     postEl.querySelector("h2").textContent = post.title.toUpperCase();
     postEl.querySelector("p").textContent = post.body;
-    postEl.querySelector("li").id = post.id;    // 추가
+    postEl.querySelector("li").id = post.id; // 추가
     listElement.append(postEl);
   }
 }
 
-postList.addEventListener('click', e => {
-    if (e.target.tagName === 'BUTTON') {
-        const postId = e.target.closest('li').id;
-        sendHttpRequest("DELETE", `https://jsonplaceholder.typicode.com/posts/${postId}`);
-    } 
+postList.addEventListener("click", (e) => {
+  if (e.target.tagName === "BUTTON") {
+    const postId = e.target.closest("li").id;
+    sendHttpRequest(
+      "DELETE",
+      `https://jsonplaceholder.typicode.com/posts/${postId}`
+    );
+  }
 });
+```
+
+<br>
+
+## 📌 오류 처리하기
+
+```javascript
+function sendHttpRequest(method, url, data) {
+  const promise = new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.open(method, url);
+
+    xhr.responseType = "json";
+
+    xhr.onload = function () {
+      if (xhr.status >= 200 && xhr.status < 300) {  // xhr.status 코드를 이용해서 오류 처리
+        // success
+        resolve(xhr.response);
+      } else {
+        reject(new Error("Something went wrong!"));
+      }
+    };
+
+    xhr.onerror = function () {
+      reject(new Error("Failed to send request!"));
+    };
+
+    xhr.send(JSON.stringify(data)); 
+  });
+  return promise;
+}
+
+async function fetchPost() {
+  try { // try ~ catch 문 적용하여 오류 처리
+    const responseData = await sendHttpRequest(
+      "GET",
+      "https://jsonplaceholder.typicode.com/pos"
+    );
+
+    const listOfPosts = responseData;
+    for (const post of listOfPosts) {
+      const postEl = document.importNode(postTemplate.content, true);
+      postEl.querySelector("h2").textContent = post.title.toUpperCase();
+      postEl.querySelector("p").textContent = post.body;
+      postEl.querySelector("li").id = post.id;
+      listElement.append(postEl);
+    }
+  } catch (error) {
+    alert(error.message);
+  }
+}
 ```
