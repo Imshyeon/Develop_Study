@@ -1,6 +1,19 @@
 const button = document.querySelector("button");
 const output = document.querySelector("p");
 
+const getPosition = (opts) => {
+  const promise = new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (success) => {
+        resolve(success);
+      },
+      (error) => {},
+      opts
+    );
+  });
+  return promise;
+};
+
 const setTimer = (duration) => {
   const promise = new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -11,16 +24,16 @@ const setTimer = (duration) => {
 };
 
 function trackUserHandler() {
-  navigator.geolocation.getCurrentPosition(
-    (posData) => {
-      setTimer(2000).then((data) => {
-        console.log(data, posData); // Done! 과 함께 위치 정보 출력
-      });
-    },
-    (error) => {
-      console.log(error);
-    }
-  );
+  let positionData;
+  getPosition()
+    .then((posData) => {
+      positionData = posData;
+      return setTimer(2000);
+    })
+    .then((data) => {
+      console.log(data, positionData);
+    });
+    
   setTimer(0).then(() => {
     console.log("Timer done!");
   });
