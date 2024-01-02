@@ -2,6 +2,8 @@
 
 [📌 동기 코드 이해하기](#-동기-코드-이해하기)<br>
 [📌 비동기 코드 이해하기](#-비동기-코드-이해하기)<br>
+[📌 코드 차단하기 & 이벤트 반복문](#-코드-차단하기--이벤트-반복문)<br>
+[📌 ]()<br>
 <br>
 
 ## 📌 동기 코드 이해하기
@@ -47,3 +49,44 @@ button.addEventListener("click", trackUserHandler);
 ```
 
 해당 코드에서 `addEventListener`의 `trackUserHandler`가 사실 상 콜백함수이다. button이 클릭되었을 때 해당 함수가 실행하도록 함.
+
+<br>
+
+## 📌 코드 차단하기 & 이벤트 반복문
+
+```javascript
+const button = document.querySelector("button");
+const output = document.querySelector("p");
+
+function trackUserHandler() {
+  console.log("Clicked");
+}
+
+button.addEventListener("click", trackUserHandler);
+
+let result = 0;
+for (let i = 0; i < 10000000; i++){
+    result += i
+}
+console.log(result);
+```
+
+- 루프문을 실행하고서야 click 이벤트 리스너가 작동이 된다.
+
+<br>
+
+### 📖 이벤트 반복문
+
+이벤트 루프는 비동기 코드 처리를 돕는다. 비동기 코드를 사용하는 콜백 함수의 처리를 돕는다.
+
+- Message Queue(메시지 대기열) : 브라우저에서 지원될 뿐만 아니라 JavaScript와도 연결
+  - 메시지 큐는 브라우저가 시간이 생길 때에 실행해야 하는 모든 코드를 저장해 놓는다. (To-do Task)
+
+- Event Loop : 메시지 큐와 같이 브라우저의 빌트인 기능이다. 이벤트 루프는 JavaScript의 호스트 환경 중 일부이다.
+  - 엔진의 호출 스택을 대기 중인 메시지와 동기화.
+  - 결국 이벤트 루프는 항시 실행 중인 상태이다.
+  - 따라서 스택이 비어있는 것을 확인하고 대기 중인 작업이 있는지 확인, 비어 있을 때 이벤트 루프가 실행 &rarr; 대기 중인 메시지나 작업 대상인 함수를 호출 스택으로 푸시.
+
+<br>
+
+## 📌 다수의 콜백 & setTimeout(0)
