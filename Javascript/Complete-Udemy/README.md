@@ -24,3 +24,4 @@
 🚀 [14_Advanced_Functions](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/14_Advanced_Functions) : 고급 함수 <br>
 🚀 [15_NumberAndStrings](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/15_NumberAndStrings) : 숫자 & 문자열 <br>
 🚀 [16_AsynchronousCode](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/16_AsynchronousCode) : 비동기 JavaScript - 프로미스 & 콜백 <br>
+🚀 [17_Network_Requests](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/16_AsynchronousCode) : HTTP 요청으로 작업하기 <br>
