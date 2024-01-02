@@ -3,7 +3,8 @@
 [📌 동기 코드 이해하기](#-동기-코드-이해하기)<br>
 [📌 비동기 코드 이해하기](#-비동기-코드-이해하기)<br>
 [📌 코드 차단하기 & 이벤트 반복문](#-코드-차단하기--이벤트-반복문)<br>
-[📌 ]()<br>
+[📌 다수의 콜백 & setTimeout(0)](#-다수의-콜백--settimeout0)<br>
+[📌 Promises](#📌-promises)<br>
 <br>
 
 ## 📌 동기 코드 이해하기
@@ -65,8 +66,8 @@ function trackUserHandler() {
 button.addEventListener("click", trackUserHandler);
 
 let result = 0;
-for (let i = 0; i < 10000000; i++){
-    result += i
+for (let i = 0; i < 10000000; i++) {
+  result += i;
 }
 console.log(result);
 ```
@@ -80,6 +81,7 @@ console.log(result);
 이벤트 루프는 비동기 코드 처리를 돕는다. 비동기 코드를 사용하는 콜백 함수의 처리를 돕는다.
 
 - Message Queue(메시지 대기열) : 브라우저에서 지원될 뿐만 아니라 JavaScript와도 연결
+
   - 메시지 큐는 브라우저가 시간이 생길 때에 실행해야 하는 모든 코드를 저장해 놓는다. (To-do Task)
 
 - Event Loop : 메시지 큐와 같이 브라우저의 빌트인 기능이다. 이벤트 루프는 JavaScript의 호스트 환경 중 일부이다.
@@ -117,3 +119,65 @@ button.addEventListener("click", trackUserHandler);
 
 - `trackUserHandler` 함수 안에 `setTimeout(0)`로 설정. &rarr; 콘솔에는 'Getting Position...' &rarr; 'Timer done' 순으로 출력.
 - 브라우저가 콜백 함수를 실행하려면 항상 메시지 대기열(메시지 큐)과 이벤트 루프에 대한 경로를 취해야 하기 떄문에 위의 설명처럼 출력이 된다.
+
+<br>
+
+## 📌 Promises
+
+1. Callback Hell 💀 &rarr; 좋은 코드는 아니다.
+
+```javascript
+getCurrentPosition(()=>{
+    setTimeout(()=>{
+        doMoreAsyncStuff(()=>{
+            ...
+        });
+    }, 1000);
+}, ...);
+```
+
+2. Promises
+
+```javascript
+someAsyncTask()
+.then(()=>{
+    return anotherTask();
+})
+.then(()=>{
+    return yetAnotherTask();
+})
+.then(...);
+```
+
+```javascript
+const button = document.querySelector("button");
+const output = document.querySelector("p");
+
+const setTimer = (duration) => {
+  const promise = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve("Done!"); // JavaScript 엔진으로부터 resolve 함수에 전달. 원한다면 resolve('Done')처럼 텍스트, 배열, 객체 등을 넣을 수 있다.
+    }, duration);
+  });
+  return promise;
+};
+
+function trackUserHandler() {
+  navigator.geolocation.getCurrentPosition(
+    (posData) => {
+      setTimer(2000).then((data) => {
+        console.log(data, posData); // Done! 과 함께 위치 정보 출력
+      });
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+  setTimer(0).then(() => {
+    console.log("Timer done!");
+  });
+  console.log("Getting position..."); // click 했을 때 해당 코드가 먼저 실행이 된다.
+}
+
+button.addEventListener("click", trackUserHandler);
+```
