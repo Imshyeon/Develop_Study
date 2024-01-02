@@ -4,7 +4,8 @@
 [📌 비동기 코드 이해하기](#-비동기-코드-이해하기)<br>
 [📌 코드 차단하기 & 이벤트 반복문](#-코드-차단하기--이벤트-반복문)<br>
 [📌 다수의 콜백 & setTimeout(0)](#-다수의-콜백--settimeout0)<br>
-[📌 Promises](#📌-promises)<br>
+[📌 Promises](#-promises)<br>
+[📌 Async & await](#-async--await)<br>
 <br>
 
 ## 📌 동기 코드 이해하기
@@ -342,4 +343,52 @@ somePromiseCreatingCode()
     // finally는 새로운 프로미스를 리턴하지 않는다.
     // finally는 굳이 추가할 필요는 없다!
   });
+```
+
+<br>
+
+## 📌 Async / await
+
+- Async와 await는 함수에서만 쓸 수 있다.
+- async가 앞에 있으면 해당 함수는 자동으로 프로미스를 반환.
+
+```javascript
+async function trackUserHandler() {
+  //   let positionData;
+  const posData = await getPosition();
+  const timerData = await setTimer(2000);
+  console.log(timerData, posData); // .then((posData) => {
+  //   positionData = posData;
+  //   return setTimer(2000);
+  // })
+  // .catch((err) => {
+  //   console.log(err);
+  // })
+  // .then((data) => {
+  //   console.log(data, positionData);
+  // });
+}
+```
+
+이렇게 하면 `trackUserHandler` 함수는 전체가 하나의 큰 프로미스가 된다. 즉, 내부적으로 새로운 프로미스로 묶은 후 프로미스 생성자에 전달하는 초기화함수에서 모든 코드를 감싸는데 이는 내부적으로 수행된다.
+
+- `await`는 프로미스 앞에 추가.
+- `await`는 프로미스가 해결되거나 실패하기를 기다리고 그렇게 되면 그 다음 줄이 실행된다.
+
+<br>
+
+### 📖 Async / await & 오류 처리하기
+
+```javascript
+async function trackUserHandler() {
+  let posData;
+  let timerData;
+  try {
+    posData = await getPosition();
+    timerData = await setTimer(2000);
+  } catch (err) {
+    console.log(err);
+  }
+  console.log(timerData, posData);
+}
 ```

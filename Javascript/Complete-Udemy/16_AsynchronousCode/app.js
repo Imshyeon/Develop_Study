@@ -16,7 +16,7 @@ const getPosition = (opts) => {
   return promise;
 };
 
-const setTimer = (duration) => {
+const setTimer = async (duration) => {
   const promise = new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve("Done!"); // JavaScript 엔진으로부터 resolve 함수에 전달. 원한다면 resolve('Done')처럼 텍스트, 배열, 객체 등을 넣을 수 있다.
@@ -25,24 +25,31 @@ const setTimer = (duration) => {
   return promise;
 };
 
-function trackUserHandler() {
-  let positionData;
-  getPosition()
-    .catch((err) => {
-      console.log(err);
-    })
-    .then((posData) => {
-      positionData = posData;
-      return setTimer(2000);
-    })
-    .then((data) => {
-      console.log(data, positionData);
-    });
+async function trackUserHandler() {
+  let posData;
+  let timerData;
+  try {
+    posData = await getPosition();
+    timerData = await setTimer(2000);
+  } catch (err) {
+    console.log(err);
+  }
+  console.log(timerData, posData);
+  // .then((posData) => {
+  //   positionData = posData;
+  //   return setTimer(2000);
+  // })
+  // .catch((err) => {
+  //   console.log(err);
+  // })
+  // .then((data) => {
+  //   console.log(data, positionData);
+  // });
 
-  setTimer(0).then(() => {
-    console.log("Timer done!");
-  });
-  console.log("Getting position..."); // click 했을 때 해당 코드가 먼저 실행이 된다.
+  //   setTimer(0).then(() => {
+  //     console.log("Timer done!");
+  //   });
+  //   console.log("Getting position..."); // click 했을 때 해당 코드가 먼저 실행이 된다.
 }
 
 button.addEventListener("click", trackUserHandler);
