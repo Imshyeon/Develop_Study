@@ -5,29 +5,50 @@ const fetchButton = document.querySelector("#available-posts button");
 const postList = document.querySelector("ul");
 
 function sendHttpRequest(method, url, data) {
-  const promise = new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
+  //   const promise = new Promise((resolve, reject) => {
+  //   const xhr = new XMLHttpRequest();
+  //   xhr.setRequestHeader("Content-Type", "application/json");
+  //     xhr.open(method, url);
+  //     xhr.responseType = "json";
+  //     xhr.onload = function () {
+  //       if (xhr.status >= 200 && xhr.status < 300) {
+  //         // success
+  //         resolve(xhr.response);
+  //       } else {
+  //         reject(new Error("Something went wrong!"));
+  //       }
+  //     };
+  //     xhr.onerror = function () {
+  //       reject(new Error("Failed to send request!"));
+  //     };
+  //     xhr.send(JSON.stringify(data)); // 요청 전송
+  //   });
+  //   return promise;
 
-    xhr.open(method, url);
+  // ==================== fetch API ====================
 
-    xhr.responseType = "json";
-
-    xhr.onload = function () {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        // success
-        resolve(xhr.response);
+  return fetch(url, {
+    method: method,
+    // body: JSON.stringify(data),
+    body: data,
+    // headers: {
+    //   "Content-Type": "application/json",
+    // },
+  })
+    .then((response) => {
+      if (response.status >= 200 && response.status < 300) {
+        return response.json();
       } else {
-        reject(new Error("Something went wrong!"));
+        return response.json().then((errData) => {
+          console.log(errData);
+          throw new Error("Something went wrong - server-side !");
+        });
       }
-    };
-
-    xhr.onerror = function () {
-      reject(new Error("Failed to send request!"));
-    };
-
-    xhr.send(JSON.stringify(data)); // 요청 전송
-  });
-  return promise;
+    })
+    .catch((err) => {
+      console.log(err);
+      throw new Error("Something sent wrong!");
+    });
 }
 
 async function fetchPost() {
@@ -57,7 +78,14 @@ async function createPost(title, content) {
     body: content,
     userId: userId,
   };
-  sendHttpRequest("POST", "https://jsonplaceholder.typicode.com/posts", post); // 서버에 데이터를 생성하려는 POST 요청의 경우 생성하고자하는 데이터를 나가는 요청에 추가해야한다.
+
+  const fd = new FormData(form);
+  fd.append("title", title);
+  fd.append("body", content);
+  fd.append("userId", userId);
+
+  sendHttpRequest("POST", "https://jsonplaceholder.typicode.com/posts", fd); 
+//   sendHttpRequest("POST", "https://jsonplaceholder.typicode.com/posts", post); 
 }
 
 fetchButton.addEventListener("click", fetchPost);
