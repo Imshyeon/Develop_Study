@@ -1,6 +1,7 @@
 # Network Requests
 
 [GET](#-get)<br>
+[POST](#-post)<br>
 <br>
 
 [JSONPlaceholder](https://jsonplaceholder.typicode.com)를 이용하여 배워보자!
@@ -40,7 +41,7 @@ xhr.send();
 ]
 ```
 
-- JSON은 JavaScript 배열과 객체에서 유래한 데이터 유형이다.
+- JSON(JavaScript Object Notation)은 JavaScript 배열과 객체에서 유래한 데이터 유형이다.
 - JSON은 데이터만 저장 가능하고 메서드가 없다.
 - 또한 프로퍼티는 항상 `"`를 사용해야한다.
 
@@ -88,6 +89,8 @@ xhr.send(); // 요청 전송
 
 ---
 
+<br>
+
 **JSONPlaceholder에서 받아온 데이터 뿌려주기**
 
 ```javascript
@@ -115,3 +118,147 @@ xhr.onload = function () {
 
 xhr.send(); // 요청 전송
 ```
+
+<br>
+
+### 📖 HTTP 요청 프로미스화 하기(XMLHttpRequest 이용)
+
+```javascript
+const listElement = document.querySelector(".posts");
+const postTemplate = document.getElementById("single-post");
+
+function sendHttpRequest(method, url) {
+  const promise = new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.open(method, url);
+
+    xhr.responseType = "json";
+
+    xhr.onload = function () {
+      resolve(xhr.response);
+    };
+
+    xhr.send(); // 요청 전송
+  });
+  return promise;
+}
+
+async function fetchPost() {
+  const responseData = await sendHttpRequest(
+    "GET",
+    "https://jsonplaceholder.typicode.com/posts"
+  );
+
+  const listOfPosts = responseData;
+  for (const post of listOfPosts) {
+    const postEl = document.importNode(postTemplate.content, true);
+    postEl.querySelector("h2").textContent = post.title.toUpperCase();
+    postEl.querySelector("p").textContent = post.body;
+    listElement.append(postEl);
+  }
+}
+
+fetchPost();
+```
+
+<br>
+
+## 📌 POST
+
+### 📖 POST 요청으로 데이터 보내기
+
+- 서버에 데이터를 추가하는 요청
+
+```javascript
+function sendHttpRequest(method, url, data) {
+  const promise = new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.open(method, url);
+
+    xhr.responseType = "json";
+
+    xhr.onload = function () {
+      resolve(xhr.response);
+    };
+
+    xhr.send(JSON.stringify(data)); // 요청 전송
+  });
+  return promise;
+}
+
+async function createPost(title, content) {
+  const userId = Math.random();
+  const post = {
+    title: title,
+    body: content,
+    userId: userId,
+  };
+  sendHttpRequest("POST", "https://jsonplaceholder.typicode.com/posts", post); // 서버에 데이터를 생성하려는 POST 요청의 경우 생성하고자하는 데이터를 나가는 요청에 추가해야한다.
+}
+
+createPost("DUMMY", "A dummy post!");
+```
+
+<br>
+
+### 📖 UI를 통해 요청 트리거하기
+
+```javascript
+const listElement = document.querySelector(".posts");
+const postTemplate = document.getElementById("single-post");
+const form = document.querySelector('#new-post form');
+const fetchButton = document.querySelector("#available-posts button");
+
+function sendHttpRequest(method, url, data) {
+  const promise = new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.open(method, url);
+
+    xhr.responseType = "json";
+
+    xhr.onload = function () {
+      resolve(xhr.response);
+    };
+
+    xhr.send(JSON.stringify(data)); // 요청 전송
+  });
+  return promise;
+}
+
+async function fetchPost() {
+  const responseData = await sendHttpRequest(
+    "GET",
+    "https://jsonplaceholder.typicode.com/posts"
+  );
+
+  const listOfPosts = responseData;
+  for (const post of listOfPosts) {
+    const postEl = document.importNode(postTemplate.content, true);
+    postEl.querySelector("h2").textContent = post.title.toUpperCase();
+    postEl.querySelector("p").textContent = post.body;
+    listElement.append(postEl);
+  }
+}
+
+async function createPost(title, content) {
+  const userId = Math.random();
+  const post = {
+    title: title,
+    body: content,
+    userId: userId,
+  };
+  sendHttpRequest("POST", "https://jsonplaceholder.typicode.com/posts", post); // 서버에 데이터를 생성하려는 POST 요청의 경우 생성하고자하는 데이터를 나가는 요청에 추가해야한다.
+}
+
+fetchButton.addEventListener('click', fetchPost)
+form.addEventListener('submit', event => {
+    event.preventDefault();
+    const enteredTitle = event.currentTarget.querySelector('#title').value;
+    const enteredContent = event.currentTarget.querySelector('#content').value;
+    createPost(enteredTitle, enteredContent);
+})
+```
+

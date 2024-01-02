@@ -1,23 +1,54 @@
 const listElement = document.querySelector(".posts");
 const postTemplate = document.getElementById("single-post");
+const form = document.querySelector('#new-post form');
+const fetchButton = document.querySelector("#available-posts button");
 
-const xhr = new XMLHttpRequest(); // 이 객체를 통해 HTTP 요청을 보낼 수 있게 됨. 브라우저에 내장
+function sendHttpRequest(method, url, data) {
+  const promise = new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
 
-xhr.open("GET", "https://jsonplaceholder.typicode.com/posts"); // 이 자체로는 네트워크 활동이 안됨. - 요청 구성
+    xhr.open(method, url);
 
-xhr.responseType = "json"; // 자동으로 구문 분석이 된다.
+    xhr.responseType = "json";
 
-xhr.onload = function () {
-  console.log(xhr.response);
-  // const listOfPosts = JSON.parse(xhr.response);
-  const listOfPosts = xhr.response;
-  console.log(listOfPosts);
+    xhr.onload = function () {
+      resolve(xhr.response);
+    };
+
+    xhr.send(JSON.stringify(data)); // 요청 전송
+  });
+  return promise;
+}
+
+async function fetchPost() {
+  const responseData = await sendHttpRequest(
+    "GET",
+    "https://jsonplaceholder.typicode.com/posts"
+  );
+
+  const listOfPosts = responseData;
   for (const post of listOfPosts) {
-    const postEl = document.importNode(postTemplate.content, true); // true = deep clone
+    const postEl = document.importNode(postTemplate.content, true);
     postEl.querySelector("h2").textContent = post.title.toUpperCase();
     postEl.querySelector("p").textContent = post.body;
     listElement.append(postEl);
   }
-};
+}
 
-xhr.send(); // 요청 전송
+async function createPost(title, content) {
+  const userId = Math.random();
+  const post = {
+    title: title,
+    body: content,
+    userId: userId,
+  };
+  sendHttpRequest("POST", "https://jsonplaceholder.typicode.com/posts", post); // 서버에 데이터를 생성하려는 POST 요청의 경우 생성하고자하는 데이터를 나가는 요청에 추가해야한다.
+}
+
+fetchButton.addEventListener('click', fetchPost)
+form.addEventListener('submit', event => {
+    event.preventDefault();
+    const enteredTitle = event.currentTarget.querySelector('#title').value;
+    const enteredContent = event.currentTarget.querySelector('#content').value;
+    createPost(enteredTitle, enteredContent);
+})
