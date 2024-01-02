@@ -427,3 +427,10 @@ Promise.allSettled([getPosition(), setTimer(1000)]).then((promiseData) => {
   console.log(promiseData);
 });
 ```
+
+
+<br><br>
+
+### 더 알아보기
+🔗 [Promise](https://www.udemy.com/course/javascript-zw/learn/lecture/30292008#overview)<br>
+🔗 [async / await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
