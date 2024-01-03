@@ -2,6 +2,8 @@
 
 [📌 JavaScript의 모듈화](#-javascript의-모듈화)<br>
 [📌 내보내기 구문 변형 더보기](#-내보내기-구문-변형-더보기)<br>
+[📌 기본 내보내기](#-기본-내보내기)<br>
+[📌 동적 임포트 & 코드 분할](#-동적-임포트--코드-분할)<br>
 <br>
 
 ## 📌 JavaScript의 모듈화
@@ -263,3 +265,21 @@ export class Tooltip extends Cmp {}
 ## 📌 동적 임포트 & 코드 분할
 
 많은 모듈을 임포트 하는 것은 적절하지 않다. 따라서 동적 가져오기(코드가 항상 필요한 것이 아니라 조건부로!)를 이용할 수 있다.
+
+1. ProjectItem.js
+
+```javascript
+import("./Tooltip.js").then((module) => {
+  const tooltip = new module.Tooltip(
+    () => {
+      this.hasActiveTooltip = false;
+    },
+    tooltipText,
+    this.id
+  );
+  tooltip.attach();
+  this.hasActiveTooltip = true;
+});
+```
+
+- import 함수는 브라우저에 내장되고 JavaScript에 노출된다. 또한 프로미스를 제공하여 then이나 async/await을 사용할 수 있다.
