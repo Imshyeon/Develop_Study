@@ -4,6 +4,8 @@
 [📌 내보내기 구문 변형 더보기](#-내보내기-구문-변형-더보기)<br>
 [📌 기본 내보내기](#-기본-내보내기)<br>
 [📌 동적 임포트 & 코드 분할](#-동적-임포트--코드-분할)<br>
+[📌 모듈 코드는 언제 실행이 될까?](#-모듈-코드는-언제-실행이-될까)<br>
+[📌 모듈 스코프(Scope) & globalThis](#-모듈-스코프scope--globalthis)<br>
 <br>
 
 ## 📌 JavaScript의 모듈화
@@ -283,3 +285,70 @@ import("./Tooltip.js").then((module) => {
 ```
 
 - import 함수는 브라우저에 내장되고 JavaScript에 노출된다. 또한 프로미스를 제공하여 then이나 async/await을 사용할 수 있다.
+
+<br>
+
+## 📌 모듈 코드는 언제 실행이 될까?
+
+모듈 안의 코드는 모듈이 처음으로 임포트 및 로드될 때만 실행된다. 처음에만 실행된다는 점이 중요!<br>
+여러 번 임포트하는 모듈이 있어도 딱 한번만 `console.log()`가 실행된다. &rarr; 처음 임포트 될 때에만 실행. 이것은 동적 임포트에도 적용이 됨.
+
+1. ProjectItem.js
+
+```javascript
+import { DOMHelper } from "../Utility/DOMHelper.js";
+
+console.log("Project Item Created"); // 해당 코드는 export 되지 않아도 실행되었음을 알 수 있다.
+
+export class ProjectItem {}
+```
+
+<br>
+
+## 📌 모듈 스코프(Scope) & globalThis
+
+1. app.js
+```javascript
+const DEFAULT_VALUE = 'Taemin';
+```
+
+<br>
+
+2. ProjectList.js
+
+```javascript
+console.log(window) // window 객체 출력
+console.log(DEFAULT_VALUE) // 오류 발생!
+```
+
+- `DEFAULT_VALUE`는 전역 객체에 노출되지 않음을 알 수 있다.
+- `window`는 일종의 전역 변수임에도 여전히 출력
+- 과거의 전역 변수를 정의하면 전체 앱에 걸쳐 전역 객체로 작동하는 window 객체에 보이지 않게 자동적으로 추가된다.
+
+```javascript
+// 다음과 같이 정의하면 전역 객체로!
+// app.js
+window.DEFAULT_VALUE = 'Taemin';
+
+// ProjectList.js
+console.log(window.DEFAULT_VALUE)   // Taemin
+```
+- 단, app.js에서 ProjectList가 먼저 임포트가 되는 순서이기 때문에 `console.log()` 문장을 app.js에서 전역객체로 선언한 것 보다 더 늦게 수행되도록 `connectDroppable()` 함수 안에 넣으면 위의 결과를 확인할 수 있다.
+- 이러한 방법은 import, export로도 전역 데이터가 공유되지 않을 때 **최후의 수단**으로 쓰자!
+
+<br>
+
+3. `globalThis`
+
+```javascript
+globalThis.DEFAULT_VALUE = 'Taemin';
+```
+
+- 기본적으로 this 대신 사용하며 전역 객체를 가리킴. 이는 window를 사용할 수 없는 브라우저 측, node.js 측 둘 다에서 사용 가능하다.
+- 모듈에서의 globalThis는 window를 가리키는 this를 대체한다. 모듈에서는 this가 정의되지 않고 엄격모드에서 실행되어 undefined로 나온다. 이때, this가 window를 가리키지 않지만 그 대안으로 globalThis가 있는 것.
+
+<br>
+<br>
+
+### 더 알아보기
+🔗 [module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
