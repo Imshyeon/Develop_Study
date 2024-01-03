@@ -1,6 +1,7 @@
 # JavaScript Modules
 
 [📌 JavaScript의 모듈화](#-javascript의-모듈화)<br>
+[📌 내보내기 구문 변형 더보기](#-내보내기-구문-변형-더보기)<br>
 <br>
 
 ## 📌 JavaScript의 모듈화
@@ -43,6 +44,7 @@ export class Component {
 <br>
 
 ---
+
 <br>
 
 따라서 모든 코드를 모듈화하면 다음과 같다.
@@ -181,3 +183,83 @@ import { ProjectList } from "./App/ProjectList.js";
    ```javascript
    export class DOMHelper {}
    ```
+
+<br>
+
+## 📌 내보내기 구문 변형 더보기
+
+1. DOMHelper.js
+
+```javascript
+export class DOMHelper {
+  static clearEventListeners(element) {
+    const clonedElement = element.cloneNode(true);
+    element.replaceWith(clonedElement);
+    return clonedElement;
+  }
+
+  static moveElement(elementId, newDestinationSelector) {
+    const element = document.getElementById(elementId);
+    const destinationElement = document.querySelector(newDestinationSelector);
+    destinationElement.append(element);
+    element.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+export function clearEventListeners(element) {
+  const clonedElement = element.cloneNode(true);
+  element.replaceWith(clonedElement);
+  return clonedElement;
+}
+
+export function moveElement(elementId, newDestinationSelector) {
+  const element = document.getElementById(elementId);
+  const destinationElement = document.querySelector(newDestinationSelector);
+  destinationElement.append(element);
+  element.scrollIntoView({ behavior: "smooth" });
+}
+```
+
+<br>
+
+2. ProjectList.js
+
+```javascript
+import {
+  moveElement,
+  DOMHelper,
+  clearEventListener,
+} from "../Utility/DOMHelper.js";
+// 혹은
+import * as DOMHelper from "../Utility/DOMHelper.js"; // 해당 파일의 모든 export 문을 번들로 묶어서 DOMHelper로 사용하겠다.
+```
+
+<br>
+
+## 📌 기본 내보내기
+
+1. Component.js
+
+```javascript
+export function doSomething() {}
+export default class {}
+```
+
+- 이름으로 가져오기를 하는 것이 아니라 파일을 가리키면 자동으로 기본 임포트를 하게 한다.
+- **파일마다 하나의 기본 내보내기만 존재할 수 있다.**
+
+<br>
+
+2. Tooltip.js
+
+```javascript
+import Cmp, { doSomething } from "./Component.js";
+
+export class Tooltip extends Cmp {}
+```
+
+<br>
+
+## 📌 동적 임포트 & 코드 분할
+
+많은 모듈을 임포트 하는 것은 적절하지 않다. 따라서 동적 가져오기(코드가 항상 필요한 것이 아니라 조건부로!)를 이용할 수 있다.
