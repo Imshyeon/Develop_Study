@@ -28,3 +28,4 @@
 🚀 [18_JavaScriptLibrary](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/18_JavaScriptLibrary) : JavaScript 라이브러리로 작업하기 <br>
 🚀 [19_JavaScriptModules](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/19_JavaScriptModules) : 모듈식 JavaScript <br>
 🚀 [20_JavaScriptTooling](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/20_JavaScriptTooling) : JavaScript 도구 & 워크플로우 <br>
+🚀 [21_BrowserStorage](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/21_BrowserStorage) : 브라우저 저장소 활용하기 <br>
