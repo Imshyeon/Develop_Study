@@ -184,5 +184,22 @@ module.exports = {
   },
   ```
   2. `npm run build:prod`
-  3. scripts 폴더 내에 45c8a40fe1e228c33a1c.js과 c43e32dbae0faf21ada5.js으로 파일 이름이 변경되었음을 알 수 있다. 
-  4. 이렇게 변경된 이름을 index.html도 적용할 수 있도록 변경해줘야 함. 
+  3. scripts 폴더 내에 45c8a40fe1e228c33a1c.js과 c43e32dbae0faf21ada5.js으로 파일 이름이 변경되었음을 알 수 있다.
+  4. 이렇게 변경된 이름을 index.html도 적용할 수 있도록 변경해줘야 함.
+
+<br>
+
+## 📌 npm & 웹팩을 통해 third-party 패키지 사용하기
+
+1. `npm i --save lodash`
+2. app.js에서 다음의 코드 작성
+
+```javascript
+import * as _ from "lodash";
+console.log(_.difference([0, 1], [1, 2]));
+```
+
+<br><br>
+
+🔗 [ESLint docs](https://eslint.org)
+🔗 [Webpack](https://webpack.js.org)
