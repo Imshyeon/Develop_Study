@@ -7,6 +7,7 @@
 [📌 webpack-dev-server 사용하기](#-webpack-dev-server-사용하기)<br>
 [📌 소스맵 생성하기](#-소스맵-생성하기)<br>
 [📌 배포용 구축하기](#-배포용-구축하기)<br>
+[📌 최적화 마무리](#-최적화-마무리)<br>
 <br>
 
 ## 📌 프로젝트 제한 & 도구가 필요한 이유
@@ -155,3 +156,33 @@ module.exports = {
 ```
 
 - `npm run build:prod`
+
+<br>
+
+## 📌 최적화 마무리
+
+- scripts 폴더 내 더이상 필요하지 않은 오래된 파일은 제거
+
+  1. `npm install --save-dev clean-webpack-plugin`
+  2. webpack.config.js과 webpack.config.prod.js에서 다음과 같이 코드 작성
+
+  ```javascript
+  const CleanPlugin = require("clean-webpack-plugin");
+
+  plugins: [new CleanPlugin.CleanWebpackPlugin()];
+  ```
+
+  3. `npm run build:prod`
+
+<br>
+
+- 파일 이름 개선 &rarr; 웹페이지에서 파일을 캐시하기 때문에 작업을 하다보면 변경사항 적용이 잘 안될 때가 있다. 이를 위해서 파일 이름을 변경함으로써 코드의 변경사항이 잘 확인할 수 있도록 함.
+  1. webpack.config.prod.js에서 다음처럼 코드 작성
+  ```javascript
+  output: {
+    filename: '[contenthash].js',
+  },
+  ```
+  2. `npm run build:prod`
+  3. scripts 폴더 내에 45c8a40fe1e228c33a1c.js과 c43e32dbae0faf21ada5.js으로 파일 이름이 변경되었음을 알 수 있다. 
+  4. 이렇게 변경된 이름을 index.html도 적용할 수 있도록 변경해줘야 함. 
