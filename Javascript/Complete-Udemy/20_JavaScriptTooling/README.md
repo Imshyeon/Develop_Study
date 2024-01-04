@@ -4,6 +4,8 @@
 [📌 npm 프로젝트 설정, ESLint로 린팅하기](#-npm-프로젝트-설정-eslint로-린팅하기)<br>
 [📌 Webpack으로 번들링하기](#-webpack으로-번들링하기)<br>
 [📌 개발모드 & 지연된 로딩 해결하기](#-개발-모드--지연된-로딩-해결하기)<br>
+[📌 webpack-dev-server 사용하기](#-webpack-dev-server-사용하기)<br>
+[📌 소스맵 생성하기](#-소스맵-생성하기)<br>
 <br>
 
 ## 📌 프로젝트 제한 & 도구가 필요한 이유
@@ -87,14 +89,33 @@ module.exports = {
 
 <br>
 
-## 📌 webpack-dev-서버 사용하기
+## 📌 webpack-dev-server 사용하기
 
 - 변경할 때마다 자동으로 새로 고침이 되는 서버.
 - `npm install --save-dev webpack-dev-server`
 - package.json
+
 ```json
 "scripts": {
     "build:dev" : "webpack-dev-server"
   }
 ```
+
 - `npm run build:dev`
+
+<br>
+
+## 📌 소스맵 생성하기
+
+코드 디버깅을 효율적으로 하기 위함.
+
+🔗 [webpack-development](https://webpack.kr/guides/development/#using-source-maps)<br>
+🔗 [webpack-devtool](https://webpack.kr/configuration/devtool)
+
+- webpack.config.js
+
+```javascript
+module.exports = {
+  devtool: "cheap-module-source-map",
+};
+```
