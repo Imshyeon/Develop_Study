@@ -6,6 +6,7 @@
 [📌 개발모드 & 지연된 로딩 해결하기](#-개발-모드--지연된-로딩-해결하기)<br>
 [📌 webpack-dev-server 사용하기](#-webpack-dev-server-사용하기)<br>
 [📌 소스맵 생성하기](#-소스맵-생성하기)<br>
+[📌 배포용 구축하기](#-배포용-구축하기)<br>
 <br>
 
 ## 📌 프로젝트 제한 & 도구가 필요한 이유
@@ -119,3 +120,38 @@ module.exports = {
   devtool: "cheap-module-source-map",
 };
 ```
+
+<br>
+
+## 📌 배포용 구축하기
+
+- webpack.config.prod.js 파일 생성 &rarr; 배포의 구성 파일
+- webpack.config.js에서 복사하여 일부분 수정
+
+```javascript
+const path = require("path");
+
+module.exports = {
+  mode: "production",
+  entry: "./src/app.js",
+  output: {
+    filename: "app.js",
+    path: path.resolve(__dirname, "assets", "scripts"),
+    publicPath: "assets/scripts/",
+  },
+  devtool: "cheap-source-map",
+  //     devServer: {
+  //       contentBase: './'// 루트 html파일의 위치를 개발 서버에 알림.
+  //   }
+};
+```
+
+- package.json에서 다음의 코드 작성
+
+```json
+  "scripts": {
+    "build:prod" : "webpack --config webpack.config.prod.js"
+  }
+```
+
+- `npm run build:prod`
