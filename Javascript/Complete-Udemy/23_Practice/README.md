@@ -172,3 +172,87 @@ export class Modal {
   }
 }
 ```
+
+<br>
+
+### 📖 Google Maps를 이용해 맵 렌더링하기
+
+🔗 [Google Maps - JavaScript API docs](https://developers.google.com/maps/documentation/javascript?_gl=1*l00zc6*_ga*MTY0OTc1NjE5NC4xNzA0NDQxNTQx*_ga_NRWSTWS78N*MTcwNDQ0MTU0MS4xLjEuMTcwNDQ0MTU2Ny4wLjAuMA..&hl=ko)
+
+1. src/UI/Map.js
+
+```javascript
+export class Map {
+  constructor(coords) {
+    // this.coordinates = coords;
+    this.render(coords);
+  }
+
+  render(coordinates) {
+    if (!google) {
+      alert("지도 라이브러리를 로드할 수 없습니다. 다시 시도해주세요.");
+      return;
+    }
+
+    const map = new google.maps.Map(document.getElementById("map"), {
+      center: coordinates,
+      zoom: 16,
+    }); // 전역 google 변수
+
+    new google.maps.Marker({
+      position: coordinates,
+      map: map,
+    }); // Google Maps에게 마커를 해당 map에 배치하라고 알림.
+  }
+}
+```
+
+<br>
+
+2. src/SharePlace.js
+
+```javascript
+import { Map } from "./UI/Map.js";
+class PlaceFinder {
+  constructor() {
+    locateUserBtn.addEventListener("click", this.locateUserHandler.bind(this));
+    addressForm.addEventListener("submit", this.findAddressHandler.bind(this));
+  }
+  selectPlace(coordinates) {
+    if (this.map) {
+      this.map.render(coordinates);
+    } else {
+      this.map = new Map(coordinates);
+    }
+  }
+
+  locateUserHandler() {
+    if (!navigator.geolocation) {
+      alert(
+        "현재 브라우저에서 위치 특성을 이용할 수 없습니다. - 최신 브라우저를 사용하거나 직접 주소를 입력해주세요."
+      );
+      return;
+    }
+    const modal = new Modal(
+      "loading-modal-content",
+      "loading location.. plz wait!"
+    );
+    modal.show();
+    navigator.geolocation.getCurrentPosition(
+      (successResult) => {
+        modal.hide();
+        console.log(successResult);
+        const userLocation = {
+          lat: successResult.coords.latitude,
+          lng: successResult.coords.longitude,
+        };
+        this.selectPlace(userLocation); //
+      },
+      (error) => {
+        modal.hide();
+        alert("위치를 파악할 수 없습니다. 직접 주소를 입력해주세요.");
+      }
+    );
+  }
+}
+```

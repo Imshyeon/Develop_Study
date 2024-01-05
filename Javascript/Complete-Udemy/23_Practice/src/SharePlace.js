@@ -1,12 +1,21 @@
 import { Modal } from "./UI/Model.js";
+import { Map } from "./UI/Map.js";
 
 class PlaceFinder {
   constructor() {
     const addressForm = document.querySelector("form");
     const locateUserBtn = document.getElementById("locate-btn");
 
-    locateUserBtn.addEventListener("click", this.locateUserHandler);
-    addressForm.addEventListener("submit", this.findAddressHandler);
+    locateUserBtn.addEventListener("click", this.locateUserHandler.bind(this));
+    addressForm.addEventListener("submit", this.findAddressHandler.bind(this));
+  }
+
+  selectPlace(coordinates) {
+    if (this.map) {
+      this.map.render(coordinates);
+    } else {
+      this.map = new Map(coordinates);
+    }
   }
 
   locateUserHandler() {
@@ -25,11 +34,11 @@ class PlaceFinder {
       (successResult) => {
         modal.hide();
         console.log(successResult);
-        const userLoccation = {
+        const userLocation = {
           lat: successResult.coords.latitude, // 위도
-          lug: successResult.coords.longitude, // 경도
+          lng: successResult.coords.longitude, // 경도
         }; // User의 좌표
-        console.log(userLoccation);
+        this.selectPlace(userLocation);
       },
       (error) => {
         modal.hide();
