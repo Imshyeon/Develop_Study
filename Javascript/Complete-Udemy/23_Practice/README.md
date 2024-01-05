@@ -261,29 +261,31 @@ class PlaceFinder {
 
 ### 📖 주소 찾기 & 좌표 얻기
 
-[Google Geocoding API](https://developers.google.com/maps/documentation/geocoding/overview?hl=ko)
+🔗 [Google Geocoding API](https://developers.google.com/maps/documentation/geocoding/overview?hl=ko)
 
 1. src/Utility/Location.js
+
 ```javascript
-const GOOGLE_API_KEY = 'YOUR_KEY'
+const GOOGLE_API_KEY = "YOUR_KEY";
 
 export async function getCoordsFromAddress(address) {
-    const urlAddress = encodeURI(address);  // url에 적합하게 address 변경
-    const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?address=${urlAddress}&key=${GOOGLE_API_KEY}`
-    );
+  const urlAddress = encodeURI(address); // url에 적합하게 address 변경
+  const response = await fetch(
+    `https://maps.googleapis.com/maps/api/geocode/json?address=${urlAddress}&key=${GOOGLE_API_KEY}`
+  );
 
-    if (!response.ok) {
-        throw new Error('좌표를 패치하는데 실패했습니다. 다시 시도하세요.')
-    } 
-    const data = await response.json();
+  if (!response.ok) {
+    throw new Error("좌표를 패치하는데 실패했습니다. 다시 시도하세요.");
+  }
+  const data = await response.json();
 
-    if (data.error_message) {   // 200 상태 코드로 실패했을 때 그걸 알려주는 오류 메시지
-        throw new Error(data.error_message);
-    }
+  if (data.error_message) {
+    // 200 상태 코드로 실패했을 때 그걸 알려주는 오류 메시지
+    throw new Error(data.error_message);
+  }
 
-    const coordinates = data.results[0].geometry.location;
-    return coordinates;
+  const coordinates = data.results[0].geometry.location;
+  return coordinates;
 }
 ```
 
@@ -292,6 +294,7 @@ export async function getCoordsFromAddress(address) {
 ### 📖 사용자 입력을 좌표로 변환하기
 
 1. src/SharePlace.js
+
 ```javascript
 async findAddressHandler(event) {
     event.preventDefault();
@@ -313,4 +316,164 @@ async findAddressHandler(event) {
     }
     modal.hide();
   }
+```
+
+<br>
+
+### 📖 공유 장소 링크 생성하기
+
+1. src/Utility/Location.js
+
+```javascript
+export async function getAddressFromCoords(coords) {
+  const response = await fetch(
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coords.lat},${coords.lng}&key=${GOOGLE_API_KEY}`
+  );
+
+  if (!response.ok) {
+    throw new Error("주소를 패치하는데 실패했습니다. 다시 시도하세요.");
+  }
+  const data = await response.json();
+
+  if (data.error_message) {
+    // 200 상태 코드로 실패했을 때 그걸 알려주는 오류 메시지
+    throw new Error(data.error_message);
+  }
+
+  const address = data.results[0].formatted_address;
+  return address;
+}
+```
+
+<br>
+
+2. src/SharePlace.js
+
+```javascript
+import {
+  getCoordsFromAddress,
+  getAddressFromCoords,
+} from "./Utility/Location.js";
+
+class PlaceFinder {
+  constructor() {
+    this.shareBtn = document.getElementById("share-btn");
+    // this.shareBtn.addEventListener("click");
+  }
+
+  selectPlace(coordinates, address) {
+    if (this.map) {
+      this.map.render(coordinates);
+    } else {
+      this.map = new Map(coordinates);
+    }
+
+    this.shareBtn.disabled = false; // disabled를 false로 함으로써 이제 클릭을 할 수 있게 함.
+    const sharedLinkInputElement = document.getElementById("share-link");
+    sharedLinkInputElement.value = `${
+      location.origin
+    }/my-place?address=${encodeURI(address)}&lat=${coordinates.lat}&lng=${
+      coordinates.lng
+    }`; // location.origin: 현재 도메인
+  }
+
+  locateUserHandler() {
+    navigator.geolocation.getCurrentPosition(
+      async (successResult) => {
+        console.log(successResult);
+        const coordinate = {
+          lat: successResult.coords.latitude,
+          lng: successResult.coords.longitude,
+        };
+        const address = await getAddressFromCoords(coordinate); // coords -> address
+        modal.hide();
+        this.selectPlace(coordinate, address); // address 추가
+      },
+      (error) => {
+        modal.hide();
+        alert("위치를 파악할 수 없습니다. 직접 주소를 입력해주세요.");
+      }
+    );
+  }
+
+  async findAddressHandler(event) {
+    event.preventDefault();
+    const address = event.target.querySelector("input").value;
+    if (!address || address.trim().length === 0) {
+      alert("유효하지 않은 주소입니다. 다시 입력해주세요.");
+      return;
+    }
+    const modal = new Modal(
+      "loading-modal-content",
+      "loading location.. plz wait!"
+    );
+    modal.show();
+    try {
+      const coordinates = await getCoordsFromAddress(address);
+      this.selectPlace(coordinates, address); // address 추가
+    } catch (err) {
+      alert(err.message);
+    }
+    modal.hide();
+  }
+}
+```
+
+<br>
+
+### 📖 링크를 클립보드에 복사하기
+
+1. src/SharePlace.js
+
+```javascript
+class PlaceFinder {
+  constructor() {
+    this.shareBtn.addEventListener("click", this.sharePlaceHandler);
+  }
+
+  sharePlaceHandler() {
+    const sharedLinkInputElement = document.getElementById("share-link");
+
+    if (!navigator.clipboard) {
+      sharedLinkInputElement.select(); // select : select 이벤트를 트리거하는 건 전체 콘텐츠를 선택하고 마킹한다. => cmd+c 를 통해 복사할 수 있게..
+      return;
+    }
+    navigator.clipboard
+      .writeText(sharedLinkInputElement.value)
+      .then(() => {
+        alert("클립보드에 복사되었습니다!");
+      })
+      .catch((err) => {
+        console.log(err);
+        sharedLinkInputElement.select();
+      });
+  }
+}
+```
+
+<br>
+
+### 📖 공유 장소 화면에 렌더링하기
+
+1. src/MyPlace.js
+
+```javascript
+import { Map } from "./UI/Map.js";
+
+class LoadedPlace {
+  constructor(coordinates, address) {
+    new Map(coordinates);
+    const headerTitleEl = document.querySelector("header h1");
+    headerTitleEl.textContent = address;
+  }
+}
+
+const url = new URL(location.href); // location.href -> 브라우저에서 로드된 현재 위치. 현재 url
+const queryParams = url.searchParams; // ?뒤에 있는 값들을 키-값 형식으로 queryParams에 저장.
+const coords = {
+  lat: parseFloat(queryParams.get("lat")),
+  lng: +queryParams.get("lng"),
+};
+const address = queryParams.get("address");
+new LoadedPlace(coords, address);
 ```

@@ -1,22 +1,53 @@
 import { Modal } from "./UI/Model.js";
 import { Map } from "./UI/Map.js";
-import { getCoordsFromAddress } from "./Utility/Location.js";
+import {
+  getCoordsFromAddress,
+  getAddressFromCoords,
+} from "./Utility/Location.js";
 
 class PlaceFinder {
   constructor() {
     const addressForm = document.querySelector("form");
     const locateUserBtn = document.getElementById("locate-btn");
+    this.shareBtn = document.getElementById("share-btn");
 
     locateUserBtn.addEventListener("click", this.locateUserHandler.bind(this));
+    this.shareBtn.addEventListener("click", this.sharePlaceHandler);
     addressForm.addEventListener("submit", this.findAddressHandler.bind(this));
   }
 
-  selectPlace(coordinates) {
+  sharePlaceHandler() {
+    const sharedLinkInputElement = document.getElementById("share-link");
+
+    if (!navigator.clipboard) {
+      sharedLinkInputElement.select(); // select : select 이벤트를 트리거하는 건 전체 콘텐츠를 선택하고 마킹한다. => cmd+c 를 통해 복사할 수 있게..
+      return;
+    }
+    navigator.clipboard
+      .writeText(sharedLinkInputElement.value)
+      .then(() => {
+        alert("클립보드에 복사되었습니다!");
+      })
+      .catch((err) => {
+        console.log(err);
+        sharedLinkInputElement.select();
+      });
+  }
+
+  selectPlace(coordinates, address) {
     if (this.map) {
       this.map.render(coordinates);
     } else {
       this.map = new Map(coordinates);
     }
+
+    this.shareBtn.disabled = false;
+    const sharedLinkInputElement = document.getElementById("share-link");
+    sharedLinkInputElement.value = `${
+      location.origin
+    }/my-place?address=${encodeURI(address)}&lat=${coordinates.lat}&lng=${
+      coordinates.lng
+    }`; // location.origin: 현재 도메인
   }
 
   locateUserHandler() {
@@ -32,14 +63,15 @@ class PlaceFinder {
     );
     modal.show();
     navigator.geolocation.getCurrentPosition(
-      (successResult) => {
-        modal.hide();
+      async (successResult) => {
         console.log(successResult);
         const coordinate = {
           lat: successResult.coords.latitude, // 위도
           lng: successResult.coords.longitude, // 경도
         }; // User의 좌표
-        this.selectPlace(coordinate);
+        const address = await getAddressFromCoords(coordinate);
+        modal.hide();
+        this.selectPlace(coordinate, address);
       },
       (error) => {
         modal.hide();
@@ -62,7 +94,7 @@ class PlaceFinder {
     modal.show();
     try {
       const coordinates = await getCoordsFromAddress(address); // async, await을 사용했기 때문에 Promise를 반환..
-      this.selectPlace(coordinates);
+      this.selectPlace(coordinates, address);
     } catch (err) {
       alert(err.message);
     }
