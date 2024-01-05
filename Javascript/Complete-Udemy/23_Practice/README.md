@@ -256,3 +256,61 @@ class PlaceFinder {
   }
 }
 ```
+
+<br>
+
+### 📖 주소 찾기 & 좌표 얻기
+
+[Google Geocoding API](https://developers.google.com/maps/documentation/geocoding/overview?hl=ko)
+
+1. src/Utility/Location.js
+```javascript
+const GOOGLE_API_KEY = 'YOUR_KEY'
+
+export async function getCoordsFromAddress(address) {
+    const urlAddress = encodeURI(address);  // url에 적합하게 address 변경
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${urlAddress}&key=${GOOGLE_API_KEY}`
+    );
+
+    if (!response.ok) {
+        throw new Error('좌표를 패치하는데 실패했습니다. 다시 시도하세요.')
+    } 
+    const data = await response.json();
+
+    if (data.error_message) {   // 200 상태 코드로 실패했을 때 그걸 알려주는 오류 메시지
+        throw new Error(data.error_message);
+    }
+
+    const coordinates = data.results[0].geometry.location;
+    return coordinates;
+}
+```
+
+<br>
+
+### 📖 사용자 입력을 좌표로 변환하기
+
+1. src/SharePlace.js
+```javascript
+async findAddressHandler(event) {
+    event.preventDefault();
+    const address = event.target.querySelector("input").value;
+    if (!address || address.trim().length === 0) {
+      alert("유효하지 않은 주소입니다. 다시 입력해주세요.");
+      return;
+    }
+    const modal = new Modal(
+      "loading-modal-content",
+      "loading location.. plz wait!"
+    );
+    modal.show();
+    try {
+      const coordinates = await getCoordsFromAddress(address); // async, await을 사용했기 때문에 Promise를 반환..
+      this.selectPlace(coordinates);
+    } catch (err) {
+      alert(err.message);
+    }
+    modal.hide();
+  }
+```

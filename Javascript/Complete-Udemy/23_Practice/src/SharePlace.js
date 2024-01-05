@@ -1,5 +1,6 @@
 import { Modal } from "./UI/Model.js";
 import { Map } from "./UI/Map.js";
+import { getCoordsFromAddress } from "./Utility/Location.js";
 
 class PlaceFinder {
   constructor() {
@@ -34,11 +35,11 @@ class PlaceFinder {
       (successResult) => {
         modal.hide();
         console.log(successResult);
-        const userLocation = {
+        const coordinate = {
           lat: successResult.coords.latitude, // 위도
           lng: successResult.coords.longitude, // 경도
         }; // User의 좌표
-        this.selectPlace(userLocation);
+        this.selectPlace(coordinate);
       },
       (error) => {
         modal.hide();
@@ -47,7 +48,26 @@ class PlaceFinder {
     );
   }
 
-  findAddressHandler() {}
+  async findAddressHandler(event) {
+    event.preventDefault();
+    const address = event.target.querySelector("input").value;
+    if (!address || address.trim().length === 0) {
+      alert("유효하지 않은 주소입니다. 다시 입력해주세요.");
+      return;
+    }
+    const modal = new Modal(
+      "loading-modal-content",
+      "loading location.. plz wait!"
+    );
+    modal.show();
+    try {
+      const coordinates = await getCoordsFromAddress(address); // async, await을 사용했기 때문에 Promise를 반환..
+      this.selectPlace(coordinates);
+    } catch (err) {
+      alert(err.message);
+    }
+    modal.hide();
+  }
 }
 
 new PlaceFinder();
