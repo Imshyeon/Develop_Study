@@ -48,3 +48,25 @@ button.addEventListener("click", () => {
 
 // COPY 버튼을 누르면 undefined가 나오지만 cmd+v를 누르면 해당 텍스트가 복사된 것을 알 수 있다.
 ```
+
+<br>
+
+2. 기능 탐지 + 폴백 코드
+
+```javascript
+button.addEventListener("click", () => {
+  const text = textParagraph.textContent;
+  if (navigator.clipboard) { // undefined 이면 falsy => if 안의 코드는 지원되는 브라우저에서만 실행이 될 것.
+    navigator.clipboard
+      .writeText(text)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((err) => {
+        console.log(err);
+      }); 
+  } else {  // 폴백 코드
+    alert('Feature not available, plz copy manually!')
+  }
+});
+```
