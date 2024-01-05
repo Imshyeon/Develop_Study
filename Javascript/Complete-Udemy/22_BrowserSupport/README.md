@@ -4,6 +4,7 @@
 [📌 기능 탐지 + 폴백 코드](#-기능-탐지--폴백-코드)<br>
 [📌 폴리필(Polyfills)](#-폴리필polyfills)<br>
 [📌 코드 트랜스파일링](#-코드-트랜스파일링)<br>
+[📌 폴리필 자동 감지 + 추가](#-폴리필-자동-감지--추가)<br>
 <br>
 
 ## 📌 JavaScript 기능에 대한 브라우저 지원 여부
@@ -179,3 +180,12 @@ import Promise from "core-js-pure/actual/promise"; // 이런식으로 쓰면 된
 
 4. regenerator-runtime: core-js가 제공하지 않는 기능을 다루는 또다른 폴리필 패키지. 필요하다고 판단되면 Babel이 사용을 시도할 것.
    - 설치 : `npm install --save regenerator-runtime`
+
+<br><br>
+
+### 더 알아보기
+
+🔗 [Babel](https://babeljs.io/docs/)<br>
+🔗 [Babel-loader](https://github.com/babel/babel-loader)<br>
+🔗 [@babel/preset-env](https://babeljs.io/docs/babel-preset-env)<br>
+🔗 [core-js](https://github.com/zloirock/core-js)
