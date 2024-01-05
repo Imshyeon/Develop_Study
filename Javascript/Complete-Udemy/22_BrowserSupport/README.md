@@ -152,3 +152,30 @@ not dead // 아직까지 살아있는 브라우저를 의미.
 import "core-js"; // app.js의 용량이 매우매우 커지게 된다.
 import Promise from "core-js-pure/actual/promise"; // 이런식으로 쓰면 된다..
 ```
+
+3. babel.config.json
+
+```json
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {},
+        "useBuiltIns": "usage",
+        "corejs": "3.6.5"
+      }
+    ]
+  ]
+}
+```
+
+`"useBuiltIns": "usage"`라고 되어있는데 원래 해당 프로퍼티의 기본 값은 `false`로 자동으로 폴리필을 추가하지 않는다는 의미이다. 이를 `entry`나 `usage`로 설정할 수 있는데,
+
+- `entry` : 수동으로 폴리필을 가져온다.
+- `usage` : Babel이 감지한 내용에 따라 폴리필 엔트리를 추가한다. 자동으로 폴리필을 가져온다.
+
+<br>
+
+4. regenerator-runtime: core-js가 제공하지 않는 기능을 다루는 또다른 폴리필 패키지. 필요하다고 판단되면 Babel이 사용을 시도할 것.
+   - 설치 : `npm install --save regenerator-runtime`
