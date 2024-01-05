@@ -477,3 +477,13 @@ const coords = {
 const address = queryParams.get("address");
 new LoadedPlace(coords, address);
 ```
+
+<br>
+
+## 📌 결과
+
+- 현위치 탐색
+  ![현위치](현위치.gif)
+
+- 검색 후 클립보드 복사 &rarr; myplace/index.html
+  ![경복궁](경복궁.gif)
