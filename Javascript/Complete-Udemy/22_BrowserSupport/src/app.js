@@ -11,9 +11,8 @@ button.addEventListener("click", () => {
       })
       .catch((err) => {
         console.log(err);
-      }); 
-  } else {  
-    alert('Feature not available, plz copy manually!')
+      });
+  } else {
+    alert("Feature not available, plz copy manually!");
   }
 });
-

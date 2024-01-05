@@ -9,6 +9,7 @@
 ## 📌 JavaScript 기능에 대한 브라우저 지원 여부
 
 브라우저가 자바스크립트의 기능에 대해서 지원하는지 여부를 판단하기 위한 자료
+
 1. MDN &rarr; 브라우저 지원 표
 2. caniuse.com &rarr; 시장 점유율도 알 수 있다.
 3. Google &rarr; stackoverflow를 통해서 추가적인 정보..
@@ -32,6 +33,7 @@
 어떠한 기능을 사용하고자 할 때, 그 기능을 사용할 수 있다면 해당 코드와 특징을 사용한다. 만약 기능을 사용할 수 없는 곳이라면 폴백 코드를 실행하거나 오류 메시지를 나타낸다.
 
 1. start
+
 ```javascript
 const button = document.querySelector("button");
 const textParagraph = document.querySelector("p");
@@ -58,7 +60,8 @@ button.addEventListener("click", () => {
 ```javascript
 button.addEventListener("click", () => {
   const text = textParagraph.textContent;
-  if (navigator.clipboard) { // undefined 이면 falsy => if 안의 코드는 지원되는 브라우저에서만 실행이 될 것.
+  if (navigator.clipboard) {
+    // undefined 이면 falsy => if 안의 코드는 지원되는 브라우저에서만 실행이 될 것.
     navigator.clipboard
       .writeText(text)
       .then((result) => {
@@ -66,9 +69,10 @@ button.addEventListener("click", () => {
       })
       .catch((err) => {
         console.log(err);
-      }); 
-  } else {  // 폴백 코드
-    alert('Feature not available, plz copy manually!')
+      });
+  } else {
+    // 폴백 코드
+    alert("Feature not available, plz copy manually!");
   }
 });
 ```
@@ -80,7 +84,7 @@ button.addEventListener("click", () => {
 - 폴리필(polyfill) : 브라우저에서 누락된 기능을 추가해주는 타사 JavaScript 패키지.
 - 폴리필 찾기
   1. caniuse.com 이용하기
-    ![폴리필찾기](pollyfill.gif)
+     ![폴리필찾기](pollyfill.gif)
   2. 구글에 검색
 
 <br>
@@ -99,9 +103,11 @@ button.addEventListener("click", () => {
 
 <br>
 
-### 📖 트랜스파일러 적용하기 
+### 📖 트랜스파일러 적용하기
+
 1. 설치 : `npm i -D @babel/core @babel/cli @babel/preset-env` (babel 사용.)
 2. babel.config.json 생성 후 코드 작성
+
 ```json
 {
   "presets": [
@@ -121,10 +127,28 @@ button.addEventListener("click", () => {
   ]
 }
 ```
+
 3. `npm run build` &rarr; assets/scripts/app.js 생성됨
 
-*참고 `npx browserslist` 프로젝트 루트 위치에서 해당 명령어를 실행하면 프로젝트가 지원하는 브라우저 목록이 출력됨*
+_참고 `npx browserslist` 프로젝트 루트 위치에서 해당 명령어를 실행하면 프로젝트가 지원하는 브라우저 목록이 출력됨_
 
 ```.browserslistrc
 not dead // 아직까지 살아있는 브라우저를 의미.
+```
+
+<br>
+
+## 📌 폴리필 자동 감지 + 추가
+
+- [core-js](https://github.com/zloirock/core-js) : 폴리필의 집합, 다수의 폴리필들이 내장된 거대한 패키지.
+
+1. 설치 : `npm install --save core-js`
+
+   - `--save` : 단순한 개발 도구가 아니라 최종적으로 코드에 포함될 제 3자 라이브러리 니깐..
+
+2. 적용
+
+```javascript
+import "core-js"; // app.js의 용량이 매우매우 커지게 된다.
+import Promise from "core-js-pure/actual/promise"; // 이런식으로 쓰면 된다..
 ```
