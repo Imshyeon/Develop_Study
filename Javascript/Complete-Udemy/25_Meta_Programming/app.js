@@ -91,3 +91,30 @@ Reflect.setPrototypeOf(course, {
 });
 
 console.log(course.toString()); // JavaScript - The complete guide
+
+// ============================ Reflect API ============================
+const courseHandler = {
+  get(obj, propertyName) {
+    console.log(propertyName);
+    if (propertyName === "length") {
+      return 0;
+    }
+    return obj[propertyName] || "NOT FOUND";
+  },
+  set(obj, propertyName, newValue) {
+    if (propertyName === "rating") {
+      return;
+    }
+    obj[propertyName] = newValue;
+  },
+};
+const pCourse = new Proxy(course, courseHandler);
+pCourse.rating = 5; // rating에 대한 property 설정을 금했기 때문에 설정이 되지 않았음을 알 수 있다.
+
+console.log(pCourse.title);
+// title
+// JavaScript - The complete guide
+
+console.log(course, pCourse);
+// {title: 'JavaScript - The complete guide'}
+// Proxy(Object) { title: 'JavaScript - The complete guide' }

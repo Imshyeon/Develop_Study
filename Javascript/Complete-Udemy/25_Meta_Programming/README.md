@@ -232,7 +232,7 @@ Reflect.setPrototypeOf(course, {
 console.log(course.toString()); // JavaScript - The complete guide
 ```
 
-- `setPrototypeOf` : 객체의 프로토타입을 설정할 수 있다. 
+- `setPrototypeOf` : 객체의 프로토타입을 설정할 수 있다.
 - `definedProperty` : 새 프로퍼티를 추가할 수 있다.
 - Reflect API 는 메타 수준에서 객체를 바꾸고 객체로 작업할 수 있는 다양한 메서드를 제공한다.
 - 그렇다면 왜 Reflect API를 사용할까?
@@ -244,3 +244,35 @@ console.log(course.toString()); // JavaScript - The complete guide
 
 ## 📌 Proxy API
 
+1. 특정 개체의 연산을 위해 트랩을 만든다. &rarr; 트랩을 가로챈다.
+2. 특정 연산에 개입하고 자신만의 코들르 실행.
+
+```javascript
+const courseHandler = {
+  get(obj, propertyName) {
+    console.log(propertyName);
+    return obj[propertyName] || "NOT FOUND";
+  },
+  set(obj, propertyName, newValue) {
+    if (propertyName === "rating") {
+      return;
+    }
+    obj[propertyName] = newValue;
+  },
+};
+const pCourse = new Proxy(course, courseHandler);
+pCourse.rating = 5; // rating에 대한 property 설정을 금했기 때문에 설정이 되지 않았음을 알 수 있다.
+
+console.log(pCourse.title);
+// title
+// JavaScript - The complete guide
+
+console.log(course, pCourse);
+// {title: 'JavaScript - The complete guide'}
+// Proxy(Object) { title: 'JavaScript - The complete guide' }
+```
+
+- 프록시 생성자 함수는 프록시가 적용되어야 하는 객체를 요구. & 래핑된 객체에 대해 특정 핸들러를 정의해서 래핑된 객체에서 특정 동작 또는 연산을 수행하게 한다.
+- 즉, 기존 객체를 다른 객체로 래핑한다.
+
+🔗 [Proxy API](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
