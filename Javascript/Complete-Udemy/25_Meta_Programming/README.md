@@ -2,6 +2,8 @@
 
 [📌 Symbols](#-symbols)<br>
 [📌 Iterators & Generators](#-iterators--generators)<br>
+[📌 Reflect API](#-reflect-api)<br>
+[📌 📌 Proxy API](#📌-proxy-api)<br>
 <br>
 
 ## 📌 Symbols
@@ -98,37 +100,147 @@ console.log(user.toString()); // [object User]
 
 - 반복자 : next 메서드를 가진 객체
 
-    ```javascript
-    const company = {
+  ```javascript
+  const company = {
     curEmployee: 0, // 출력된 직원을 추적할 수 있게 함
     employees: ["Max", "Zoe", "Taemin"],
     next() {
-        if (this.curEmployee >= this.employees.length) {
+      if (this.curEmployee >= this.employees.length) {
         return { value: this.curEmployee, done: true };
         // done : 출력할 값이 더 남아있는지 아닌지 불리언으로 신호를 보냄
-        }
-        const returnValue = {
+      }
+      const returnValue = {
         values: this.employees[this.curEmployee],
         done: false,
-        };
-        this.curEmployee++;
-        return returnValue;
+      };
+      this.curEmployee++;
+      return returnValue;
     },
-    };
+  };
 
-    console.log(company.next()); // {values: 'Max', done: false}
-    console.log(company.next()); // {values: 'Zoe', done: false}
-    console.log(company.next()); // {values: 'Taemin', done: false}
-    console.log(company.next()); // {value: 3, done: true}
-    console.log(company.next()); // {value: 3, done: true}
-    console.log(company.next()); // {value: 3, done: true}
+  console.log(company.next()); // {values: 'Max', done: false}
+  console.log(company.next()); // {values: 'Zoe', done: false}
+  console.log(company.next()); // {values: 'Taemin', done: false}
+  console.log(company.next()); // {value: 3, done: true}
+  console.log(company.next()); // {value: 3, done: true}
+  console.log(company.next()); // {value: 3, done: true}
 
-    // ===== or
+  // ===== or
 
-    let employee = company.next()
+  let employee = company.next();
 
-    while (!employee.done) {
-        console.log(employee.values);// Max, Zoe, Taemin
-        employee = company.next()
-    }
-    ```
+  while (!employee.done) {
+    console.log(employee.values); // Max, Zoe, Taemin
+    employee = company.next();
+  }
+  ```
+
+<br>
+
+### 📖 Generators
+
+- Generator
+- JavaScript에서 Iterable 객체를 사용해서 빌트인 next 메서드를 가진 객체를 생성한다. &rarr; 자동으로 반복자 생성(next 메서드를 가진 객체 생성)
+
+  ```javascript
+  const company = {
+    employees: ["Max", "Zoe", "Taemin"],
+    getEmployee: function* employeeGenerator() {
+      // next 메서드를 가진 객체여야 함 -> function* : 해당 함수는 제너레이터로 바뀜
+      // 1.
+      //     let employee = company.next();
+      //     while (!employee.done) {
+      //       yield employee.values;
+      //       employee = company.next();
+      //     }
+
+      // 2.
+      let currentEmployee = 0;
+      while (currentEmployee < this.employees.length) {
+        yield this.employees[currentEmployee];
+        currentEmployee++;
+      }
+    },
+  };
+  const it = company.getEmployee();
+  console.log(it.next()); // {value: 'Max', done: false}
+  console.log(it.next()); // {value: 'Zoe', done: false}
+  console.log(it.next()); // {value: 'Taemin', done: false}
+  console.log(it.next()); // {value: undefined, done: true}
+  console.log(it.next()); // {value: undefined, done: true}
+  ```
+
+- `yield`
+  - `yield` 키워드를 사용하면 제네레이터를 통해 생성된 객체에서 next 메서드에 대한 모든 호출의 반환값을 정의해준다.
+  - `yield`는 return과 비슷 => 해당 함수 호출에 대한 결과를 반환하는 기능
+  - `yield`에 도달할 때마다 자바스크립트는 그 시점까지의 실행 상태를 저장한다. 그리고 그 다음번에 next 메서드를 실행하면 그 부분부터 다시 시작한다.
+
+<br>
+
+- Symbol과 for~of 문
+
+  ```javascript
+  const company = {
+    employees: ["Max", "Zoe", "Taemin"],
+    [Symbol.iterator]: function* employeeGenerator() {
+      let currentEmployee = 0;
+      while (currentEmployee < this.employees.length) {
+        yield this.employees[currentEmployee]; // yield는 return과 비슷 => 해당 함수 호출에 대한 결과를 반환하는 기능
+        currentEmployee++;
+      }
+    },
+  };
+
+  for (const employee of company) {
+    console.log(employee);
+    // Max
+    // Zoe
+    // Taemin
+  }
+
+  console.log([...company]); // [Max Zoe Taemin]
+  ```
+
+  - `for~of`를 사용하면 루프하는 객체를 대상으로 Symbol.iterator에 있는 것을 찾아준다. 그리고 제네레이터에 있는 함수를 실행시켜 반복자로 반환.
+  - `...company` : 전개 연산자가 배후에서 반복자 심볼을 찾아 모든 값들을 확인하고 새로운 배열에 요소로 추가한다.
+
+<br>
+
+### 📖 정리
+
+1. 빌트인 반복자 심볼로 자체 루프를 생성할 수 있다.
+2. 배열과 문자열이 내부에서 실행하는 작업과 자체 객체로 할 수 있는 것들을 이해하는데 도움을 준다.
+
+<br>
+
+## 📌 Reflect API
+
+1. API는 객체를 제어하고 JavaScript 객체로 작업이 가능하게 함.
+2. Reflect는 JavaScript 객체로 클래스의 정적 메서드들을 그룹화한다. &rarr; 객체를 써서 작업할 때 도움이 되는 기능을 묶은 것
+3. 표준화되고 그룹화된 메서드가 있고 코드가 어떻게 동작할 지를 제어하는데 쓰인다.
+
+```javascript
+const course = {
+  title: "JavaScript - The complete guide",
+};
+
+Reflect.setPrototypeOf(course, {
+  toString() {
+    return this.title;
+  },
+});
+console.log(course.toString()); // JavaScript - The complete guide
+```
+
+- `setPrototypeOf` : 객체의 프로토타입을 설정할 수 있다. 
+- `definedProperty` : 새 프로퍼티를 추가할 수 있다.
+- Reflect API 는 메타 수준에서 객체를 바꾸고 객체로 작업할 수 있는 다양한 메서드를 제공한다.
+- 그렇다면 왜 Reflect API를 사용할까?
+  - 비교적 최신으로 Object API보다 최신..
+  - 메서드가 약간 다르게 작동한다. 만약 메서드가 작동에 실패했을 때 Object API는 undefined나 아무 말도 없이 실패한다. 하지만 Reflect API는 에러를 표시하거나 주어진 메서드에 True, False로 반환해서 작동 여부를 알려준다.
+  - Reflect API에선 객체로 작업할 때 필요한 모든 기능을 묶어놨다.
+
+<br>
+
+## 📌 Proxy API
+
