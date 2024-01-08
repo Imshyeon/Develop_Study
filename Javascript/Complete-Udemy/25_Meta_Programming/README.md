@@ -3,7 +3,7 @@
 [📌 Symbols](#-symbols)<br>
 [📌 Iterators & Generators](#-iterators--generators)<br>
 [📌 Reflect API](#-reflect-api)<br>
-[📌 📌 Proxy API](#📌-proxy-api)<br>
+[📌 Proxy API](#-proxy-api)<br>
 <br>
 
 ## 📌 Symbols
@@ -275,4 +275,12 @@ console.log(course, pCourse);
 - 프록시 생성자 함수는 프록시가 적용되어야 하는 객체를 요구. & 래핑된 객체에 대해 특정 핸들러를 정의해서 래핑된 객체에서 특정 동작 또는 연산을 수행하게 한다.
 - 즉, 기존 객체를 다른 객체로 래핑한다.
 
-🔗 [Proxy API](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
+<br><br>
+
+### 더 알아보기
+🔗 [Symbol](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Symbol)<br>
+🔗 [Well-Known Symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#well-known_symbols)<br>
+🔗 [Iterators & Generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators)<br>
+🔗 [Reflect API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect)<br>
+🔗 [Proxy API](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Proxy)<br>
+🔗 [Proxy API의 전체 Trap 목록](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy#a_complete_traps_list_example)
