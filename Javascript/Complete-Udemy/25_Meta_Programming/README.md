@@ -97,3 +97,38 @@ console.log(user.toString()); // [object User]
 ### 📖 Iterators
 
 - 반복자 : next 메서드를 가진 객체
+
+    ```javascript
+    const company = {
+    curEmployee: 0, // 출력된 직원을 추적할 수 있게 함
+    employees: ["Max", "Zoe", "Taemin"],
+    next() {
+        if (this.curEmployee >= this.employees.length) {
+        return { value: this.curEmployee, done: true };
+        // done : 출력할 값이 더 남아있는지 아닌지 불리언으로 신호를 보냄
+        }
+        const returnValue = {
+        values: this.employees[this.curEmployee],
+        done: false,
+        };
+        this.curEmployee++;
+        return returnValue;
+    },
+    };
+
+    console.log(company.next()); // {values: 'Max', done: false}
+    console.log(company.next()); // {values: 'Zoe', done: false}
+    console.log(company.next()); // {values: 'Taemin', done: false}
+    console.log(company.next()); // {value: 3, done: true}
+    console.log(company.next()); // {value: 3, done: true}
+    console.log(company.next()); // {value: 3, done: true}
+
+    // ===== or
+
+    let employee = company.next()
+
+    while (!employee.done) {
+        console.log(employee.values);// Max, Zoe, Taemin
+        employee = company.next()
+    }
+    ```
