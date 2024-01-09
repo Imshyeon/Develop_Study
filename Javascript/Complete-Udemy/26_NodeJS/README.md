@@ -401,3 +401,10 @@ router.get("/location/:locId", (req, res, next) => {
   res.json({ address: location.address, coordinates: location.coords });
 });
 ```
+
+<br>
+<br>
+
+### 더 알아보기
+
+🔗 [Node.js docs](https://nodejs.org/docs/latest/api/)

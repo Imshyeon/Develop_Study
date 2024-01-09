@@ -1,5 +1,4 @@
 const express = require("express");
-
 const router = express.Router();
 
 const locationStorage = {
@@ -8,6 +7,7 @@ const locationStorage = {
 
 router.post("/add-location", (req, res, next) => {
   const id = Math.random();
+
   locationStorage.locations.push({
     id: id,
     address: req.body.address,
