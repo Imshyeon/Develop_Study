@@ -61,3 +61,5 @@
 
 🚀 [27_Security](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/27_Security) : 보안 <br>
 
+🚀 [28_Deploy](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/28_Deploy) : JavaScript 코드 배포하기 <br>
+
