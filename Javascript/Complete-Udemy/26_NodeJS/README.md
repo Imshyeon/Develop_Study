@@ -159,7 +159,7 @@ server.listen(3000); // 서버를 시작하여 들어오는 요청을 리스닝.
 
 1. `npm install --save ejs`
 2. views/index.ejs
-   `html
+   ```html
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -174,7 +174,7 @@ server.listen(3000); // 서버를 시작하여 들어오는 요청을 리스닝.
         </form>
     </body>
     </html>
-    `
+    ```
    <br>
 
 3. app.js
