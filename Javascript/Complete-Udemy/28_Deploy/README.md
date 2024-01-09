@@ -54,3 +54,38 @@
 
 ## 📌 동적 페이지 배포
 
+🔗 [참고](https://devcenter.heroku.com/articles/getting-started-with-nodejs)
+
+1. git 설치 &rarr; `brew install git`
+2. `brew tap heroku/brew && brew install heroku`
+3. `heroku login`
+4. `git init`
+5. git 레파지토리 생성 후 클론
+6. `heroku create` &rarr; `git push heroku main`(main 대신 다른 브랜치 명을 썼다면 해당 브랜치명 쓰기)
+   1. 만약 해당 부분에서 오류가 발생했다면..
+   ```json
+   // package.json
+    "scripts": {
+        "start": "node app.js"  // 추가 -> 서버 시작
+    },
+   ```
+
+   ```Procfile
+   // Procfile 생성
+   web: node app.js
+   ```
+<br><br>
+
+**그 전에, app.js에서 리스닝 설정하기!**
+```javascript
+// app.js
+
+app.listen(process.env.PORT || 3000);   //node.js의 빌트인 된 환경변수를 사용
+```
+
+<br><br>
+
+### 더 알아보기
+
+🔗 [firebase docs](https://firebase.google.com/docs/hosting?hl=ko)<br>
+🔗 [heroku docs](https://devcenter.heroku.com/categories/reference)<br>
