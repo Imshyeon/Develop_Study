@@ -4,6 +4,7 @@
 [📌 HTTP](#-http)<br>
 [📌 Express.js](#-expressjs)<br>
 [📌 템플릿 & EJS 이용하기](#-템플릿--ejs-이용하기)<br>
+[📌 프로젝트 향상시키기](#-프로젝트-향상시키기)<br>
 <br>
 
 ## 📌 모듈 & 파일 엑세스 이해하기
@@ -126,27 +127,27 @@ server.listen(3000); // 서버를 시작하여 들어오는 요청을 리스닝.
 
 1. `npm install body-parser --save`
 
-    ```javascript
-    const express = require("express");
-    const bodyParser = require("body-parser");
-    const app = express();
+   ```javascript
+   const express = require("express");
+   const bodyParser = require("body-parser");
+   const app = express();
 
-    app.use(bodyParser.urlencoded({ extended: false }));
+   app.use(bodyParser.urlencoded({ extended: false }));
 
-    app.use((req, res, next) => {
-    res.setHeader("Content-Type", "text/html");
-    next();
-    });
+   app.use((req, res, next) => {
+     res.setHeader("Content-Type", "text/html");
+     next();
+   });
 
-    app.use((req, res, next) => {
-    const userName = req.body.username || "Unknown User"; // input name="username"이니까
-    res.send(
-        `<h1>Hi ${userName}</h1><form method="POST" action="/"><input name="username" type="text"><button type="submit">Send</button></form>`
-    );
-    });
+   app.use((req, res, next) => {
+     const userName = req.body.username || "Unknown User"; // input name="username"이니까
+     res.send(
+       `<h1>Hi ${userName}</h1><form method="POST" action="/"><input name="username" type="text"><button type="submit">Send</button></form>`
+     );
+   });
 
-    app.listen(3000);
-    ```
+   app.listen(3000);
+   ```
 
 - `app.use(bodyParser)` : 기본 미들웨어로 추가가 됨.
   - 들어오는 body, 요청 body를 분석하고 추출함.
@@ -158,7 +159,7 @@ server.listen(3000); // 서버를 시작하여 들어오는 요청을 리스닝.
 
 1. `npm install --save ejs`
 2. views/index.ejs
-    ```html
+   `html
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -173,31 +174,134 @@ server.listen(3000); // 서버를 시작하여 들어오는 요청을 리스닝.
         </form>
     </body>
     </html>
-    ```
-<br>
+    `
+   <br>
 
 3. app.js
-    ```javascript
-    const express = require("express");
-    const bodyParser = require("body-parser");
-    const app = express();
 
-    app.set("view engine", "ejs"); // 뷰와 템플릿을 분석하는 엔진이 ejs라고 알림.
-    app.set("views", "views"); // 뷰 폴더 지정
+   ```javascript
+   const express = require("express");
+   const bodyParser = require("body-parser");
+   const app = express();
 
-    app.use(bodyParser.urlencoded({ extended: false }));
+   app.set("view engine", "ejs"); // 뷰와 템플릿을 분석하는 엔진이 ejs라고 알림.
+   app.set("views", "views"); // 뷰 폴더 지정
 
-    app.use((req, res, next) => {
-    res.setHeader("Content-Type", "text/html");
-    next();
-    });
+   app.use(bodyParser.urlencoded({ extended: false }));
 
-    app.use((req, res, next) => {
-    const userName = req.body.username || "Unknown User"; // input name="username"이니까
-    res.render("index", {
-        user: userName,
-    }); // view 이름, 전체 프로퍼티가 있는 객체 (또는 해당 템플릿에 제공하고자 하는 전체 데이터가 있는 객체)
-    });
+   app.use((req, res, next) => {
+     res.setHeader("Content-Type", "text/html");
+     next();
+   });
 
-    app.listen(3000);
-    ```
+   app.use((req, res, next) => {
+     const userName = req.body.username || "Unknown User"; // input name="username"이니까
+     res.render("index", {
+       user: userName,
+     }); // view 이름, 전체 프로퍼티가 있는 객체 (또는 해당 템플릿에 제공하고자 하는 전체 데이터가 있는 객체)
+   });
+
+   app.listen(3000);
+   ```
+
+<br>
+
+## 📌 프로젝트 향상시키기
+
+### 📖 기본 REST 경로 추가하기
+
+1. 26_NodeJS/app.js
+
+```javascript
+const express = require("express");
+const bodyParser = require("body-parser");
+const locationRoutes = require("./routes/location"); // 파일 확장자는 적지 않음.
+
+const app = express();
+
+app.use(bodyParser.json());
+
+app.use(locationRoutes); // express router가 express 어플리케이션에 등록할 수 있는 미들웨어
+
+app.listen(3000);
+```
+
+<br>
+
+2. 26_NodeJS/routes/location.js
+
+```javascript
+const express = require("express");
+
+const router = express.Router();
+
+const locationStorage = {
+  locations: [],
+};
+
+router.post("/add-location", (req, res, next) => {
+  locationStorage.locations.push({
+    id: Math.random(),
+    address: req.body.address,
+    coords: { lat: req.body.lat, lng: req.body.lng },
+  });
+  res.json({ message: "Stored Location" });
+}); // 오직 이 주소로 post 요청이 들어와야만 해당 함수에 입력될 수 있다.
+
+router.get("/location", (req, res, next) => {});
+
+module.exports = router;
+```
+
+<br>
+
+3. 23_Practice/src/SharePlace.js
+
+```javascript
+selectPlace(coordinates, address) {
+
+    fetch("http://localhost:3000/add-location", {
+      method: "POST",
+      body: JSON.stringify({
+        address: address,
+        lat: coordinates.lat,
+        lng: coordinates.lng,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      });
+
+  }
+```
+
+4. 23_Practice에서 `npm run build:dev` 실행 후, 브라우저 'localhost:8080'에 접속
+
+<br>
+
+**결과 : CORS (교차 출처 요청 정책) 오류 발생**
+![CORS](./beforeCORS.png)
+
+<br>
+
+### 📖 CORS (교차 출처 요청 정책) 이해하기
+
+- CORS(Cross-Origin Resource Sharing) : 기술적으로 다른 두 개의 서버를 사용. 기본적으로 브라우저들은 교차 출처 요청을 막는다. 출처가 같고 도메인이 같은 요청만 승인된다.
+- 이러한 교차 출처 요청이 괜찮다는 신호를 보낼 필요가 있다.
+
+1. 26_NodeJS/app.js
+
+```javascript
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*"); // 요청을 보내고자 하는 모든 서버를 허용
+  res.setHeader("Access-Control-Allow-Method", "POST, GET, OPTIONS"); // Post, get 요청만 공용으로 노출시키길 원함.
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type"); // 클라이언트가 보낼만한 헤더를 정의
+  next();
+});
+```
