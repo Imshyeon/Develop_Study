@@ -56,16 +56,13 @@ class PlaceFinder {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
+        const locationId = data.locId;
+        this.shareBtn.disabled = false;
+        const sharedLinkInputElement = document.getElementById("share-link");
+        sharedLinkInputElement.value = `${
+          location.origin
+        }/my-place?location=${locationId}`; // location.origin: 현재 도메인
       });
-    
-    this.shareBtn.disabled = false;
-    const sharedLinkInputElement = document.getElementById("share-link");
-    sharedLinkInputElement.value = `${
-      location.origin
-    }/my-place?address=${encodeURI(address)}&lat=${coordinates.lat}&lng=${
-      coordinates.lng
-    }`; // location.origin: 현재 도메인
   }
 
   locateUserHandler() {

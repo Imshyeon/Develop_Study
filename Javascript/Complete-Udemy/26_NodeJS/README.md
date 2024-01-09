@@ -305,3 +305,99 @@ app.use((req, res, next) => {
   next();
 });
 ```
+
+<br>
+
+### 📖 프론트엔드로 위치 ID 보내기
+
+1. 26_NodeJS/routes/location.js
+
+```javascript
+router.post("/add-location", (req, res, next) => {
+  const id = Math.random(); // 상수로 아이디를 따로 뺌
+  locationStorage.locations.push({
+    id: id,
+    address: req.body.address,
+    coords: { lat: req.body.lat, lng: req.body.lng },
+  });
+  res.json({ message: "Stored Location", locId: id }); // 아이디를 전달
+});
+```
+
+2. 23_Practice/SharePlace.js
+
+```javascript
+fetch("http://localhost:3000/add-location", {
+  method: "POST",
+  body: JSON.stringify({
+    address: address,
+    lat: coordinates.lat,
+    lng: coordinates.lng,
+  }),
+  headers: {
+    "Content-Type": "application/json",
+  },
+})
+  .then((response) => {
+    return response.json();
+  })
+  .then((data) => {
+    // 해당 부분 수정
+    const locationId = data.locId; // 받아온 데이터(json)에서 locId를 가져옴
+    this.shareBtn.disabled = false;
+    const sharedLinkInputElement = document.getElementById("share-link");
+    sharedLinkInputElement.value = `${location.origin}/my-place?location=${locationId}`; // 도메인 수정
+  });
+```
+
+<br>
+
+### 📖 GET 위치 경로 추가하기
+
+1. 23_Practice/MyPlace.js
+
+```javascript
+import { Map } from "./UI/Map.js";
+
+class LoadedPlace {
+  constructor(coordinates, address) {
+    new Map(coordinates);
+    const headerTitleEl = document.querySelector("header h1");
+    headerTitleEl.textContent = address;
+  }
+}
+
+const url = new URL(location.href); // location.href -> 브라우저에서 로드된 현재 위치. 현재 url
+const queryParams = url.searchParams; // ?뒤에 있는 값들을 키-값 형식으로 queryParams에 저장.
+
+// 새롭게 작성된 부분.
+const locId = queryParams.get("location"); // location뒤로 locId를 전달 받을 것.
+fetch("http://localhost:3000/location/" + locId)
+  .then((response) => {
+    if (response.status === 404) {
+      throw new Error("Could not found the location");
+    }
+    return response.json();
+  })
+  .then((data) => {
+    new LoadedPlace(data.coordinates, data.address);
+  })
+  .catch((err) => {
+    alert(err.message);
+  });
+```
+
+2. 26_NodeJS/routes/location.js
+
+```javascript
+router.get("/location/:locId", (req, res, next) => {
+  const locationId = +req.params.locId; // /location/:locId => 해당 url에서 가져옴 && 문자열 -> 숫자로 변환
+  const location = locationStorage.locations.find((loc) => {
+    return loc.id === locationId;
+  });
+  if (!location) {
+    return res.status(404).json({ message: "Not Found!" });
+  }
+  res.json({ address: location.address, coordinates: location.coords });
+});
+```
