@@ -57,5 +57,7 @@
 
 🚀 [25_Meta_Programming](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/25_Meta_Programming) : 메타-프로그래밍 : 기호, 반복자, 생성자, 반영 API & 프록시 API <br>
 
-🚀 [26_NodeJS](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/25_Meta_Programming) : Node.js 개요 <br>
+🚀 [26_NodeJS](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/26_NodeJS) : Node.js 개요 <br>
+
+🚀 [27_Security](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/27_Security) : 보안 <br>
 
