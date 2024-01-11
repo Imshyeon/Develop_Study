@@ -63,3 +63,5 @@
 
 🚀 [28_Deploy](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/28_Deploy) : JavaScript 코드 배포하기 <br>
 
+🚀 [29_Performance_Optimizations](https://github.com/Imshyeon/Develop_Study/tree/js/Javascript/Complete-Udemy/29_Performance_Optimizations) : 성능 & 최적화 <br>
+
