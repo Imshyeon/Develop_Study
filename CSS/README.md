@@ -3,6 +3,7 @@
 [💬 시작하기 전에](#-시작하기-전에)<br>
 [📍 Selector](#-selector)<br>
 [📍 Display & Position](#-display--position)<br>
+[📍 Flex Box](#-flex-box)<br>
 [📍 Box Model](#-box-model)<br>
 [📍 Grid Model](#-grid-model)<br>
 [📍 Media Query](#-media-query)<br>
@@ -163,6 +164,8 @@ div {
 
 ## 📍 Flex Box
 
+Flex는 다음의 링크를 통해서 공부했습니다! &rarr; 🔗 [JSbin](https://jsbin.com/?html,output)
+
 - flex box에는 박스에 지정하는 속성값이 있고 box안의 item에 지정되는 속성값이 있다.
 - main axis(중심축)와 cross axis(반대축)이 있다. &rarr; 설정하는 대로 바뀐다.
 
@@ -246,6 +249,7 @@ div {
   order: 3;
 }
 ```
+
 - `order` : 개별 아이템의 순서를 직접 지정할 수 있다.
 - 위의 css 코드를 해설하면, 순서는 다음과 같이 나올 것이다.
 - 아이템2 &rarr; 아이템1 &rarr; 아이템3
@@ -253,41 +257,42 @@ div {
 <br>
 
 ```css
-.container{
+.container {
   padding-top: 100px;
-  background:beige;
-  height:100vh; 
-  display:flex;
- }
+  background: beige;
+  height: 100vh;
+  display: flex;
+}
 
-.item{
-  width:40px;
-  height:40px;
+.item {
+  width: 40px;
+  height: 40px;
   border: 1px solid black;
 }
 
-.item1{
+.item1 {
   background: #ef9a9a;
   flex-grow: 1;
-  
-  flex-shrink: 2; 
-  
-  flex-basis : 60%;
+
+  flex-shrink: 2;
+
+  flex-basis: 60%;
 
   align-self: center;
 }
-.item2{
+.item2 {
   background: #f48fb1;
   flex-shrink: 1;
-  flex-basis : 30%;
+  flex-basis: 30%;
 }
-.item3{
+.item3 {
   background: #ce93d8;
   flex-shrink: 1;
-  flex-basis : 10%;
+  flex-basis: 10%;
 }
 ```
-- `flex-grow` : 기본값 0. 아이템2,3은 자신의 고유한 사이즈인 40*40을 지키지만 아이템1은 flex-grow:1로 했기 때문에 해당 박스를 채운다.
+
+- `flex-grow` : 기본값 0. 아이템2,3은 자신의 고유한 사이즈인 40\*40을 지키지만 아이템1은 flex-grow:1로 했기 때문에 해당 박스를 채운다.
   - `item1{flex-grow:2;}, item2{flex-grow:1;}, item3{flex-grow:1;}`로 한다면 아이템1이 아이템2,3에 비해 2배로 채운다는 의미
 - `flex-shrink` : 컨테이너가 점점 작아졌을 때 어떻게 행동할 것인가 기본값은 0.
   - 자신의 고유한 사이즈에서 더 작아질때 아이템1이 아이템2,3에 비해서 2배 더 작게 줄어든다. &rarr; 더 많이 줄어듦.
@@ -380,6 +385,146 @@ h1 {
 <br>
 
 ![grid](./img/grid.png)
+
+### 📖 (+) Grid
+
+- 부모 컨테이너에 `display:grid;` 라고 지정해줘야 하고. 그 안의 자식요소들은 grid cell이 된다.
+- 부모 컨테이너(grid)
+  - grid의 전체적인 모양과 사이즈에 대해 템플릿 지정 가능.
+  - `grid-template-columns` : 몇 개의 column(가로)을 가질 수 있고, column의 사이즈
+  - `grid-template-rows` : 몇 개의 row(세로)가 있고 사이즈는 어떻게 되는지
+  - `grid-template-areas`,`gap(column-gap, row-gap)`
+- 자식 요소(grid cell)
+  - 얼만큼 차지할 것인지, grid안에서도 어떤 셀에 표기가 될 것인지, 몇개의 셀을 차지하는지 지정 가능.
+  - `grid-column-start`, `grid-column-end` &rarr; 가로 몇 번째 셀부터 몇 번째 셀까지 보여줄 것인지 지정
+  - `grid-row-start`, `grid-row-end` &rarr; 세로로 어디부터 어디까지 보여줄 것인지 지정
+  - `grid-area`
+
+<br>
+
+#### 1. 부모 컨테이너(grid)
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+
+  /* grid-template-rows: 100px 200px repeat(2,100px);  이렇게하거나 혹은*/
+  grid-auto-rows: minmax(150px, auto);
+
+  padding: 10px;
+  gap: 10px;
+}
+```
+
+- `repeat(5,10%);` = 5개의 grid, 사용가능한 화면의 10%
+- `repeat(3,1fr)` : 사용가능한 너비를 3개로 나눠서 비율로 나눔
+- `grid-auto-rows` : 몇 줄인지는 모르겠으나 개수에 상관없이 줄당 150px씩 &rarr; 단 안에 콘텐츠가 있을 수 있으니 `minmax()`를 이용
+  - `minmax(150px, auto)` : 최소 150px ~ 자동으로 늘어나게
+- `gap` : 셀 사이의 갭 &rarr; `column-gap, row-gap`을 사용할 수도 있다.
+
+<br>
+
+#### 2. 자식 요소(grid cell)
+
+```css
+.item2{
+    grid-column-start: 2;
+    grid-column-end: 4;
+    grid-row-start: 1;
+    grid-row-end: 3;
+}
+
+/* 이렇게 수정 가능 */
+.item2 {
+  grid-column: 2 / 4;
+  grid-row: 1 / 3;
+}
+
+/* 혹은 */
+.item2 {
+  grid-column: 2 / span 2; /*2번째 줄에서 시작하되, 2개의 셀을 차지할거다~*/
+  grid-row: 1 / 3;
+}
+```
+
+- grid line을 통한 범위 지정
+- column(가로) 기준
+  - 제일 왼쪽에서부터 : 1 &rarr; 2 &rarr; 3 &rarr; ... 
+  - 제일 오른쪽에서부터 : -1 &rarr; -2 &rarr; -3 &rarr; ...
+- row(세로) 기준
+  - 제일 위에서부터 : 1 &rarr; 2 &rarr; 3 &rarr; ...
+  - 제일 아래서부터 : -1 &rarr; -2 &rarr; -3 &rarr; ...
+
+**결과** 
+
+![cell](./img/gridCell.png)
+
+<br>
+
+#### `grid-area` 사용하기
+
+```css
+body {
+  padding: 5rem;
+  background-color: black;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 150px;
+  gap: 1rem;
+
+  grid-template-areas: /* 영역 설정!! */
+    "a a a"
+    "b c c"
+    "b d g"
+    "e f g";
+}
+
+.image {
+  /* 이미지가 부모 컨테이너의 100% 너비와 높이를 가지도로고 함 */
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.image1{
+    grid-area: a; /* image1은 grid-template-areas에 a라고 표시되어 있는 곳에 위치해라. */
+}
+
+.image2{
+    grid-area: b;
+}
+
+.image3{
+    grid-area: c;
+}
+
+.image4{
+    grid-area: d;
+}
+
+.image5{
+    grid-area: e;
+}
+
+.image6{
+    grid-area: f;
+}
+
+.image7{
+    grid-area: g;
+}
+```
+
+**결과**
+
+![grid-area](./img/grid-area.gif)
+
+
 
 <br>
 
