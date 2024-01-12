@@ -295,6 +295,8 @@ div {
   - 아이템1, 2, 3는 지정된 퍼센트에 맞게 공간을 차지한다. 이는 화면크기를 늘리든 줄이든 같은 퍼센트를 차지함.
 - `align-self` : 컨테이너에서 지정된 것에서 벗어나서 아이템별로 아이템 정렬
 
+🔗 [CSS-TRICKS | flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
+
 <br>
 
 ## 📍 Box Model
