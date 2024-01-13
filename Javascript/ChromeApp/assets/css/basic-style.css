@@ -1,0 +1,103 @@
+body {
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+#flex {
+  display: flex;
+  flex-direction: column;
+}
+#login-form {
+  align-self: end;
+}
+
+#login-form input {
+  border-radius: 10px;
+  margin-right: 5px;
+  border-style: none;
+  padding: 0.51rem;
+}
+#login-form button {
+  border-radius: 10px;
+  background-color: rgb(132, 173, 250);
+  margin-left: 5px;
+  border-style: none;
+  padding: 0.51rem;
+  align-self: baseline;
+}
+#login-form button:hover {
+  background-color: rgb(95, 136, 212);
+}
+
+#clock {
+  color: gray;
+  font-size: 3rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+  align-self: center;
+}
+
+#greeting {
+  margin-top: 0;
+  font-weight: 100;
+  display: flex;
+  justify-content: center;
+  font-size: small;
+  margin-bottom: 2rem;
+}
+
+#todo-box {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  border: 1px solid beige;
+  border-radius: 2rem;
+  height: 60vh;
+  background-color: rgba(240, 248, 255, 0.598);
+  width: 60%;
+  align-self: center;
+  opacity: 0.5;
+}
+
+#todo-list li span,
+#todo-list li button {
+  margin: 0.2rem 0.3rem;
+}
+
+#todo-list li span{
+font-weight: 600;
+}
+
+#todo-list li button {
+  border: none;
+  background-color: transparent;
+  z-index: 1000;
+}
+
+#todo-form {
+  display: flex;
+  justify-content: center;
+}
+
+#todo-form input {
+  border: 1px dotted black;
+  background-color: transparent;
+  border-radius: 2rem;
+  padding: 0.8rem;
+  margin-bottom: 0.4rem;
+  width: 12rem;
+  /* background-color: rgba(250, 235, 215, 0.395); */
+}
+
+#todo-form input::placeholder {
+  color: black;
+  text-align: center;
+}
+
+#quote {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  margin-top: 1.5rem;
+  color: antiquewhite;
+}

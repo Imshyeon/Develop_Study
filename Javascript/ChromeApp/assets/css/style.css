@@ -1,17 +1,3 @@
-.hidden{
-    display: none;
+.hidden {
+  display: none !important;
 }
-/* 
-#screen-top{
-    display: grid;
-    grid-template-columns: 5fr 1fr;
-}
-
-#login-form input, button{
-    
-}
-
-#clock{
-    color: gray;
-    margin-top: 0;
-} */

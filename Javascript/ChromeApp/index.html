@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/basic-style.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
     <script src="assets/js/greeting.js" defer></script>
     <script src="assets/js/clock.js" defer></script>
     <script src="assets/js/quotes.js" defer></script>
@@ -13,30 +14,38 @@
     <script src="assets/js/weather.js" defer></script>
   </head>
   <body>
-    <div id="screen-top">
-    <form class="hidden" id="login-form">
-      <input
-        required
-        maxlength="15"
-        type="text"
-        placeholder="What is your name?"
-      />
-      <button type="submit">Log In</button>
-    </form> 
-    <h2 id="clock">00:00:00</h2>
-    </div>
-    <h1 id="greeting" class="hidden"></h1>
-    <form id="todo-form">
-      <input type="text" placeholder="write a To Do and Press Enter" required>
-    </form>
-    <ul id="todo-list"></ul>
-    <div id="quote">
-      <span></span>
-      <span></span>
-    </div>
-    <div id="weather">
-      <span></span>
-      <span></span>
+    <div id="flex">
+      <form class="hidden" id="login-form">
+        <input
+          required
+          maxlength="15"
+          type="text"
+          placeholder="What is your name?"
+        />
+        <button type="submit">Log In</button>
+      </form>
+      <h2 id="clock">00:00:00</h2>
+
+      <h1 id="greeting" class="hidden"></h1>
+
+      <form id="todo-form">
+        <input
+          type="text"
+          placeholder="write a To Do and Press Enter"
+          required
+        />
+      </form>
+      <div id="todo-box">
+        <ul id="todo-list"></ul>
+      </div>
+      <div id="quote">
+        <span></span>
+        <span></span>
+      </div>
+      <div id="weather">
+        <span></span>
+        <span></span>
+      </div>
     </div>
   </body>
 </html>
