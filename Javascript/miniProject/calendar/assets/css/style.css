@@ -1,0 +1,83 @@
+/* body{
+    margin-top: 15rem;
+} */
+#date,
+#clock {
+  display: flex;
+  justify-content: center;
+  margin-block: 0;
+}
+
+#date {
+  margin-top: 2rem;
+}
+
+#calendar-header{
+    display:flex;
+    justify-content: center;
+    align-items: baseline;
+    width: 60%;
+    align-self: center;
+}
+
+#calendar-header button{
+    background-color: transparent;
+    border: none;
+    margin: 1rem;
+    padding: auto
+}
+
+#calendar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+#calendar-days,
+#calendar-all-dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: 1rem;
+  grid-template-areas: "sun mon tue wed thu fri sat";
+  width: 60%;
+  align-self: center;
+}
+#sun,
+.sun-dates {
+  grid-area: sun;
+}
+#mon,
+.mon-dates {
+  grid-area: mon;
+}
+#tue,
+.tue-dates {
+  grid-area: tue;
+}
+#wed,
+.wed-dates {
+  grid-area: wed;
+}
+#thu,
+.thu-dates {
+  grid-area: thu;
+}
+#fri,
+.fri-dates {
+  grid-area: fri;
+}
+#sat,
+.sat-dates {
+  grid-area: sat;
+}
+
+.notThisMonthDate {
+  color: lightgray;
+}
+
+.today {
+  font-weight: bold;
+  text-decoration: underline;
+}

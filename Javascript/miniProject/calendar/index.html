@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar Project</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script src="assets/js/showDate.js" defer></script>
+    <script src="assets/js/calendar.js" defer></script>
+  </head>
+  <body>
+    <div class="header">
+      <h1 id="date"></h1>
+      <h3 id="clock"></h3>
+    </div>
+    <section id="calendar">
+      <div id="calendar-header">
+        <button id="goToPreMonth"><</button>
+        <h2 id="calendar-month"></h2>
+        <button id="goToNextMonth">></button>
+      </div>
+      <div id="calendar-days">
+        <div id="sun">SUN</div>
+        <div id="mon">MON</div>
+        <div id="tue">TUE</div>
+        <div id="wed">WED</div>
+        <div id="thu">THU</div>
+        <div id="fri">FRI</div>
+        <div id="sat">SAT</div>
+      </div>
+      <div id="calendar-all-dates">
+        <div class="sun-dates"></div>
+        <div class="mon-dates"></div>
+        <div class="tue-dates"></div>
+        <div class="wed-dates"></div>
+        <div class="thu-dates"></div>
+        <div class="fri-dates"></div>
+        <div class="sat-dates"></div>
+      </div>
+    </section>
+  </body>
+</html>
