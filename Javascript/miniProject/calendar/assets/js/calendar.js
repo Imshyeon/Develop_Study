@@ -24,7 +24,6 @@ const goToPreMonthHandler = () => {
   }
   date.dataset["year"] = currentYear;
   date.dataset["month"] = currentMonth;
-  console.log(currentYear, currentMonth);
   deleteCurrentCanlendarHandler();
   createCalendarMonth(currentMonth);
   createCalendarForm(currentYear, currentMonth);
@@ -41,7 +40,6 @@ const goToNextMonthHandler = () => {
   }
   date.dataset["year"] = currentYear;
   date.dataset["month"] = currentMonth;
-  console.log(currentYear, currentMonth);
   deleteCurrentCanlendarHandler();
   createCalendarMonth(currentMonth);
   createCalendarForm(currentYear, currentMonth);
@@ -56,22 +54,21 @@ const createCalendarForm = (y, m) => {
   const prevDate = new Date(`${year}-${month}`);
   prevDate.setDate(0);
   // 다음 달 첫번째 날짜 설정. ex: 2024-1-31
-  const lastDate = new Date(`${year}-${month + 1}`);
+  const lastDate =
+    month === 12 ? new Date(`${year + 1}-1`) : new Date(`${year}-${month + 1}`);
   lastDate.setDate(0);
   // 이번 달 첫번째 날 설정.
-  const firstDate = new Date(`${year}-${month}-1`);
+  const firstDate = new Date(`${year}-${month}`);
 
   // 이전 달 날짜 출력.
   if (prevDate.getDay() !== 6) {
-    prevDate.id = prevDate.getDay();
-    for (let i = 0; i <= prevDate.id; i++) {
-      // console.log(prevDate.getFullYear(), prevDate.getMonth()+1,prevDate.getDate())
+    const prevYear = prevDate.getFullYear();
+    const prevMonth = prevDate.getMonth() + 1;
+    const prevDay = prevDate.getDay();
+    for (let i = 0; i <= prevDay; i++) {
       const newDate = new Date(
-        `${prevDate.getFullYear()}-${prevDate.getMonth() + 1}-${
-          prevDate.getDate() - i
-        }`
+        `${prevYear}-${prevMonth}-${prevDate.getDate() - i}`
       );
-      console.log(newDate);
       const optionClass = "notThisMonthDate";
       printAllDatesHandler(newDate, optionClass);
     }
@@ -79,15 +76,20 @@ const createCalendarForm = (y, m) => {
 
   // 이번 달 날짜 출력
   for (let i = 1; i < lastDate.getDate() + 1; i++) {
-    const newDate = new Date(`${year}-${month}-${i}`); // 날짜 생성
+    const firstYear = firstDate.getFullYear();
+    const firstMonth = firstDate.getMonth() + 1;
+    const newDate = new Date(`${firstYear}-${firstMonth}-${i}`); // 날짜 생성
     printAllDatesHandler(newDate);
   }
 
   // 다음 달 날짜 출력
   if (lastDate.getDay !== 6) {
-    lastDate.id = lastDate.getDay();
-    for (let i = 1; i < 7 - lastDate.id; i++) {
-      const newDate = new Date(`${year}-${month + 1}-${i}`);
+    const lastDay = lastDate.getDay();
+    for (let i = 1; i < 7 - lastDay; i++) {
+      const newDate =
+        month === 12
+          ? new Date(`${year + 1}-1-${i}`)
+          : new Date(`${year}-${month + 1}-${i}`);
       const optionClass = "notThisMonthDate";
       printAllDatesHandler(newDate, optionClass);
     }
@@ -104,7 +106,7 @@ const hightLightTodayHandler = (date) => {
 
   allthisMonthDates.forEach((d) => {
     if (
-      //
+      // 현재 달과 캘린더에서 표시된 달이 일치하고 && 현재 날짜가 표시되는 모든 날짜 중에 일치한다면... -> today 클래스 추가
       parseInt(calendarMonth.classList.value) === currentMonth &&
       parseInt(d.textContent) === currentDay
     ) {
@@ -154,7 +156,6 @@ const printAllDatesHandler = (newDate, optionClass) => {
 };
 
 const deleteCurrentCanlendarHandler = () => {
-  console.log("delete");
   let ps = document.querySelectorAll("p");
   ps.forEach((p) => p.parentElement.removeChild(p));
 };
