@@ -13,14 +13,19 @@ const createCalendarMonth = (calMonth) => {
   calendarMonth.textContent = `${monthCalendar} 월`;
 };
 
-const goToPreMonthHandler = () => {
+// 월 이동하는 코드
+const goToMonthHandler = (where) => {
   let currentYear = parseInt(date.dataset["year"]);
   let currentMonth = parseInt(date.dataset["month"]);
-  if (currentMonth === 1) {
-    currentYear -= 1;
-    currentMonth = 12;
+  let current;
+  if (where.target.id === "goToNextMonth") {
+    current = goToNextMonthHandler(currentYear, currentMonth);
+    currentYear = current[0];
+    currentMonth = current[1];
   } else {
-    currentMonth -= 1;
+    current = goToPreMonthHandler(currentYear, currentMonth);
+    currentYear = current[0];
+    currentMonth = current[1];
   }
   date.dataset["year"] = currentYear;
   date.dataset["month"] = currentMonth;
@@ -29,20 +34,26 @@ const goToPreMonthHandler = () => {
   createCalendarForm(currentYear, currentMonth);
 };
 
-const goToNextMonthHandler = () => {
-  let currentYear = parseInt(date.dataset["year"]);
-  let currentMonth = parseInt(date.dataset["month"]);
+const goToPreMonthHandler = (currentYear, currentMonth) => {
+  if (currentMonth === 1) {
+    currentYear -= 1;
+    currentMonth = 12;
+  } else {
+    currentMonth -= 1;
+  }
+  const current = [currentYear, currentMonth];
+  return current;
+};
+
+const goToNextMonthHandler = (currentYear, currentMonth) => {
   if (currentMonth === 12) {
     currentYear += 1;
     currentMonth = 1;
   } else {
     currentMonth += 1;
   }
-  date.dataset["year"] = currentYear;
-  date.dataset["month"] = currentMonth;
-  deleteCurrentCanlendarHandler();
-  createCalendarMonth(currentMonth);
-  createCalendarForm(currentYear, currentMonth);
+  const current = [currentYear, currentMonth];
+  return current;
 };
 
 const createCalendarForm = (y, m) => {
@@ -163,5 +174,5 @@ const deleteCurrentCanlendarHandler = () => {
 createCalendarMonth();
 createCalendarForm();
 // 버튼 이벤트리스너
-goToPreMonthBtn.addEventListener("click", goToPreMonthHandler);
-goToNextMonthBtn.addEventListener("click", goToNextMonthHandler);
+goToPreMonthBtn.addEventListener("click", goToMonthHandler);
+goToNextMonthBtn.addEventListener("click", goToMonthHandler);
