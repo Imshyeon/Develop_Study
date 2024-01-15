@@ -117,7 +117,7 @@ const hightLightTodayHandler = (date) => {
 
   allthisMonthDates.forEach((d) => {
     if (
-      // 현재 달과 캘린더에서 표시된 달이 일치하고 && 현재 날짜가 표시되는 모든 날짜 중에 일치한다면... -> today 클래스 추가
+      // 현재 달과 캘린더에서 표시된 달이 일치하고 && 현재 날짜가 표시되는새f 모든 날짜 중에 일치한다면... -> today 클래스 추가
       parseInt(calendarMonth.classList.value) === currentMonth &&
       parseInt(d.textContent) === currentDay
     ) {
