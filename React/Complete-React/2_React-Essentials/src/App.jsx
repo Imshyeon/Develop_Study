@@ -3,10 +3,16 @@ import Header from "./components/Header/Header.jsx";
 import CoreConcept from "./components/CoreConcept/CoreConcept.jsx";
 import TabButton from "./components/TabButton/TabButton.jsx";
 
+import { useState } from "react";
+// useState : 리액트 훅.
+
 function App() {
+  let [selectedTopic, setSelectedTopic] = useState("Plz click a button"); // Hook 함수는 이런 식으로 컴포넌트 함수 안에서 바로 호출되어야 하고 다른 코드 안에 중첩되면 안된다.
+
   function handleSelect(selectedButton) {
     // selectedButton => 'components','jsx','props','state'
-    console.log(selectedButton);
+    setSelectedTopic(selectedButton);
+    console.log(selectedTopic);
   }
 
   return (
@@ -37,7 +43,7 @@ function App() {
             <TabButton onSelect={() => handleSelect("props")}>Props</TabButton>
             <TabButton onSelect={() => handleSelect("state")}>State</TabButton>
           </menu>
-          Dynamic Content
+          {selectedTopic}
         </section>
       </main>
     </div>

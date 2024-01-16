@@ -6,6 +6,8 @@
 [📌 동적 값 출력 및 활용](#-동적-값-출력-및-활용)<br>
 [📌 Prop(속성)으로 컴포넌트 재사용](#-prop속성으로-컴포넌트-재사용)<br>
 [📌 이벤트 처리하기](#-이벤트-처리하기)<br>
+[📌 UI를 업데이트하지 않는 법](#-ui를-업데이트하지-않는-법)<br>
+[📌 State(상태) 관리 & Hooks(훅) 사용법](#-state상태-관리--hooks훅-사용법)<br>
 <br>
 
 ## 📌 Components
@@ -422,3 +424,72 @@ export default function TabButton({ children, onSelect }) {
 - 화살표 함수를 사용했기 때문에 당장 클릭을 했다고 해서 바로 실행되지는 않는다. &rarr; `onSelect={handleSelect()}`와는 다르게 동작한다.
 - TabButton.jsx에 해당 화살표 함수가 전달되고 나서야 handleSelect 함수가 실행된다. &rarr; `onClick = () => handleSelect('components')`가 되니깐.
 - 이것을 이용해서 handleSelect 함수에 어떤 요소를 클릭했는지 각 컴포넌트의 문자열 정보를 보낸다.
+
+<br>
+
+## 📌 UI를 업데이트하지 않는 법
+
+```jsx
+function App() {
+  let tabContent = "Plz Click a button.";
+
+  function handleSelect(selectedButton) {
+    // selectedButton => 'components','jsx','props','state'
+    tabContent = selectedButton;
+    console.log(tabContent) 
+  }
+  
+  return(
+    {tabContent}
+  )
+}
+```
+- 버튼을 클릭해도 실제 브라우저에서는 클릭을 안한 것 처럼 보인다.(변화가 없다.)
+- 실제 handleSelect안에서 확인을 해보니 tabContent에는 올바르게 'components','jsx','props','state'가 전달되고 있었다.
+- 즉, 변수는 업데이트 되지만 UI는 업데이트 되지 않음.
+> 리액트는 컴포넌트 함수를 코드 내에서 처음 발견했을 떄 한 번밖에 실행하지 않는다. 따라서 컴포넌트 함수가 재실행 되야한다는 것을 리액트에게 다시 알려야 한다.
+
+<br>
+
+## 📌 State(상태) 관리 & Hooks(훅) 사용법
+
+### 📖 State(상태) 관리 & Hooks(훅) 사용법
+
+- 리액트 프로젝트에서 'use'로 시작하는 모든 함수는 리액트 Hooks이다.
+- 리액트 훅은 일반 함수이지만 특별한 점은 리액트 컴포넌트 함수 또는 다른 리액트 훅 안에서 호출되어야 한다는 것이다.
+> useState Hook은 일부 컴포넌트에 연결된 상태르 관리하게 한다. 이는 리액트에 의해 저장된 일부 데이터일 뿐이며 데이터가 변경되면 이 훅이 자신이 속한 컴포넌트 함수를 활성화하여 리액트에 의해 재검토된다.
+- useState의 인수 : 기본적으로 컴포넌트가 처음 렌더링될 떄 사용되길 원하는 기본값.
+- useState가 반환하는 값은 배열이고 이 배열의 요소에는 항상 2가지가 있다.
+    1. 첫번째 요소 : 해당 컴포넌트 실행 주기의 현재 데이터 스냅샷이다. 컴포넌트 함수가 처음 실행될 때 초기값이 첫번째 요소에 저장. 다시 실행될 때에는 업데이트된 값이 저장된다.
+    2. 두번쨰 요소 : 항상 함수이다. 리액트에서 제공되고, 상태를 업데이트하기 위해 실행되어 저장된 값을 업데이트한다.
+
+```jsx
+// App.jsx
+import { useState } from "react";
+// useState : 리액트 훅.
+
+function App() {
+  let [selectedTopic, setSelectedTopic] = useState("Plz click a button"); // Hook 함수는 이런 식으로 컴포넌트 함수 안에서 바로 호출되어야 하고 다른 코드 안에 중첩되면 안된다.
+
+  function handleSelect(selectedButton) {
+    setSelectedTopic(selectedButton);
+    console.log(selectedTopic);
+  }
+  
+  return(
+    {selectedTopic};
+  )
+}
+```
+
+**console.log(selectedTopic)**
+    1. console => Plz click a button || 화면 => components
+    2. console => components || 화면 => jsx
+    3. console => jsx || 화면 => props
+    4. console => state || 화면 => props
+
+    - 버튼을 누를 때마다 App, TabButton 컴포넌트가 재실행.
+    - 버튼을 눌러서 상태를 업데이트 했어도 로그를 출력하면 업데이트하기 이전 값이 출력된다.
+
+- 상태를 업데이트하는 함수(setSelectedTopic)를 부를 때 리액트는 상태 업데이트의 스케줄을 조정하며 해당 컴포넌트 함수(App)를 재실행한다.
+- 그래서 App 컴포넌트 함수를 다시 실행하고 나서야 업데이트된 값을 사용할 수 있다. 그제서야 새로운 값을 사용하므로, 업데이트의 스케줄이 조장되자마자 로그를 출력하면 보이지 않는다.
