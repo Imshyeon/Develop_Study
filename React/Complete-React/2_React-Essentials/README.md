@@ -4,6 +4,7 @@
 [📌 JSX와 리액트 컴포넌트](#-jsx와-리액트-컴포넌트)<br>
 [📌 리액트의 컴포넌트 처리과정 & 컴포넌트 트리 생성법](#-리액트의-컴포넌트-처리과정--컴포넌트-트리-생성법)<br>
 [📌 동적 값 출력 및 활용](#-동적-값-출력-및-활용)<br>
+[📌 Prop(속성)으로 컴포넌트 재사용](#-prop속성으로-컴포넌트-재사용)<br>
 <br>
 
 ## 📌 Components
@@ -183,5 +184,86 @@ function Header() {
     return(
       <img src={reactImg} alt="Stylized atom" />
     )
+}
+```
+
+<br>
+
+## 📌 Prop(속성)으로 컴포넌트 재사용
+
+### 📖 Prop(속성)으로 컴포넌트 재사용하기
+
+- props : 컴포넌트를 설정하는 개념. 데이터를 컴포넌트로 전달하고 그 데이터를 그곳에 사용할 수 있다. **리액트 컴포넌트의 재사용성을 높인다.**
+- 커스텀 컴포넌트에 커스텀 속성을 추가할 수 있다. 또한 커스텀이니까 속성 이름도 개발자 마음대로 만들 수 있다.
+- 리액트는 props 매개변수에 대한 값을 전달하고, 리액트에 의해 함수에 전달되는 값은 객체가 되어 모든 키-값을 보유하는 객체가 된다.
+    - 커스텀 속성은 key로, 속성의 값은 value로 그룹화된다. 
+
+```jsx
+import componentImg from "./assets/components.png";
+
+function CoreConcept(props) {
+  return (
+    <li>
+      <img src={props.image} alt={props.title} />
+      <h3>{props.title}</h3>
+      <p>{props.description}</p>
+    </li>
+  );
+}
+
+function App() {
+  return (
+    <div>
+      {/* 이곳에 헤더를 추가하고 싶다.. */}
+      <Header />
+      <main>
+        <section id="core-concepts">
+          <h2>Core Concepts</h2>
+          <ul>
+            <CoreConcept
+              title="Components"
+              description="The core UI building block."
+              image={componentImg}
+            />
+            <CoreConcept />
+            <CoreConcept />
+            <CoreConcept />
+          </ul>
+        </section>
+      </main>
+    </div>
+  );
+}
+```
+
+### 📖 Props(속성) 대체 문법
+
+- data.js에 삽입하고자 하는 데이터에 대한 정보를 입력한 후, App.jsx에서 다음과 같이 작성할 수 있다.
+
+```jsx
+<CoreConcept
+    title={CORE_CONCEPTS[0].title}
+    description={CORE_CONCEPTS[0].description}
+    image={CORE_CONCEPTS[0].image}
+/>
+```
+그러나 이 방법 또한 효율적이진 않음!
+
+- 만약 객체의 props 이름과 data.js에서 설정한 속성 이름이 비슷한 경우, 다음의 방법을 쓸 수 있다.
+```jsx
+ <CoreConcept {...CORE_CONCEPTS[1]}
+```
+
+또한 CoreConcepts도 단순화할 수 있다.
+```jsx
+function CoreConcept({ image, title, description }) {
+  // 디스트럭처링을 사용하는 대신, props로 설정하는 것과 이름을 동일하게 해야한다.
+  return (
+    <li>
+      <img src={image} alt={title} />
+      <h3>{title}</h3>
+      <p>{description}</p>
+    </li>
+  );
 }
 ```
