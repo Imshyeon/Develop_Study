@@ -3,6 +3,7 @@
 [📌 초기 프로젝트 구축하기](#-초기-프로젝트-구축하기)<br>
 [📌 JSX와 리액트 컴포넌트](#-jsx와-리액트-컴포넌트)<br>
 [📌 리액트의 컴포넌트 처리과정 & 컴포넌트 트리 생성법](#-리액트의-컴포넌트-처리과정--컴포넌트-트리-생성법)<br>
+[📌 동적 값 출력 및 활용](#-동적-값-출력-및-활용)<br>
 <br>
 
 ## 📌 Components
@@ -125,3 +126,62 @@ ReactDOM.createRoot(entryPoint).render(<App />);
 <br>
 
 **🚨 이를 통해서 중첩된 컴포넌트가 있을 수 있음을 충분히 유추할 수 있다! &rarr; 컴포넌트 계층구조 설립(컴포넌트 트리)🚨**
+
+<br>
+
+## 📌 동적 값 출력 및 활용
+
+- 리액트에서 자주 실행하는 작업. `{}`을 사용한다.
+- HTML 태그 안의 값이나 HTML의 속성값 등으로 사용할 수 있다.
+- 중괄호 안에는 if, for, function 등 block statements를 사용할 수 없다. 오직 직접적으로 값을 만들어내는 표현식만 가능!
+
+```jsx
+const reactDescriptions = ["Fundamental", "Crucial", "Core"]; // index-max:2
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * (max + 1));
+} // 무작위로 숫자 생성
+
+function Header() {
+  return (
+    <header>
+      <img src="src/assets/react-core-concepts.png" alt="Stylized atom" />
+      <h1>React Essentials</h1>
+      <p>
+        {reactDescriptions[getRandomInt(2)]} React concepts you will need for
+        almost any app you are going to build!
+      </p>
+    </header>
+  );
+}
+```
+
+- 페이지를 새로 고침할 때마다 reactDescriptions 배열 안의 값이 {} 안에 표현됨.
+
+```jsx
+  const description = reactDescriptions[getRandomInt(2)];
+  return (
+    <header>
+      <img src="src/assets/react-core-concepts.png" alt="Stylized atom" />
+      <h1>React Essentials</h1>
+      <p>
+        {description} React concepts you will need for
+        almost any app you are going to build!
+      </p>
+    </header>
+  )
+```
+위의 방법처럼 따로 빼는 방법이 가독성이 좋다!
+<br>
+
+### 📖 동적 HTML Attributes(속성) 설정 & 이미지 파일 로딩
+
+```jsx
+import reactImg from "./assets/react-core-concepts.png";
+
+function Header() {
+    return(
+      <img src={reactImg} alt="Stylized atom" />
+    )
+}
+```
