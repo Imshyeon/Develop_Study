@@ -6,6 +6,11 @@
 AppleHomePage/
 animationExample/
 Javascript/Complete-Udemy/수업자료/
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
 
 ### macOS ###
 # General
