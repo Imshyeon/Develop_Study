@@ -482,14 +482,16 @@ function App() {
 }
 ```
 
-**console.log(selectedTopic)**
-    1. console => Plz click a button || 화면 => components
-    2. console => components || 화면 => jsx
-    3. console => jsx || 화면 => props
-    4. console => state || 화면 => props
-
+#### console.log(selectedTopic) 결과
+1. console => Plz click a button || 화면 => components
+2. console => components || 화면 => jsx
+3. console => jsx || 화면 => props
+4. console => state || 화면 => props
     - 버튼을 누를 때마다 App, TabButton 컴포넌트가 재실행.
     - 버튼을 눌러서 상태를 업데이트 했어도 로그를 출력하면 업데이트하기 이전 값이 출력된다.
+<br>
+
+#### 리액트의 State 동작 이해하기
 
 - 상태를 업데이트하는 함수(setSelectedTopic)를 부를 때 리액트는 상태 업데이트의 스케줄을 조정하며 해당 컴포넌트 함수(App)를 재실행한다.
 - 그래서 App 컴포넌트 함수를 다시 실행하고 나서야 업데이트된 값을 사용할 수 있다. 그제서야 새로운 값을 사용하므로, 업데이트의 스케줄이 조장되자마자 로그를 출력하면 보이지 않는다.
