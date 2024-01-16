@@ -173,6 +173,7 @@ function Header() {
   )
 ```
 위의 방법처럼 따로 빼는 방법이 가독성이 좋다!
+
 <br>
 
 ### 📖 동적 HTML Attributes(속성) 설정 & 이미지 파일 로딩
@@ -236,6 +237,8 @@ function App() {
 }
 ```
 
+<br>
+
 ### 📖 Props(속성) 대체 문법
 
 - data.js에 삽입하고자 하는 데이터에 대한 정보를 입력한 후, App.jsx에서 다음과 같이 작성할 수 있다.
@@ -267,3 +270,85 @@ function CoreConcept({ image, title, description }) {
   );
 }
 ```
+
+<br>
+
+### 📖 컴포넌트 분리하기
+
+1. src/components 폴더 생성
+2. 컴포넌트 이름과 동일하게 새로운 jsx 파일 생성
+3. 해당 컴포넌트에 해당하는 코드를 옮기는데, import하는 파일 위치를 수정해야한다면 수정한다.
+4. 해당 컴포넌트 파일에는 export(리액트에선 주로 export default를 한다.), App.jsx에서는 import를 한다.
+
+<br>
+
+### 📖 컴포넌트 옆에 컴포넌트 스타일 파일 저장하기
+
+1. 해당 컴포넌트에 대한 css를 옮겨 적는다.(보통 컴포넌트이름.css로 설정)
+2. 해당 컴포넌트.jsx에서 css를 import한다.
+
+**이렇게 분리하는 것은 CSS 변경이 용이하기 때문인데, 이렇게 분리해도 자동적으로 해당 컴포넌트에만 적용이 되도록 한정되는 것은 아니다!**
+
+<br>
+
+### 📖 컴포넌트 구성 : "children" Prop
+
+- 속성을 설정한 것이 아니더라도 리액트에서 속성 객체를 준다. 단, 거의 빈 객체로 준다.
+- 하지만 완전히 비워진 것은 아니고 항상 받는 속성이 있는데 그것이 바로 `children` 속성이다.
+- children : 특별한 내장 children prop. 리액트에서 설정한 prop으로 어느 특정한 속성에 의해 설정된 prop이 아니다.
+> children prop은 컴포넌트 텍스트 사이 내용을 의미한다.
+- 컴포넌트 텍스트 사이의 내용은 텍스트일 수도 있고 필요에 따라 복잡한 JSX 구조가 될 수도 있다.
+
+```jsx
+// 1. 방법 1
+export default function TabButton(props) {
+  return (
+    <li>
+      <button>{props.children}</button>
+    </li>
+  );
+}
+
+// 2. 방법 2
+export default function TabButton({children}) {
+  return (
+    <li>
+      <button>{children}</button>
+    </li>
+  );
+}
+```
+
+- 컴포넌트가 다른 컴포넌트나 내용을 감싸서 `<TabButton>Components</TabButton>`같이 컴포넌트를 구축하는 것을 **컴포넌트 합성**이라고 한다.
+
+다음과 같이 작성할 수 있다.
+
+```jsx
+// 1. 방법 1
+// TabButton.jsx
+export default function TabButton({ label }) {
+  return (
+    <li>
+      <button>{label}</button>
+    </li>
+  );
+}
+// App.jsx
+<TabButton label="Components"></TabButton>
+
+
+// 2. 방법 2
+// TabButton.jsx
+export default function TabButton({ children }) {
+  return (
+    <li>
+      <button>{children}</button>
+    </li>
+  );
+}
+// App.jsx
+<TabButton>Components</TabButton>
+```
+
+<br>
+
