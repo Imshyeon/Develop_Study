@@ -5,6 +5,7 @@
 [📌 리액트의 컴포넌트 처리과정 & 컴포넌트 트리 생성법](#-리액트의-컴포넌트-처리과정--컴포넌트-트리-생성법)<br>
 [📌 동적 값 출력 및 활용](#-동적-값-출력-및-활용)<br>
 [📌 Prop(속성)으로 컴포넌트 재사용](#-prop속성으로-컴포넌트-재사용)<br>
+[📌 이벤트 처리하기](#-이벤트-처리하기)<br>
 <br>
 
 ## 📌 Components
@@ -352,3 +353,72 @@ export default function TabButton({ children }) {
 
 <br>
 
+## 📌 이벤트 처리하기
+
+### 📖 이벤트 처리하기
+
+- 리액트에선 이벤트 리스너를 요소에 추가하는 대신 해당 요소에 특별한 속성인 특별한 prop을 추가한다.
+- 내장요소는 on으로 시작하는 prop을 많이 지원한다.(ctrl + space => 추천명령어(prop?)가 뜸..)
+- 이벤트가 발생할 때 실행해야할 함수를 가리키고 싶기 때문에 `onClick={}`안에 함수를 삽입한다.
+
+```jsx
+// TabButton.jsx
+export default function TabButton({ children }) {
+  function handleClick() {
+    console.log("clicked");
+  }
+
+  return (
+    <li>
+      <button onClick={handleClick}>{children}</button>
+    </li>
+  );
+}
+```
+
+<br>
+
+### 📖 함수를 Prop(속성)의 값으로 전달하기
+
+```jsx
+// App.jsx
+function App() {
+  function handleSelect() {
+    console.log("selected");
+  }
+  return(
+    <TabButton onSelect={handleSelect}>Components</TabButton>
+    <TabButton onSelect={handleSelect}>JSX</TabButton>
+    <TabButton onSelect={handleSelect}>Props</TabButton>
+    <TabButton onSelect={handleSelect}>State</TabButton>
+  )
+}
+
+// TabButton.jsx
+export default function TabButton({ children, onSelect }) {
+  return (
+    <li>
+      <button onClick={onSelect}>{children}</button>
+    </li>
+  );
+}
+```
+- 함수를 속성값으로 전달했다.
+    1. 버튼을 눌렀을 때, onSelect Prop으로 handleSelect 함수의 주소가 넘어간다.
+    2. TabButton.jsx안의 버튼에 onClick Prop에 전달받은 handleSelect 함수 주소가 들어오고 이를 실행한다.
+    3. App.jsx에서 선언된 handleSelect()가 실행된다.
+
+<br>
+
+### 📖 이벤트 함수에 커스텀 인자 전달하기
+
+```jsx
+// App.jsx
+<TabButton onSelect={() => handleSelect("components")}>Components</TabButton>
+<TabButton onSelect={() => handleSelect("jsx")}>JSX</TabButton>
+<TabButton onSelect={() => handleSelect("props")}>Props</TabButton>
+<TabButton onSelect={() => handleSelect("state")}>State</TabButton>
+```
+- 화살표 함수를 사용했기 때문에 당장 클릭을 했다고 해서 바로 실행되지는 않는다. &rarr; `onSelect={handleSelect()}`와는 다르게 동작한다.
+- TabButton.jsx에 해당 화살표 함수가 전달되고 나서야 handleSelect 함수가 실행된다. &rarr; `onClick = () => handleSelect('components')`가 되니깐.
+- 이것을 이용해서 handleSelect 함수에 어떤 요소를 클릭했는지 각 컴포넌트의 문자열 정보를 보낸다.
