@@ -4,6 +4,8 @@
 [📌 function 키워드와 화살표 함수](#-function-키워드와-화살표-함수)<br>
 [📌 객체와 클래스](#-객체와-클래스)<br>
 [📌 배열 및 배열 메소드](#-배열-및-배열-메소드)<br>
+[📌 디스트럭처링](#-디스트럭처링)<br>
+[📌 스프레드 연산자](#-스프레드-연산자)<br>
 <br>
 
 ## 📌 import & export
@@ -128,3 +130,68 @@ console.log(editedhobbies2)
     //2: {text: 'coding'}
     //3: {text: 'working'}
 ```
+
+🔗[map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)<br>
+🔗[find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)<br>
+🔗[findIndex()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)<br>
+🔗[filter()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)<br>
+🔗[reduce()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce?v%253Db)<br>
+🔗[concat()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat?v%253Db)<br>
+🔗[slice()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)<br>
+🔗[splice()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)<br>
+
+<br>
+
+## 📌 디스트럭처링
+
+```javascript
+const [firstName, lastName] = ['Suhyeon', 'Kang'];
+// const firstName = userNameData[0];
+// const lastName = userNameData[1];
+console.log(firstName) // Suhyeon
+console.log(lastName) // Kang
+
+const {name: userName, age} = {
+    name: 'zoe',
+    age: 23
+} // 객체의 경우 동일한 프로퍼티 이름을 설정할 것. => 프로퍼티 이름으로 값을 가져오기 때문. :를 이용해 별칭 사용가능
+console.log(userName);   // zoe
+console.log(age);    // 23
+```
+
+### 📖 함수 매개변수 목록에서 디스트럭처링 하기
+
+```javascript
+function storeOrder(order){
+    localStorage.setItem('id', order.id);
+    localStorage.setItem('currency', order.currency);
+}
+// => 디스트럭처링
+function storeOrder({id, currenncy}){
+    localStorage.setItem('id', id);
+    localStorage.setItem('currency', currency);
+} 
+```
+
+<br>
+
+## 📌 스프레드 연산자
+
+```javascript
+const hobbies = ['swimming', 'watching movies'];
+const newHobbies = ['coding'];
+const mergedHobbies = [...hobbies, ...newHobbies];
+console.log(mergedHobbies) // ['swimming', 'watching movies', 'coding']
+
+
+const user = {
+    name : 'zoe',
+    age : 23
+}
+const extendedUser = {
+    isAdmin : true,
+    ...user // 모든 키-값을 가져와서 추가.
+}
+console.log(extendedUser) // {isAdmin: true, name: 'zoe', age: 23}
+```
+
