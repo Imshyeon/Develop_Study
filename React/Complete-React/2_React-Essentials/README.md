@@ -8,6 +8,7 @@
 [📌 이벤트 처리하기](#-이벤트-처리하기)<br>
 [📌 UI를 업데이트하지 않는 법](#-ui를-업데이트하지-않는-법)<br>
 [📌 State(상태) 관리 & Hooks(훅) 사용법](#-state상태-관리--hooks훅-사용법)<br>
+[📌 요약](#-요약)<br>
 <br>
 
 ## 📌 Components
@@ -518,3 +519,184 @@ function App() {
   )
 }
 ```
+
+<br>
+
+### 📖 조건적 콘텐츠 렌더링
+
+1. 방법 1
+
+```jsx
+function App() {
+  let [selectedTopic, setSelectedTopic] = useState(); 
+  return (
+    {!selectedTopic ? <p>Plz select a topic.</p> : null}
+    {/* null은 jsx 코드로 출력할 수 있는 것인데 단순히 아무것도 렌더링되지 않는 것이다. */}
+    {/* 선택한 토픽이 없다면 p 태그가 렌더링. 그외에는 아무것도 렌더링 하지 않는다.*/}
+    {selectedTopic ? (
+      <div id="tab-content">
+        <h3>{EXAMPLES[selectedTopic].title}</h3>
+        <p>{EXAMPLES[selectedTopic].description}</p>
+        <pre>
+          <code>{EXAMPLES[selectedTopic].code}</code>
+        </pre>
+      </div>
+    ) : null}
+  )
+}
+
+// 혹은 다음과 같이 코드를 줄일 수 있다.
+{!selectedTopic ? (
+  <p>Plz select a topic.</p>
+) : (
+  <div id="tab-content">
+    <h3>{EXAMPLES[selectedTopic].title}</h3>
+    <p>{EXAMPLES[selectedTopic].description}</p>
+    <pre>
+      <code>{EXAMPLES[selectedTopic].code}</code>
+    </pre>
+  </div>
+)}
+```
+<br>
+
+2. 방법 2 : && 연산자 이용 &rarr; 앞이 조건이 true이면 AND 연산자 바로 뒤에 나오는 값을 출력.
+
+```jsx
+{!selectedTopic && <p>Plz select a topic.</p>}
+{selectedTopic && (
+  <div id="tab-content">
+    <h3>{EXAMPLES[selectedTopic].title}</h3>
+    <p>{EXAMPLES[selectedTopic].description}</p>
+    <pre>
+      <code>{EXAMPLES[selectedTopic].code}</code>
+    </pre>
+  </div>
+)}
+```
+<br>
+
+3. 방법 3 : 변수 사용
+
+```jsx
+function App(){
+  let tabContent = <p>Plz select a topic.</p>;
+
+  if (selectedTopic) {
+    tabContent = (
+      <div id="tab-content">
+        <h3>{EXAMPLES[selectedTopic].title}</h3>
+        <p>{EXAMPLES[selectedTopic].description}</p>
+        <pre>
+          <code>{EXAMPLES[selectedTopic].code}</code>
+        </pre>
+      </div>
+    );
+  }
+
+  return(
+    {tabContent}
+  )
+}
+```
+- JSX 코드는 단순히 반환되지는 않기 때문에 컴포넌트 코드 아무곳에 일반 값으로 사용할 수 있다. 변수나 상수에 저장할 수 있다.
+
+<br>
+
+### 📖 CSS 스타일링 및 동적 스타일링
+
+- className이라는 속성을 사용한다. id와 같은 대부분의 속성은 JSX와 HTML 모두 동일하다. 클래스 속성의 경우에만 className을 사용.
+
+```jsx
+// TabButton.jsx
+export default function TabButton({ children, onSelect, isSelected }) {
+  return (
+    <li>
+      <button className={isSelected ? "active" : undefined} onClick={onSelect}>
+        {children}
+      </button>
+    </li>
+  );
+}
+
+// App.jsx
+<TabButton
+  isSelected={selectedTopic === "components"}
+  onSelect={() => handleSelect("components")}
+>
+  Components
+</TabButton>
+<TabButton
+  isSelected={selectedTopic === "jsx"}
+  onSelect={() => handleSelect("jsx")}
+>
+  JSX
+</TabButton>
+<TabButton
+  isSelected={selectedTopic === "props"}
+  onSelect={() => handleSelect("props")}
+>
+  Props
+</TabButton>
+<TabButton
+  isSelected={selectedTopic === "state"}
+  onSelect={() => handleSelect("state")}
+>
+  State
+</TabButton>
+```
+
+- `TabButton`에서 `isSelected`라는 속성을 추가한다. 그리고 className에 `isSelected`가 있다면 active를, 없다면 undefined(혹은 '')을 리턴하도록 한다. &rarr; CSS에 active 클래스와 관련된 스타일 정의
+- `App`에서 `isSelected` 속성에 참/거짓을 갖도록 하여 `TabButton`의 삼항연산자에 의해 걸러질 수 있도록 한다.
+
+<br>
+
+### 📖 List(리스트) 데이터 동적 출력
+
+- CORE_CONCEPTS 중 하나가 없어진다면, 현재 App.jsx 코드에 의한다면 오류가 발생할 것이다. 따라서 CORE_CONCEPTS 배열에 있는 숫자에 맞춰 해당 CoreConcept 컴포넌트 수가 동적으로 변하도록 해야한다.
+- JSX로 데이터 배열을 출력할 수 있다. 예: `{[<p>Hello</p>, <p>World</p>]}`
+  - JSX는 JSX 코드 배열과 같이 렌더링 가능한 데이터 배열을 처리할 수 있는 능력이 있다.
+
+```jsx
+// 이전
+<CoreConcept
+    title={CORE_CONCEPTS[0].title}
+    description={CORE_CONCEPTS[0].description}
+    image={CORE_CONCEPTS[0].image}
+/>
+<CoreConcept {...CORE_CONCEPTS[1]}>
+<CoreConcept {...CORE_CONCEPTS[2]}>
+<CoreConcept {...CORE_CONCEPTS[3]}>
+
+
+// 이후
+{CORE_CONCEPTS.map((concepItem) => 
+  (<CoreConcept key={concepItem.title} {...concepItem})
+)}
+```
+
+<br>
+
+## 📌 요약
+
+#### Basic
+1. 리액트의 모든 것은 컴포넌트다. 그러한 컴포넌트 결국 대문자로 시작하는 함수이고 리액트가 렌더링할 수 있는 값을 반환해야 한다. 그리고 이 값들은 보통 JSX 코드로 반환된다.
+2. 컴포넌트 함수를 JSX 코드 내 커스텀 HTML 요소처럼 사용할 수 있다. ex. `<Header />`
+3. 속성으로 컴포넌트를 설정할 수 있다. ex. `isSelected`
+  - 원하는 모든 속성을 설정할 수 있다.
+  - 전체 객체를 키 값 쌍으로 펼쳐서 컴포넌트의 속성으로 사용할 수 있다. ex. `{...conceptItem}`
+  - 컴포넌트 내부에서 속성을 컴포넌트 함수의 첫번째 매겨변수로 사용할 수 있다. ex. `function CoreConcept({image, title, description})`
+4. 중괄호를 사용해 동적으로 내용을 출력할 수 있다. 그 내용은 태그 사이에 출력하거나 속성값으로 출력할 수 있다.
+5. 리액트에서 만들어지고 재공된 children 속성을 사용하여 컴포넌트 시작과 끝 태그 사이에 통과되는 내용을 접근할 수 있게 한다. 즉, 태그 사이의 내용은 특별한 children prop에 의해 컴포넌트 내부에 받아들일 수 있다.
+---
+#### Interactive
+1. 이벤트 청취를 위해선 on~ 속성을 사용할 수 있다.
+2. UI를 업데이트하기 위해선 useState Hook을 사용해야 한다.
+  - 훅을 사용해 리액트에서 관리하는 데이터를 등록하고 특별한 상태 업데이트 함수를 통해 데이터를 업데이트 할 수 있다.
+  - useState Hook을 통해 데이터를 관리 및 업데이트할 수 있고 업데이트 되면 상태가 속해있는 컴포넌트 함수가 다시 실행되도록 하여 JSX 코드가 재평가되어 필요에 따라 UI가 업데이트된다.
+  - 리액트가 예전 JSX코드와 새로운 JSX코드를 보고, 탭 내용 변화와 같은 차이점을 찾는다면 출력될 데이터가 변했다는 의미이다. 따라서 새로운 상태에 맞춰 실제 UI가 업데이트 된다. 
+3. 조건적으로 내용을 출력하는 방법을 배웠다.
+  - 변수와 if문 사용
+  - 조건연산자 사용
+  - 논리적 AND 연산자 사용
+4. 내장 `.map()` 메서드를 사용해 데이터 배열을 매핑하여 JSX 요소 배열로 만들어 목록 데이터를 동적으로 출력. &rarr; 리액트가 목록을 효율적으로 렌더링 및 업데이트할 수 있도록 `key` prop을 추가해야한다.
