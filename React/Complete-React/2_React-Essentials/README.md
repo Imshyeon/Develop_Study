@@ -495,3 +495,26 @@ function App() {
 
 - 상태를 업데이트하는 함수(setSelectedTopic)를 부를 때 리액트는 상태 업데이트의 스케줄을 조정하며 해당 컴포넌트 함수(App)를 재실행한다.
 - 그래서 App 컴포넌트 함수를 다시 실행하고 나서야 업데이트된 값을 사용할 수 있다. 그제서야 새로운 값을 사용하므로, 업데이트의 스케줄이 조장되자마자 로그를 출력하면 보이지 않는다.
+
+<br>
+
+### 📖 데이터 기반 State(상태) 가져오기 및 출력
+
+1. data.js 업데이트
+2. App.jsx 수정
+```jsx
+import { CORE_CONCEPTS, EXAMPLES } from "./data.js";
+function App() {
+  let [selectedTopic, setSelectedTopic] = useState("components"); // 초기화
+
+  return (
+    <div id="tab-content">
+      <h3>{EXAMPLES[selectedTopic].title}</h3>
+      <p>{EXAMPLES[selectedTopic].description}</p>
+      <pre>
+        <code>{EXAMPLES[selectedTopic].code}</code>
+      </pre>
+    </div>
+  )
+}
+```
