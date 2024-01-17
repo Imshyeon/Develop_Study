@@ -215,3 +215,5 @@ export default function Examples() {
 ```
 
 🚨분리할 때, jsx 부분을 return으로 감싸는 것 잊지 않기!🚨
+
+🔗 [레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/882aa7648edef2b132e940f36609c2be05ec2fc3)
