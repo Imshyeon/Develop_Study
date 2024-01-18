@@ -198,4 +198,57 @@ function handleEditClick() {
 
 <br>
 
+#### 🧷 사용자 입력 & 양방향 바인딩
 
+- player 1 의 이름을 수정하려고 해도 작성이 안된다. 그 이유는 다음과 같다.
+```jsx
+// Player.jsx
+ if (isEditing) {
+    playerName = <input type="text" required value={name}></input>;
+  }
+```
+- `isEditing===true`일 때, playerName을 업데이트 하려고 하는데, 이때 `value={name}`을 사용했기 때문에 변경하려는 내용을 계속해서 덮어쓰게 된다.
+- 특수한 기본값 속성(`defaultValue={name}`)을 설정하면 해당 문제가 해결된다. &rarr; 덮어쓰지 않도록 함.
+- 그러나 우리는 다른 방법을 사용할 것! &rarr; 또다른 State를 사용하여 값이 변경될 때마다 컴포넌트 재실행하여 업데이트 되도록 함.
+
+<br>
+
+- 사용자가 입력 필드에 문자를 입력할 때마다 change 이벤트가 발생하여 함수가 실행되도록 한다.
+
+```jsx
+// Player.jsx
+
+import { useState } from "react";
+
+export default function Player({ initialName, symbol }) {
+  const [playerName, setPlayerName] = useState(initialName);
+
+  function handleChange(event) {
+    setPlayerName(event.target.value);
+  }
+
+  let editablePlayerName = <span className="player-name">{playerName}</span>;
+  if (isEditing) {
+    editablePlayerName = (
+      <input
+        type="text"
+        required
+        defaultValue={playerName}
+        onChange={handleChange}
+      ></input>
+    );
+  }
+
+  return (
+    <li>
+      <span className="player">
+        {editablePlayerName}
+      </span>
+    </li>
+  );
+}
+```
+- 입력값의 변화에 반응하고 변경된 값을 다시 입력값에 전달하는 방식을 양방향 바인딩이라고 한다.
+- `onChange={handleChange}`의 입력값(`event`)에서 값(`event.target.value`)을 빼내어 해당값을 다른 값(`value={playerName}`)으로 다시 전달한다.
+
+🔗 [레파지토리에서 해당 코드 보기]()
