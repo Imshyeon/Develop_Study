@@ -216,4 +216,224 @@ export default function Examples() {
 
 🚨분리할 때, jsx 부분을 return으로 감싸는 것 잊지 않기!🚨
 
-🔗 [레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/882aa7648edef2b132e940f36609c2be05ec2fc3)
+🔗 [레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/tree/882aa7648edef2b132e940f36609c2be05ec2fc3/React/Complete-React/3_React-Essentials-Deep-Dive/src)
+
+<br>
+
+### 📖 Section.jsx를 만들기
+
+```jsx
+// CoreConcepts.jsx
+export default function CoreConcepts() {
+  return (
+    <section id="core-concepts">
+      <h2>Core Concepts</h2>
+      <ul>
+      </ul>
+    </section>
+  );
+}
+
+// Examples.jsx
+export default function Examples() {
+    return(
+     <section id="examples">
+       <h2>Examples</h2>
+       <menu>
+       </menu>
+     </section>
+    );
+}
+```
+- 두 컴포넌트 모두 `<section>-제목-내용` 순으로 이뤄져 있다. 이것을 이용해 Section.jsx 컴포넌트를 생성
+
+```jsx
+// Section.jsx
+export default function Section({ title, id, children }) {
+  return (
+    <section id={id}>
+      <h2>{title}</h2>
+      {children}
+    </section>
+  );
+}
+```
+- `<section id="example">`과 같은 prop들은 커스텀 컴포넌트에 설정할 때 자동으로 적용되거나 해당 컴포넌트 속 JSX 코드로 넘어가지 않는다. **Props are not forwarded automatically.**
+- 리액트에서는 요소에 대한 props가 개발자가 설정하는대로만 적용된다.
+- 따라서 위에서도 `Section({id})`를 이용하여 속성값을 전달했다.
+
+🚨 하지만 이런 방식을 사용한다면 개발자는 속성을 계속해서 설정을 해야한다..! &rarr; 비효율적 🚨<br>
+> 따라서 forwarded props(전달 속성), proxy props(대리 속성)을 사용한다.
+
+<br>
+
+### 📖 Forwarded Props(Proxy Props)
+
+```jsx
+export default function Section({ title, children, ...props }){
+  return (
+    <section {...props}>
+      <h2>{title}</h2>
+      {children}
+    </section>
+  );
+}
+```
+- `Section({...props})` : 자바스크립트의 내장문법. title과 children을 제외한 모든 다른 props를 모아서 props object로 병합한다. 이 경우에는 데이터를 객체로 모으기 위해 사용.
+- `<section {...props}>` : 데이터, 즉 값의 집합을 펼쳐서 다른 요소에 보내기 위함.
+
+#### TabButton.jsx에 적용하기
+
+```jsx
+// TabButton.jsx
+export default function TabButton({ children, isSelected, ...props }) {
+  console.log("TABBUTTON COMPONENT EXECUTING");
+  return (
+    <li>
+      <button className={isSelected ? "active" : undefined} {...props}> 
+        {children}
+      </button>
+    </li>
+  );
+}
+
+// Examples.jsx
+<TabButton
+isSelected={selectedTopic === "components"}
+onClick={() => handleSelect("components")}
+>
+```
+- TabButton.jsx에서 `{...props}`를 이용하여 onClick 동작시킨다.
+
+<br>
+
+### 📖 여러 JSX 슬롯 활용법
+
+1. src/components/Tabs.jsx 생성
+2. Tabs.jsx 코드 작성
+```jsx
+export default function Tabs({ children, buttons }) {
+  return (
+    <>
+      <menu>{buttons}</menu>
+      {children}
+    </>
+  );
+}
+```
+
+3. Examples.jsx 코드 작성
+```jsx
+export default function Examples(){
+ return (
+    <Section id="examples" title="Examples">
+      <Tabs
+        buttons={
+          <>
+            <TabButton
+              isSelected={selectedTopic === "components"}
+              onClick={() => handleSelect("components")}
+            >
+              Components
+            </TabButton>
+            <TabButton
+              isSelected={selectedTopic === "jsx"}
+              onClick={() => handleSelect("jsx")}
+            >
+              JSX
+            </TabButton>
+            <TabButton
+              isSelected={selectedTopic === "props"}
+              onClick={() => handleSelect("props")}
+            >
+              Props
+            </TabButton>
+            <TabButton
+              isSelected={selectedTopic === "state"}
+              onClick={() => handleSelect("state")}
+            >
+              State
+            </TabButton>
+          </>
+        }
+      >
+        {tabContent}
+      </Tabs>
+    </Section>
+  );
+}
+```
+
+- Tabs라는 컴포넌트 안에 buttons라는 props를 생성한 뒤, 해당 props안에 넣고자하는 모든 버튼들을 넣는다. 이때, 하나의 루트를 통해서 전달하는 것처럼 fragment로 감싼 뒤, 버튼을 전달한다.
+- Tabs 컴포넌트 안의 내용(children)도 전달하여 결과값인 tabContent를 표현하게끔 한다.
+
+<br>
+
+### 📖 컴포넌트 타입 동적으로 설정하기
+
+- button을 감싸는 요소(태그)를 개발자가 설정하고 싶은 경우가 있다.
+- 이 패턴은 컴포넌트 식별자를 속성의 값으로 보내고, 이 식별자가 해당 컴포넌트(여기서는 Tabs)에 속해있기 때문에 다양한 HTML 요소를 동적으로 렌더링할 수 있다.
+
+```jsx
+// Tabs.jsx
+export default function Tabs({ children, buttons, buttonsContainer }) {
+  const ButtonsContainer = buttonsContainer; // 커스텀 컴포넌트로서 사용되서 대문자로 시작.
+  return (
+    <>
+      <ButtonsContainer>{buttons}</ButtonsContainer>
+      {children}
+    </>
+  );
+}
+
+// Examples.jsx
+<Tabs
+    // buttonsContainer={Section}
+    buttonsContainer="menu"
+    buttons={}>...</Tabs>
+```
+
+- Examples.jsx에서 `buttonsContainer={Section}` : 커스텀 컴포넌트는 동적값으로 설정. 내장요소는 단순히 문자열로 전달.
+
+```jsx
+// Tabs.jsx
+export default function Tabs({ children, buttons, ButtonsContainer }) {
+  return (
+    <>
+      <ButtonsContainer>{buttons}</ButtonsContainer>
+      {children}
+    </>
+  );
+}
+
+// Examples.jsx
+<Tabs
+    ButtonsContainer="menu"
+></Tabs>
+```
+- 속성을 한 상수에 새로 설정하는 대신 처음부터 대문자로 시작하는 상수를 받도록 설정하여 할 수도 있다.
+
+> 1. 속성(`ButtonsContainer`)이 반드시 받는 쪽 컴포넌트(`Tabs`)에서 커스텀 컴포넌트로서 사용 가능해야 한다.
+> 2. 식별자에는 문자열 이름(`menu, ul, div..`)을 사용하는데 만약 커스텀 컴포넌트(`{Section}`)를 사용하고 싶다면 컴포넌트 함수를 사용해야만 적용 가능하다.
+
+<br>
+
+### 📖 기본 Prop(속성) 값 설정
+
+```jsx
+// Tabs.jsx
+export default function Tabs({ children, buttons, ButtonsContainer = "menu" }) {
+  //   const ButtonsContainer = buttonsContainer; // 커스텀 컴포넌트로서 사용되서 대문자로 시작.
+  return (
+    <>
+      <ButtonsContainer>{buttons}</ButtonsContainer>
+      {children}
+    </>
+  );
+}
+
+// Examples.jsx
+<Tabs buttons={}>
+</Tabs>
+```
+- 기본 props를 설정함으로써 위에서 `<Tabs ButtonsContainer="menu" buttons={}>`에서 ButtonsContainer 속성을 삭제했다.
