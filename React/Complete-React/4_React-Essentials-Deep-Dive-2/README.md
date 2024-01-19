@@ -1043,3 +1043,4 @@ export default function Player({
 
 ## 📌 마무리 및 컴포넌트 개선
 
+🔗 [레파지토리에서 App 코드 보기](https://github.com/Imshyeon/Develop_Study/commit/92874c181124586ba2e74c4cf4c652f1687f81e9?diff%253Dsplit%2526w%253D1#diff-40b635b7e6956b131cba1c7414dbf92e274a467be0bbad46d54c08103526c2f7)
