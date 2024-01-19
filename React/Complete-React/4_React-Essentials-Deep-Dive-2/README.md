@@ -251,4 +251,212 @@ export default function Player({ initialName, symbol }) {
 - 입력값의 변화에 반응하고 변경된 값을 다시 입력값에 전달하는 방식을 양방향 바인딩이라고 한다.
 - `onChange={handleChange}`의 입력값(`event`)에서 값(`event.target.value`)을 빼내어 해당값을 다른 값(`value={playerName}`)으로 다시 전달한다.
 
-🔗 [레파지토리에서 해당 코드 보기]()
+🔗 [레파지토리에서 해당 코드 보기](https://github.com/Imshyeon/Develop_Study/blob/f937afb4127c906a1b1d7475e546b21318bc7a55/React/Complete-React/4_React-Essentials-Deep-Dive-2/src/components/Player.jsx)
+
+<br>
+
+### 📖 Game Board
+
+#### 🧷 다차원 리스트 렌더링
+
+##### GameBoard.jsx
+```jsx
+const initialGameBoard = [
+  [null, null, null],
+  [null, null, null],
+  [null, null, null],
+];
+
+export default function GameBoard() {
+  return (
+    <ol id="game-board">
+      {initialGameBoard.map((row, rowIndex) => (
+        <li key={rowIndex}>
+          <ol>
+            {row.map((playerSymbol, colIndex) => (
+              <li key={colIndex}>
+                <button>{playerSymbol}</button>
+              </li>
+            ))}
+          </ol>
+        </li>
+      ))}
+    </ol>
+  );
+}
+```
+<br>
+
+##### App.jsx
+```jsx
+import Player from "./components/Player.jsx";
+import GameBoard from "./components/GameBoard.jsx";
+
+function App() {
+  return (
+    <main>
+      <div id="game-container">
+        <ol id="players">
+          <Player initialName="Player 1" symbol="X" />
+          <Player initialName="Player 2" symbol="O" />
+        </ol>
+        <GameBoard />
+      </div>
+      LOG
+    </main>
+  );
+}
+
+export default App;
+```
+<br>
+
+##### 결과
+
+![결과](./src/assets/readme/2-gameboard-initial.png)
+
+<br>
+
+#### 🧷 불변의 객체 State(상태)로 업데이트하기
+
+- 상태가 객체나 배열이라면 해당 상태를 업데이트할 떄 변경 불가능하게 하는 것이 좋다.
+> 즉, 이전 상태를 하나 복제해서 새 객체 또는 배열로 저장해놓고 이 복제된 버전을 수정하는 방식을 채용하는 것이 좋다.
+- 만약 상태가 객체 혹은 배열이라면 이는 자바스크립트 내의 참조값이고, 만약 바로 저장을 한다면 메모리 속의 기존 값을 바로 변경하게 된다. 이는 리액트의 상태 변경 스케줄보다 더 빨리 실행될 수 있다. &rarr; 버그나 부작용 발생 가능성 있음.
+
+##### GameBoard.jsx
+```jsx
+import { useState } from "react";
+
+const initialGameBoard = [
+  [null, null, null],
+  [null, null, null],
+  [null, null, null],
+];
+
+export default function GameBoard() {
+  const [gameBoard, setGameBoard] = useState(initialGameBoard);
+
+  function handleSelectSquare(rowIndex, colIndex) {
+    setGameBoard((prevGameBoard) => {
+      const updatedBoard = [
+        ...prevGameBoard.map((innerArray) => [...innerArray]),
+      ];
+      updatedBoard[rowIndex][colIndex] = "X";
+      return updatedBoard;
+    });
+  }
+
+  return (
+    <ol id="game-board">
+      {gameBoard.map((row, rowIndex) => (
+        <li key={rowIndex}>
+          <ol>
+            {row.map((playerSymbol, colIndex) => (
+              <li key={colIndex}>
+                <button onClick={() => handleSelectSquare(rowIndex, colIndex)}>
+                  {playerSymbol}
+                </button>
+              </li>
+            ))}
+          </ol>
+        </li>
+      ))}
+    </ol>
+  );
+}
+```
+
+- state 등록 시, 가장 초기값은 initialGameBoard가 된다.
+- 버튼이 클릭될 때마다 `handleSelectSquare`함수가 실행되고 해당 함수는 어떤 버튼이 눌렸는지 정보를 받아야하기 때문에, map 함수를 통해 얻은 `rowIndex, colIndex`를 전달한다.
+- `handleSelectSquare` : 게임보드의 상태를 업데이트하는데 이전의 상태를 저장하면서 계속 업데이트를 하기 때문에 함수형 사용.
+- 이때, 상태의 초기값이 배열이기 때문에 깊은 복사를 통해 이전 게임보드의 상태를 저장해 놓는다. (`const updatedBoard = ...`) 
+
+<br>
+
+#### 🧷 State(상태) 끌어올리기
+
+- App 컴포넌트에서는 어떤 플레이어가 진행 중인지 해당 정보를 두 컴포넌트 모두에게 속성(prop)을 통해 보낼 수 있다.
+
+##### App.jsx
+
+```jsx
+import { useState } from "react";
+
+function App() {
+  const [activePlayer, setActivePlayer] = useState("X");
+
+  function handleSelectSquare() {
+    setActivePlayer((curActivePlayer) => (curActivePlayer === "X" ? "O" : "X"));
+  }
+
+  return (
+    <main>
+      <div id="game-container">
+        <ol id="players" className="highlight-player">
+          <Player
+            initialName="Player 1"
+            symbol="X"
+            isActive={activePlayer === "X"}
+          />
+          <Player
+            initialName="Player 2"
+            symbol="O"
+            isActive={activePlayer === "O"}
+          />
+        </ol>
+        <GameBoard
+          onSelectSquare={handleSelectSquare}
+          activePlayerSymbol={activePlayer}
+        />
+      </div>
+    </main>
+  );
+}
+```
+<br>
+
+##### Player.jsx
+
+```jsx
+export default function Player({ initialName, symbol, isActive }) {
+    return (
+    <li className={isActive ? "active" : undefined}>
+    </li>
+  );
+}
+```
+<br>
+
+##### GameBoard.jsx
+
+```jsx
+export default function GameBoard({ onSelectSquare, activePlayerSymbol }) {
+    function handleSelectSquare(rowIndex, colIndex) {
+    setGameBoard((prevGameBoard) => {
+      const updatedBoard = [
+        ...prevGameBoard.map((innerArray) => [...innerArray]),
+      ];
+      updatedBoard[rowIndex][colIndex] = activePlayerSymbol;  // App에서 받아온 activePlayerSymbol
+      return updatedBoard;
+    });
+
+    onSelectSquare(); // App에서 받아온 함수 실행
+  }
+}
+```
+
+<br>
+
+#### 🧷 교차 State 방지하기 & 계산된 값 권장 및 불필요한 State 관리
+
+- Log를 출력하기 위해선 다음의 요소가 필요하다.
+  1. 게임을 진행한 순서
+  2. 어떤 사용자가 어떤 버튼을 눌렀는지에 대한 정보
+
+- 두번째 요소의 경우 GameBoard.jsx의 State에서 이미 다루었다. 그러나 게임 진행 순서에 대해서는 다루지 않았다. 이를 위해서 App에서 State(상태) 끌어올리기를 한다면 비슷한 정보를 가지고 State를 두 번 쓴 경우가 되므로, 이는 리액트에서 추천하는 것이 아니다.
+
+##### GameBoard.jsx
+
+```jsx
+
+```
