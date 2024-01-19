@@ -5,6 +5,8 @@
 [📌 Player](#-player)<br>
 [📌 Game Board](#-game-board)<br>
 [📌 Player의 상태 업데이트](#-player의-상태-업데이트)<br>
+[📌 게임 진행 조건](#-게임-진행-조건)<br>
+[📌 게임 우승자에 이름 표시하기](#-게임-우승자에-이름-표시하기)<br>
 <br>
 
 ## 📌 기타 세부사항
@@ -719,3 +721,318 @@ function App() {
 }
 ```
 - 이처럼 State는 최대한 적게 사용하고, 되도록이면 파생 상태로 사용하는 것이 좋다!
+
+🔗 [레파지토리에서 코드 보기](https://github.com/Imshyeon/Develop_Study/tree/d8a29259c195b84a9084314bc82ff705b685f7dd/React/Complete-React/4_React-Essentials-Deep-Dive-2)
+
+<br>
+
+## 📌 게임 진행 조건
+
+### 📖 조건적 버튼 비활성화 - 버튼 중복 선택 방지
+
+#### GameBoard.jsx
+
+- 이미 선택한 버튼은 disabled가 되도록 한다.
+- playerSymbol이 있다면 이미 선택된 것이기 때문에 disabled=true가 된다.
+- playerSymbol이 `null`이라면 false값이 된다.
+
+```jsx
+<button
+  onClick={() => onSelectSquare(rowIndex, colIndex)}
+  disabled={playerSymbol !== null} // <== 작성된 부분
+>
+  {playerSymbol}
+</button>
+```
+
+<br>
+
+### 📖 게임 승리 조건 - 분리된 파일로 데이터 아웃 소싱
+
+#### App.jsx
+
+- 게임을 이기는 조건들을 적은 combination.js를 import
+
+```jsx
+import { WINNING_COMBINATIONS } from "./combination.js";
+```
+
+<br>
+
+### 📖 게임 승리 조건 - 계산된 값 끌어올리기
+
+- 위에서 작성된 게임을 이기는 조건들을 가지고, 매 차례마다 동적으로 해당하는 조건이 있는지 확인해야한다.
+- 버튼이 클릭될 때마다 조건을 확인해야 하므로 App.jsx의 `handleSelectSquare`함수에 로직을 작성.
+
+#### App.jsx
+
+```jsx
+import { WINNING_COMBINATIONS } from "./combination.js";
+
+const initialGameBoard = [
+  [null, null, null],
+  [null, null, null],
+  [null, null, null],
+];
+
+function App() {
+  let gameBoard = initialGameBoard;
+  // 진행된 turns이 있다면 gameBoard을 오버라이드 할 것이다. 반대로 진행된 것이 없다면 gameBoard = initialGameBoard일 것.
+  for (const turn of gameTurns) {
+    // turns가 있을때만 수행할 반복문
+    const { square, player } = turn;
+    const { row, col } = square;
+    gameBoard[row][col] = player;
+  }
+
+  let winner;
+  for (const combination of WINNING_COMBINATIONS) {
+    const firstSquareSymbol =
+      gameBoard[combination[0].row][combination[0].column];
+    const secondSquareSymbol =
+      gameBoard[combination[1].row][combination[1].column];
+    const thirdSquareSymbol =
+      gameBoard[combination[2].row][combination[2].column];
+
+    if (
+      firstSquareSymbol &&
+      firstSquareSymbol === secondSquareSymbol &&
+      firstSquareSymbol === thirdSquareSymbol
+    ) {
+      winner = firstSquareSymbol;
+    }
+  }
+
+  return (
+    <main>
+      <div id="game-container">
+        <ol id="players" className="highlight-player">
+          ...
+        </ol>
+        {winner && <p>You won, {winner}!</p>}
+        <GameBoard onSelectSquare={handleSelectSquare} board={gameBoard} />
+      </div>
+      ...
+    </main>
+  );
+}
+```
+<br>
+
+#### GameBoard.jsx
+
+```jsx
+export default function GameBoard({ onSelectSquare, board }) {  // board 속성으로 대체
+  return (
+    <ol id="game-board">
+      {board.map((row, rowIndex) => (
+        <li key={rowIndex}>
+          <ol>
+            {row.map((playerSymbol, colIndex) => (
+              <li key={colIndex}>
+                <button
+                  onClick={() => onSelectSquare(rowIndex, colIndex)}
+                  disabled={playerSymbol !== null}
+                >
+                  {playerSymbol}
+                </button>
+              </li>
+            ))}
+          </ol>
+        </li>
+      ))}
+    </ol>
+  );
+}
+```
+
+1. 우선 우승 조건을 탐색하기 위해선 게임 보드에서 플레이어가 어떤 버튼을 선택했는지 정보를 받아올 필요가 있다. 해당 정보는 GameBoard.jsx에서 `gameBoard` 형태로 남아있었다. &rarr; **이를 App.jsx에서 처리하여 우승 조건을 탐색하도록 함.**
+  - 그러기 위해서 우선 기존에 gameBoard와 관련된 코드를 App.jsx로 이동.
+  - 속성 및 변수(상수)를 수정.
+2. 우승 조건을 for 반복문을 통해서 하나씩 받아온다.
+  - 해당 우승 조건에 맞게 선택된 버튼들을 탐색 &rarr; 우승자가 있다면 p 태그를 통해 우승자를 표시한다.
+
+<br>
+
+### 📖 게임 승리 조건 - 게임 오버 화면 & 무승부 여부 확인
+
+#### App.jsx
+```jsx
+import GameOver from "./components/GameOver.jsx";
+
+function App(){
+  // 무승부 로직
+  const hasDraw = gameTurns.length === 9 && !winner;
+
+  return(
+  {(winner || hasDraw) && <GameOver winner={winner} />}
+  )
+}
+```
+- 총 게임은 최대 9번 가능하므로, 9번 게임이 진행되는 동안 우승자가 안가려졌다면 hasDraw가 true.
+<br>
+
+#### GameOver.jsx
+```jsx
+export default function GameOver({ winner }) {
+  return (
+    <div id="game-over">
+      <h2>Game Over!</h2>
+      {winner && <p>{winner} won!</p>}
+      {!winner && <p>It&apos;s a draw!</p>}
+      <p>
+        <button>Rematch!</button>
+      </p>
+    </div>
+  );
+}
+```
+<br>
+
+#### 결과
+![draw](./src/assets/readme/3-draw.png)
+
+<br>
+
+### 📖 게임 승리 조건 - 게임 재시작
+
+- 게임의 재시작 === gameTurns가 초기화된다는 것이다.
+
+#### App.jsx
+
+```jsx
+const initialGameBoard = [
+  [null, null, null],
+  [null, null, null],
+  [null, null, null],
+];
+
+function App(){
+  let gameBoard = [...initialGameBoard.map((array) => [...array])]; // gameBoard를 도출할 떄 우리가 메모리의 기존의 배열이 아닌 새로운 배열을 추가하도록 함.
+  for (const turn of gameTurns) {
+    const { square, player } = turn;
+    const { row, col } = square;
+    gameBoard[row][col] = player;
+  }
+
+  function handleRematch() {
+    setGameTurns([]);
+  }
+
+  return(
+        {(winner || hasDraw) && (
+          <GameOver winner={winner} onRestart={handleRematch} />
+        )}    
+  )
+}
+```
+<br>
+
+#### GameOver.jsx
+```jsx
+export default function GameOver({ winner, onRestart }) {
+  return (
+    <button onClick={onRestart}>Rematch!</button>
+  );
+}
+```
+- 이전 코드를 그대로 둔 뒤, `handleRematch()`를 실행시켜도 게임보드가 비어있는 상태가 되지 않는다! &rarr; 이는 App.jsx에서 `let gameBoard = initialGameBoard;` 이라고만 설정했기 때문.
+  - 단지 게임 보드를 initialGameBoard로 할당을 한다면, 게임이 진행되면 initialGameBoard의 배열이 변경될 것이다. &rarr; 깊은 복사를 통해서 새로운 참조값을 가지도록 할 필요가 있다.
+<br>
+
+#### 결과
+![rematch](./src/assets/readme/rematch.gif)
+
+<br>
+
+## 📌 게임 우승자에 이름 표시하기
+### 📖 State(상태) 끌어올리면 안되는 이유
+
+- 플레이어의 이름에 대한 것은 Player.jsx의 playerName 상태에 있다.
+- 이 플레이어 이름 상태를 App 컴포넌트로 끌어올리고 싶을 수 있다.
+- 그러나 상태를 끌어올릴 수 없다 &rarr; 플레이어의 이름 상태는 입력을 할 때마다 변경된다. 만약 App 컴포넌트로 끌어올리면, App 컴포넌트 전체가 매 타이핑마다 재평가 된다. 즉, 게임 보드 전체가 매 타이핑마다 재평가.
+- 또한 App에서 Player 컴포넌트 2개를 사용하고 있고 각각 자신의 이름을 관리해야하므로 App으로 playerName 상태를 끌어올린다면 매우 까다로울 것이다.
+
+> App 컴포넌트에 최근 설정된 플레이어의 이름을 저장하는 상태를 추가하자.
+
+<br>
+
+### 📖 State(상태) 끌어올리기 대안
+
+#### App.jsx
+
+```jsx
+function App() {
+  const [players, setPlayers] = useState({
+    X: "Player 1",
+    O: "Player 2",
+  }); // players 상태는 이름 변경을 저장하는 버튼(Save)가 눌릴때마다 호출되야한다.
+
+  function handlePlayerNameChange(symbol, newName) {
+    setPlayers((prevPlayers) => {
+      return {
+        ...prevPlayers,
+        [symbol]: newName, // 자바스크립트 문법. 변경된 플레이어의 기호에 대한 이름을 덮어씀.
+      };
+    }); // 기존정보를 바탕으로 함. 왜냐하면 바뀌지 않은 플레이어의 이름이 있을 수 있으니까.
+  }
+
+  // 우승자 가려내기 로직 => 이름을 반영하기
+  for (const combination of WINNING_COMBINATIONS) {
+    const firstSquareSymbol =
+      gameBoard[combination[0].row][combination[0].column];
+    const secondSquareSymbol =
+      gameBoard[combination[1].row][combination[1].column];
+    const thirdSquareSymbol =
+      gameBoard[combination[2].row][combination[2].column];
+
+    if (
+      firstSquareSymbol &&
+      firstSquareSymbol === secondSquareSymbol &&
+      firstSquareSymbol === thirdSquareSymbol
+    ) {
+      winner = players[firstSquareSymbol]; // 우승자의 이름.
+    }
+  }
+
+  return(
+    //...
+      <Player
+        initialName="Player 1"
+        symbol="X"
+        isActive={activePlayer === "X"}
+        onChangeName={handlePlayerNameChange}
+      />
+      <Player
+        initialName="Player 2"
+        symbol="O"
+        isActive={activePlayer === "O"}
+        onChangeName={handlePlayerNameChange}
+      />
+  )
+}
+```
+<br>
+
+#### Player.jsx
+
+```jsx
+export default function Player({
+  initialName,
+  symbol,
+  isActive,
+  onChangeName,
+}) {
+  const [playerName, setPlayerName] = useState(initialName);
+
+  function handleEditClick() {
+    setIsEditing((editing) => !editing);
+    
+    // 수정될 때 이름이 변경이 되는 것
+    if(isEditing){
+      onChangeName(symbol, playerName)
+    }
+  }
+
+}
+```
