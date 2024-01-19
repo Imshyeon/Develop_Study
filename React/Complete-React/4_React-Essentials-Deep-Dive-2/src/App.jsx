@@ -6,7 +6,12 @@ import Log from "./components/Log.jsx";
 import GameOver from "./components/GameOver.jsx";
 import { WINNING_COMBINATIONS } from "./combination.js";
 
-const initialGameBoard = [
+const PLAYERS = {
+  X: "Player 1",
+  O: "Player 2",
+};
+
+const INITIAL_GAME_BOARD = [
   [null, null, null],
   [null, null, null],
   [null, null, null],
@@ -20,17 +25,8 @@ function deriveActivePlayer(gameTurns) {
   return currentPlayer;
 }
 
-function App() {
-  const [players, setPlayers] = useState({
-    X: "Player 1",
-    O: "Player 2",
-  }); // players 상태는 이름 변경을 저장하는 버튼(Save)가 눌릴때마다 호출되야한다.
-  const [gameTurns, setGameTurns] = useState([]); // 또다른 State 끌어올리기.
-  // const [activePlayer, setActivePlayer] = useState("X");
-
-  const activePlayer = deriveActivePlayer(gameTurns);
-
-  let gameBoard = [...initialGameBoard.map((array) => [...array])]; // gameBoard를 도출할 떄 우리가 메모리의 기존의 배열이 아닌 새로운 배열을 추가하도록 함.
+function deriveGameBoard(gameTurns) {
+  let gameBoard = [...INITIAL_GAME_BOARD.map((array) => [...array])]; // gameBoard를 도출할 떄 우리가 메모리의 기존의 배열이 아닌 새로운 배열을 추가하도록 함.
   // 진행된 turns이 있다면 gameBoard을 오버라이드 할 것이다. 반대로 진행된 것이 없다면 gameBoard = initialGameBoard일 것.
   for (const turn of gameTurns) {
     // turns가 있을때만 수행할 반복문
@@ -38,10 +34,12 @@ function App() {
     const { row, col } = square;
     gameBoard[row][col] = player;
   }
+  return gameBoard;
+}
 
+function deriveWinner(gameBoard, players) {
   let winner;
 
-  // 우승자 가려내기 로직
   for (const combination of WINNING_COMBINATIONS) {
     const firstSquareSymbol =
       gameBoard[combination[0].row][combination[0].column];
@@ -59,6 +57,20 @@ function App() {
     }
   }
 
+  return winner;
+}
+
+function App() {
+  const [players, setPlayers] = useState(PLAYERS); // players 상태는 이름 변경을 저장하는 버튼(Save)가 눌릴때마다 호출되야한다.
+  const [gameTurns, setGameTurns] = useState([]); // 또다른 State 끌어올리기.
+  // const [activePlayer, setActivePlayer] = useState("X");
+
+  const activePlayer = deriveActivePlayer(gameTurns);
+
+  const gameBoard = deriveGameBoard(gameTurns);
+
+  // 우승자 가려내기 로직
+  const winner = deriveWinner(gameBoard, players);
   // 무승부 로직
   const hasDraw = gameTurns.length === 9 && !winner;
 
@@ -94,13 +106,13 @@ function App() {
       <div id="game-container">
         <ol id="players" className="highlight-player">
           <Player
-            initialName="Player 1"
+            initialName={PLAYERS.X}
             symbol="X"
             isActive={activePlayer === "X"}
             onChangeName={handlePlayerNameChange}
           />
           <Player
-            initialName="Player 2"
+            initialName={PLAYERS.O}
             symbol="O"
             isActive={activePlayer === "O"}
             onChangeName={handlePlayerNameChange}

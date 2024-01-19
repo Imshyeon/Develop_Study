@@ -1036,3 +1036,10 @@ export default function Player({
 
 }
 ```
+
+🔗 [레파지토리에서 코드 보기](https://github.com/Imshyeon/Develop_Study/tree/11a5ad2058384e0ea5e9aab13783c9dab22c9be3/React/Complete-React/4_React-Essentials-Deep-Dive-2)
+
+<br>
+
+## 📌 마무리 및 컴포넌트 개선
+
