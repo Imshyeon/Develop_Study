@@ -5,12 +5,15 @@ export default function Input({ inputId }) {
 
   function handleInputChange(e) {
     console.log(e.target.value);
-    setInputValue((prevInput) => {
-      prevInput = inputValue + e.target.value;
-    });
+    setInputValue(e.target.value);
+    if (e.target.value < 1) {
+      e.target.value = 1
+    }
   }
+
+  let errorMessage;
   if (inputValue < 1) {
-    throw new Error("1 이하 안됨.");
+    errorMessage = <label id="errorMessage">1 이하의 숫자는 입력할 수 없습니다.</label>
   }
 
   return (
@@ -22,6 +25,7 @@ export default function Input({ inputId }) {
         onChange={handleInputChange}
         defaultValue={inputValue}
       />
+      {errorMessage}
     </div>
   );
 }

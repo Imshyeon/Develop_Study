@@ -1,4 +1,5 @@
 import Tr from "./Tr.jsx";
+import { calculateInvestmentResults, formatter } from "../util/investment.js";
 
 const INVESTMENT_DATA = [
   {

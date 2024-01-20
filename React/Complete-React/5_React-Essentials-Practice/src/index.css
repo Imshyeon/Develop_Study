@@ -54,6 +54,11 @@ body {
   text-transform: uppercase;
 }
 
+#user-input #errorMessage{
+  margin-top: 0.25rem;
+  color: red;
+}
+
 #user-input input {
   width: 100%;
   padding: 0.5rem;
