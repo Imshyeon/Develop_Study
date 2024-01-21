@@ -1,36 +1,13 @@
 import Tr from "./Tr.jsx";
-import { calculateInvestmentResults, formatter } from "../util/investment.js";
 
-const INVESTMENT_DATA = [
-  {
-    year: 1,
-    investmentValue: "$16,800",
-    interest: "$900",
-    totInterest: "$900",
-    capital: "$15,900",
-  },
-  {
-    year: 2,
-    investmentValue: "$16,800",
-    interest: "$900",
-    totInterest: "$900",
-    capital: "$15,900",
-  },
-  {
-    year: 3,
-    investmentValue: "$16,800",
-    interest: "$900",
-    totInterest: "$900",
-    capital: "$15,900",
-  },
-];
+export default function Result({ isChange, datas }) {
+  let data;
+  if (isChange && datas) {
+    datas.map((item) => {
+      data = <Tr key={item.year} {...item} />;
+    });
+  }
 
-function printInvestmentData() {
-  return INVESTMENT_DATA.map((item) => <Tr key={item.year} {...item} />);
-}
-
-export default function Result() {
-  
   return (
     <>
       <table id="result">
@@ -43,7 +20,7 @@ export default function Result() {
             <th>Invested Capital</th>
           </tr>
         </thead>
-        <tbody>{INVESTMENT_DATA && printInvestmentData()}</tbody>
+        <tbody>{data}</tbody>
       </table>
     </>
   );
