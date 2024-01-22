@@ -31,31 +31,34 @@ function App() {
   function changeInvestmentResults(e) {
     switch (e.target.id) {
       case "initial-investment":
-        initialInput = +e.target.value;
+        inputData.initialInvestment = +e.target.value;
         break;
       case "annual-investment":
-        annualInput = +e.target.value;
+        inputData.annualInvestment = +e.target.value;
         break;
       case "expected-investment":
-        expectedInput = +e.target.value;
+        inputData.expectedReturn = +e.target.value;
         break;
       case "duration-investment":
-        durationInput = +e.target.value;
+        inputData.duration = +e.target.value;
         break;
     }
-    if (initialInput && annualInput && expectedInput && durationInput) {
-      inputInvestmentResultsHandler(
-        initialInput,
-        annualInput,
-        expectedInput,
-        durationInput
-      );
+    console.log(inputData)
+    if (inputData.initialInvestment && inputData.annualInvestment && inputData.expectedReturn && inputData.duration) {
+      // inputInvestmentResultsHandler(
+      //   initialInput,
+      //   annualInput,
+      //   expectedInput,
+      //   durationInput
+      // );
       setTimeout(() => {
         setInvestmentResults(calculateInvestmentResults({ ...inputData }));
       }, 1000);
       console.log(inputData);
     }
   }
+
+  console.log(investmentResults)
 
   return (
     <>
