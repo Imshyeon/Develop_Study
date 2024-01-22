@@ -44,7 +44,12 @@ function App() {
         break;
     }
     if (initialInput && annualInput && expectedInput && durationInput) {
-      inputInvestmentResultsHandler(initialInput, annualInput,expectedInput,durationInput);
+      inputInvestmentResultsHandler(
+        initialInput,
+        annualInput,
+        expectedInput,
+        durationInput
+      );
       setTimeout(() => {
         setInvestmentResults(calculateInvestmentResults({ ...inputData }));
       }, 1000);
@@ -52,11 +57,13 @@ function App() {
     }
   }
 
-
   return (
     <>
       <UserInput onChange={changeInvestmentResults} />
-      <Result isChange={ investmentResults.length<1?false:true} datas={ investmentResults } />
+      <Result
+        isChange={investmentResults.length < 1 ? false : true}
+        datas={investmentResults}
+      />
     </>
   );
 }

@@ -1,10 +1,12 @@
 import Tr from "./Tr.jsx";
 
 export default function Result({ isChange, datas }) {
-  let data;
-  if (isChange && datas) {
+
+  // console.log(isChange, datas)
+  let data=[];
+  if (isChange) {
     datas.map((item) => {
-      data = <Tr key={item.year} {...item} />;
+      data.push(<Tr key={item.year} {...item} />);
     });
   }
 
@@ -20,7 +22,7 @@ export default function Result({ isChange, datas }) {
             <th>Invested Capital</th>
           </tr>
         </thead>
-        <tbody>{data}</tbody>
+        <tbody>{[...data]}</tbody>
       </table>
     </>
   );
