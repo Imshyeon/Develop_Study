@@ -15,19 +15,6 @@ function App() {
     calculateInvestmentResults({ ...inputData })
   );
 
-  function inputInvestmentResultsHandler(
-    initialInput,
-    annualInput,
-    expectedInput,
-    durationInput
-  ) {
-    inputData.initialInvestment = initialInput;
-    inputData.annualInvestment = annualInput;
-    inputData.expectedReturn = expectedInput;
-    inputData.duration = durationInput;
-    return inputData;
-  }
-
   function changeInvestmentResults(e) {
     switch (e.target.id) {
       case "initial-investment":
@@ -43,14 +30,8 @@ function App() {
         inputData.duration = +e.target.value;
         break;
     }
-    console.log(inputData)
     if (inputData.initialInvestment && inputData.annualInvestment && inputData.expectedReturn && inputData.duration) {
-      // inputInvestmentResultsHandler(
-      //   initialInput,
-      //   annualInput,
-      //   expectedInput,
-      //   durationInput
-      // );
+      
       setTimeout(() => {
         setInvestmentResults(calculateInvestmentResults({ ...inputData }));
       }, 1000);
