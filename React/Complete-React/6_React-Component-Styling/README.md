@@ -2,6 +2,7 @@
 
 [📌 바닐라 CSS 사용하기](#-바닐라-css-사용하기)<br>
 [📌 Styled Components](#-styled-components)<br>
+[📌 Tailwind CSS](#-tailwind-css)<br>
 <br>
 
 ## 📌 바닐라 CSS 사용하기
@@ -596,3 +597,32 @@ import Input from "./Input.jsx"; // CustomInput -> Input으로 부르겠다.
 1. css를 알아야 한다.
 2. 리액트와 css 코드 사이에서 명확한 분리가 없다.
 3. 비교적 작은 wrapper 컴포넌트가 많이 생기는 경향이 있다.
+
+<br>
+
+## 📌 Tailwind CSS
+
+### 📖 설치하기
+
+1. (Vite를 사용하는 경우)`npm install -D tailwindcss postcss autoprefixer` &rarr;`npx tailwindcss init -p`
+2. `tailwind.config.js` content 수정하기
+
+```javascript
+content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+```
+
+3. index.css 작성
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+4. `npm run dev`
+
+<br>
+
