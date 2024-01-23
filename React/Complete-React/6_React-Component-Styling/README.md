@@ -598,6 +598,8 @@ import Input from "./Input.jsx"; // CustomInput -> Input으로 부르겠다.
 2. 리액트와 css 코드 사이에서 명확한 분리가 없다.
 3. 비교적 작은 wrapper 컴포넌트가 많이 생기는 경향이 있다.
 
+🔗 [레파지토리에서 해당 코드 보기](https://github.com/Imshyeon/Develop_Study/tree/afe34fcb6ab9a7e10d4fffae3e8b5fa2a38041a8/React/Complete-React/6_React-Component-Styling)
+
 <br>
 
 ## 📌 Tailwind CSS
@@ -626,3 +628,242 @@ content: [
 
 <br>
 
+#### Header.jsx에 tailwind.css 적용하기
+
+```jsx
+import logo from "../assets/logo.png";
+
+export default function Header() {
+  return (
+    <header className="flex flex-col items-center mt-8 mb-16">
+      <img
+        src={logo}
+        alt="A canvas"
+        className="mb-8 w-44 h-44 object-contain"
+      />
+      <h1 className="text-4xl font-semibold tracking-widest text-center uppercase text-amber-800">
+        ReactArt
+      </h1>
+      <p>A community of artists and art-lovers.</p>
+    </header>
+  );
+}
+```
+
+<br>
+
+### 📖 리액트 프로젝트에서 Tailwind CSS 추가 및 사용법
+
+#### index.css
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  /* Taken from SVGBackgrounds.com */
+  background-color: #ffaa00;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 1600 800'%3E%3Cg %3E%3Cpath fill='%23ffb100' d='M486 705.8c-109.3-21.8-223.4-32.2-335.3-19.4C99.5 692.1 49 703 0 719.8V800h843.8c-115.9-33.2-230.8-68.1-347.6-92.2C492.8 707.1 489.4 706.5 486 705.8z'/%3E%3Cpath fill='%23ffb800' d='M1600 0H0v719.8c49-16.8 99.5-27.8 150.7-33.5c111.9-12.7 226-2.4 335.3 19.4c3.4 0.7 6.8 1.4 10.2 2c116.8 24 231.7 59 347.6 92.2H1600V0z'/%3E%3Cpath fill='%23ffbe00' d='M478.4 581c3.2 0.8 6.4 1.7 9.5 2.5c196.2 52.5 388.7 133.5 593.5 176.6c174.2 36.6 349.5 29.2 518.6-10.2V0H0v574.9c52.3-17.6 106.5-27.7 161.1-30.9C268.4 537.4 375.7 554.2 478.4 581z'/%3E%3Cpath fill='%23ffc500' d='M0 0v429.4c55.6-18.4 113.5-27.3 171.4-27.7c102.8-0.8 203.2 22.7 299.3 54.5c3 1 5.9 2 8.9 3c183.6 62 365.7 146.1 562.4 192.1c186.7 43.7 376.3 34.4 557.9-12.6V0H0z'/%3E%3Cpath fill='%23ffcc00' d='M181.8 259.4c98.2 6 191.9 35.2 281.3 72.1c2.8 1.1 5.5 2.3 8.3 3.4c171 71.6 342.7 158.5 531.3 207.7c198.8 51.8 403.4 40.8 597.3-14.8V0H0v283.2C59 263.6 120.6 255.7 181.8 259.4z'/%3E%3Cpath fill='%23ffd914' d='M1600 0H0v136.3c62.3-20.9 127.7-27.5 192.2-19.2c93.6 12.1 180.5 47.7 263.3 89.6c2.6 1.3 5.1 2.6 7.7 3.9c158.4 81.1 319.7 170.9 500.3 223.2c210.5 61 430.8 49 636.6-16.6V0z'/%3E%3Cpath fill='%23ffe529' d='M454.9 86.3C600.7 177 751.6 269.3 924.1 325c208.6 67.4 431.3 60.8 637.9-5.3c12.8-4.1 25.4-8.4 38.1-12.9V0H288.1c56 21.3 108.7 50.6 159.7 82C450.2 83.4 452.5 84.9 454.9 86.3z'/%3E%3Cpath fill='%23ffef3d' d='M1600 0H498c118.1 85.8 243.5 164.5 386.8 216.2c191.8 69.2 400 74.7 595 21.1c40.8-11.2 81.1-25.2 120.3-41.7V0z'/%3E%3Cpath fill='%23fff852' d='M1397.5 154.8c47.2-10.6 93.6-25.3 138.6-43.8c21.7-8.9 43-18.8 63.9-29.5V0H643.4c62.9 41.7 129.7 78.2 202.1 107.4C1020.4 178.1 1214.2 196.1 1397.5 154.8z'/%3E%3Cpath fill='%23ffff66' d='M1315.3 72.4c75.3-12.6 148.9-37.1 216.8-72.4h-723C966.8 71 1144.7 101 1315.3 72.4z'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment: fixed;
+  background-size: cover;
+}
+```
+
+&rarr; 배경 이미지 설정
+<br>
+
+#### font 커스텀
+
+1. tailwind.config.js에서 theme/extend/fontFamily 설정. `font-title`로 불러올 수 있도록 title이라는 키 값을 가지고 폰트 설정(폰트는 index.html에서 구글폰트로 불러왔다.)
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {
+      fontFamily: {
+        title: ['"Pacifico"', "cursive"], //"Pacifico"는 구글 폰트에서 받아온 이름.
+      },
+    },
+  },
+  plugins: [],
+};
+```
+
+2. Header.jsx
+
+```jsx
+export default function Header() {
+  return (
+    <h1 className="text-4xl font-semibold tracking-widest text-center uppercase text-amber-800 font-title">
+      ReactArt
+    </h1>
+  );
+}
+```
+
+<br>
+
+### 📖 Tailwind: 미디어쿼리 & 가상 선택자
+
+🔗 [Tailwind | Responsive Design](https://tailwindcss.com/docs/responsive-design)
+
+```css
+/* Header.css */
+@media (min-width: 768px) {
+  header {
+    margin-bottom: 4rem;
+  }
+
+  header h1 {
+    font-size: 2.25rem;
+  }
+}
+```
+
+#### Header.jsx
+
+```jsx
+export default function Header() {
+  return (
+    <header className="flex flex-col items-center mt-8 mb-8 md:mb-16">
+      <h1 className="text-xl md:text-4xl font-semibold tracking-widest text-center uppercase text-amber-800 font-title">
+        ReactArt
+      </h1>
+    </header>
+  );
+}
+```
+
+- `md:mb-16` : 중간 크기(768px)의 화면 이상에서만 mb-16 적용 &rarr; default로는 margin-bottom이 2rem이도록 지정.(`mb-8`)
+
+<br>
+
+#### Button.jsx | hover 적용하기
+
+```jsx
+export default function Button({ children, ...props }) {
+  return (
+    <button
+      className="px-4 py-2 font-semibold uppercase rounded text-stone-900 bg-amber-400 hover:bg-amber-500"
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+- `hover:bg-amber-500` : 버튼 위로 마우스를 올렸을 때 background-color 변경
+
+<br>
+
+### 📖 Tailwind의 동적 및 조건적 스타일링
+
+#### Input.jsx
+
+```jsx
+export default function Input({ label, invalid, ...props }) {
+  let labelClasses = "block mb-2 text-xs font-bold tracking-wide uppercase";
+  let inputClasses = "w-full px-3 py-2 leading-tight border rounded shadow";
+
+  if (invalid) {
+    labelClasses += " text-red-400";
+    inputClasses += " text-red-500 bg-red-100 border-red-300";
+  } else {
+    labelClasses += " text-stone-300";
+    inputClasses += " text-gray-700 bg-stone-300";
+  }
+
+  return (
+    <p>
+      <label className={labelClasses}>{label}</label>
+      <input className={inputClasses} {...props} />
+    </p>
+  );
+}
+```
+
+<br>
+
+### 📖 Tailwind CSS로 데모 앱 옮기기
+
+#### AuthInput.jsx
+
+```jsx
+import { useState } from "react";
+
+import Button from "./Button.jsx";
+import Input from "./Input.jsx";
+
+export default function AuthInputs() {
+  const [enteredEmail, setEnteredEmail] = useState("");
+  const [enteredPassword, setEnteredPassword] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  function handleInputChange(identifier, value) {
+    if (identifier === "email") {
+      setEnteredEmail(value);
+    } else {
+      setEnteredPassword(value);
+    }
+  }
+
+  function handleLogin() {
+    setSubmitted(true);
+  }
+
+  const emailNotValid = submitted && !enteredEmail.includes("@");
+  const passwordNotValid = submitted && enteredPassword.trim().length < 6;
+
+  return (
+    <div
+      id="auth-inputs"
+      className="w-full max-w-sm p-8 mx-auto rounded shadow-md bg-gradient-to-b from-stone-900 to-stone-800"
+    >
+      <div className="flex flex-col gap-2 mb-6">
+        <Input
+          type="email"
+          label="Email"
+          invalid={emailNotValid}
+          onChange={(event) => handleInputChange("email", event.target.value)}
+        />
+        <Input
+          type="password"
+          label="Password"
+          invalid={passwordNotValid}
+          onChange={(event) =>
+            handleInputChange("password", event.target.value)
+          }
+        />
+      </div>
+      <div className="flex justify-end gap-4">
+        <button type="button" className="text-amber-400 hover:text-amber-500">
+          Create a new account
+        </button>
+        <Button onClick={handleLogin}>Sign In</Button>
+      </div>
+    </div>
+  );
+}
+```
+
+<br>
+
+### 📖 Tailwind CSS 장단점
+
+#### 장점
+
+1. CSS 몰라도 사용할 수 있다.
+2. 리액트나 웹 앱을 일반적으로 꽤 빠르게 개발할 수 있다.
+3. 스타일 충돌을 회피할 수 있다.
+4. 높은 수준의 개인 커스텀 설정, 맞춤화 혹은 추가 기능을 가진다.
+   <br>
+
+#### 단점
+
+1. 최소한 몇 개의 요소들에 대해 상대적으로 킨 클래스 이름 값을 가진다.
+2. 어떤 스타일 변화도 jsx코드의 편집을 요구한다. 따라서 서식 코드와 jsx 코드 사이에 강한 분리가 있지 않다.
+3. input, button 요소들 같은 상대적으로 작은 wrapper 요소들이 만들어 지고 대량의 복사-붙여놓기를 할 수 있다.
