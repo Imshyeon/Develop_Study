@@ -2,6 +2,7 @@
 
 [📌 복습](#-복습)<br>
 [📌 Refs(참조)](#-refs참조)<br>
+[📌 Portals](#-portals)<br>
 <br>
 
 ## 📌 복습
@@ -704,3 +705,77 @@ return (
 ```
 
 - `<dialog>` 요소에 내장된 `onClose`속성을 추가. 해당 값에 `onReset`을 바인딩한다.
+
+<br>
+
+## 📌 Portals
+
+![ModalDOM](./src/assets/readme/modalDom.png)
+
+- 사진을 봤을 때, Modal은 `<section>`과 동일한 `<div>`내에서 정의되고 있다. &rarr; TimerChallenge에서 그렇게 설정되어있으니까.
+- 하지만 Modal은 페이지 제일 위에 보여지는 오버레이 요소이기 때문에 바로 `body`밑이나 `<div id="modal">` 바로 밑에 위치하는 것이 맞다.
+
+#### ResultModal.jsx
+
+```jsx
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import { createPortal } from "react-dom"; // 추가
+
+const ResultModal = forwardRef(function ResultModal(
+  { targetTime, remainingTime, onReset },
+  ref
+) {
+  const dialog = useRef();
+
+  const userLost = remainingTime <= 0;
+  const formattedRemainingTime = (remainingTime / 1000).toFixed(2);
+  const score = Math.round((1 - remainingTime / (targetTime * 1000)) * 100);
+
+  useImperativeHandle(ref, () => {
+    return {
+      open() {
+        dialog.current.showModal();
+      },
+    };
+  });
+
+  // 추가 createPortal( jsx코드, 옮겨질 html 요소)
+  return createPortal(
+    <dialog ref={dialog} className="result-modal" onClose={onReset}>
+      {userLost && <h2>You Lost</h2>}
+      {!userLost && <h2>Your score:{score}</h2>}
+      <p>
+        The targe time was <strong>{targetTime} seconds.</strong>
+      </p>
+      <p>
+        You stopped the timer with
+        <strong>{formattedRemainingTime} seconds left.</strong>
+      </p>
+      <form method="dialog" onSubmit={onReset}>
+        <button>Close</button>
+      </form>
+    </dialog>,
+    document.getElementById("modal") // modal이라는 id를 지닌 html요소로 이동하겠다.
+  );
+});
+
+export default ResultModal;
+```
+
+1. react 와 react-dom 라이브러리의 차이
+
+- react 라이브러리 : 모든 환경에서 작동 가능한 함수와 기능만 노출한다. &rarr; ex. 리액트 네이티브로 네이티브 어플을 만들 때 사용 가능.
+- react-dom 라이브러리 : 몇 가지 함수와 기능은 리액트가 DOM과 상호작용하도록 한다. 즉, 브라우저에 렌더링된 웹사이트와 상호작용한다.
+
+2. Portal : 컴포넌트에 렌더링이 될 HTML 코드를 DOM 내에 다른 곳으로 옮기는 것이다.
+
+- `createPortal( jsx코드, 옮겨질 html 요소 )`
+- 옮겨질 html 요소는 index.html에 있어야 한다.
+
+<br>
+
+#### 결과
+
+![modalPortal](./src/assets/readme/modalPortal.png)
+
+- `<div id="modal">`안에 4개의 요소가 있는 이유는 우리가 만든 챌린지(1초, 5초, 10초, 15초)의 수가 4개이기 때문이다. &rarr; 1초의 챌린지 모달만 open됨.
