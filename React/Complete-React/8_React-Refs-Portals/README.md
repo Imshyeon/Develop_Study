@@ -299,6 +299,10 @@ export default function TimerChallenge({ title, targetTime }) {
 
 <br>
 
+---
+
+<br>
+
 ### 📖 Modal Component 추가하기
 
 #### Modal 작성하기
@@ -504,3 +508,180 @@ function handleStart() {
 ```
 
 - ResultModal.jsx에서 사용된 `useImperativeHandle`에서 선언한 함수 `open()`을 사용한다.
+
+<br>
+
+### 📖 컴포넌트 간의 State(상태) 공유 | Modal에 남은 시간 및 게임 결과 공유하기
+
+#### 남은 시간 표현을 위해 State 수정
+
+```jsx
+// TimerChallenge.jsx
+import { useRef, useState } from "react";
+import ResultModal from "./ResultModal";
+
+export default function TimerChallenge({ title, targetTime }) {
+  // ============== 수정된 부분 ==============
+  const [timeRemaining, setTimeRemaining] = useState(targetTime*1000);
+  const timer = useRef();
+  const dialog = useRef();
+  
+  const timerIsActive = timeRemaining > 0 && timeRemaining < targetTime * 1000;
+
+  if (timeRemaining <= 0) {
+    clearInterval(timer.current);
+    setTimeRemaining(targetTime * 1000);
+    // 사실 이런 식으로 상태 업데이트 함수를 컴포넌트에서 바로 호출하는 것은 위험하다. 대신 우린 if문을 사용하긴 했다..!
+    dialog.current.open(); // 이 함수는 타이머가 자동으로 멈췄을 때 동작하는 것 -> 졌을 때 상황
+  }
+
+  function handleStart() {
+    timer.current = setInterval(() => {
+      setTimeRemaining(prevTimeRemaing=>prevTimeRemaing-10) // timeRemaing을 10밀리초마다 업데이트
+    }, 10);
+  }
+
+  function handleStop() {
+    dialog.current.open(); // 이 함수는 우리가 타이머를 수동으로 멈췄을 때 동작하는 것 -> 이겼을 때 상황
+    clearInterval(timer.current);
+  }
+  // ======================================
+
+  return (
+    <>
+      <ResultModal ref={dialog} targetTime={targetTime} result="lost" />
+      <section className="challenge">
+        <h2>{title}</h2>
+        <p className="challenge-time">
+          {targetTime} second{targetTime > 1 ? "s" : ""}
+        </p>
+        <p>
+          <button onClick={timerIsActive ? handleStop : handleStart}> {/* 수정 */}
+            {timerIsActive ? "Stop" : "Start"} Challenge {/* 수정 */}
+          </button>
+        </p>
+        <p className={timerIsActive ? "active" : undefined}> {/* 수정 */}
+          {timerIsActive ? "Time is running..." : "Timer inactive"} {/* 수정 */}
+        </p>
+      </section>
+    </>
+  );
+}
+```
+
+<br>
+
+#### 게임 결과 공유하기
+
+```jsx
+// TimerChallenge.jsx
+import { useRef, useState } from "react";
+import ResultModal from "./ResultModal";
+
+export default function TimerChallenge({ title, targetTime }) {
+  const [timeRemaining, setTimeRemaining] = useState(targetTime * 1000);
+  const timer = useRef();
+  const dialog = useRef();
+
+  const timerIsActive = timeRemaining > 0 && timeRemaining < targetTime * 1000;
+
+  // ============== 수정된 부분 ==============
+  if (timeRemaining <= 0) {
+    clearInterval(timer.current);
+    dialog.current.open(); 
+  }
+
+  function handleReset() {
+    setTimeRemaining(targetTime * 1000);
+  }
+  // ======================================
+
+  function handleStart() {
+    timer.current = setInterval(() => {
+      setTimeRemaining((prevTimeRemaing) => prevTimeRemaing - 10); 
+    }, 10);
+  }
+
+  function handleStop() {
+    dialog.current.open(); 
+    clearInterval(timer.current);
+  }
+
+  return (
+    <>
+      <ResultModal
+        ref={dialog}
+        targetTime={targetTime}
+        remainingTime={timeRemaining} // remainingTime 수정
+        onReset={handleReset} // onReset 수정
+      />
+      <section className="challenge">
+        <h2>{title}</h2>
+        <p className="challenge-time">
+          {targetTime} second{targetTime > 1 ? "s" : ""}
+        </p>
+        <p>
+          <button onClick={timerIsActive ? handleStop : handleStart}>
+            {timerIsActive ? "Stop" : "Start"} Challenge
+          </button>
+        </p>
+        <p className={timerIsActive ? "active" : undefined}>
+          {timerIsActive ? "Time is running..." : "Timer inactive"}
+        </p>
+      </section>
+    </>
+  );
+}
+```
+
+<br>
+
+```jsx
+// ResultModal.jsx
+import { forwardRef, useImperativeHandle, useRef } from "react";
+
+const ResultModal = forwardRef(function ResultModal(
+  { targetTime, remainingTime, onReset }, // 수정 : remainingTime, onReset 추가
+  ref
+) {
+  const dialog = useRef();
+
+  // ============== 수정된 부분 ==============
+  const userLost = remainingTime <= 0;
+  const formattedRemainingTime = (remainingTime / 1000).toFixed(2); // 소수점 두자리 수 까지 표현
+  const score = Math.round((1 - remainingTime / (targetTime * 1000)) * 100); // 0~100사이의 숫자 생성. remaining(ms 단위), targetTime(s 단위)
+  // ======================================
+
+  useImperativeHandle(ref, () => {
+    return {
+      open() {
+        dialog.current.showModal();
+      },
+    };
+  });
+
+  return (
+    <dialog ref={dialog} className="result-modal">
+      {userLost && <h2>You Lost</h2>} {/* 추가 */}
+      {!userLost && <h2>Your score:{score}</h2>} {/* 추가 */}
+      <p>
+        The targe time was <strong>{targetTime} seconds.</strong> {/* targetTime 추가 */}
+      </p>
+      <p>
+        You stopped the timer with
+        <strong>{formattedRemainingTime} seconds left.</strong> {/* formattedRemainingTime 추가 */}
+      </p>
+      <form method="dialog" onSubmit={onReset}> {/* onReset 추가 */}
+        <button>Close</button>
+      </form>
+    </dialog>
+  );
+});
+
+export default ResultModal;
+```
+
+<br>
+
+#### 결과
+![resultModal](./src/assets/readme/resultModal.gif)
