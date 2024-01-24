@@ -522,10 +522,10 @@ import ResultModal from "./ResultModal";
 
 export default function TimerChallenge({ title, targetTime }) {
   // ============== 수정된 부분 ==============
-  const [timeRemaining, setTimeRemaining] = useState(targetTime*1000);
+  const [timeRemaining, setTimeRemaining] = useState(targetTime * 1000);
   const timer = useRef();
   const dialog = useRef();
-  
+
   const timerIsActive = timeRemaining > 0 && timeRemaining < targetTime * 1000;
 
   if (timeRemaining <= 0) {
@@ -537,7 +537,7 @@ export default function TimerChallenge({ title, targetTime }) {
 
   function handleStart() {
     timer.current = setInterval(() => {
-      setTimeRemaining(prevTimeRemaing=>prevTimeRemaing-10) // timeRemaing을 10밀리초마다 업데이트
+      setTimeRemaining((prevTimeRemaing) => prevTimeRemaing - 10); // timeRemaing을 10밀리초마다 업데이트
     }, 10);
   }
 
@@ -556,11 +556,15 @@ export default function TimerChallenge({ title, targetTime }) {
           {targetTime} second{targetTime > 1 ? "s" : ""}
         </p>
         <p>
-          <button onClick={timerIsActive ? handleStop : handleStart}> {/* 수정 */}
+          <button onClick={timerIsActive ? handleStop : handleStart}>
+            {" "}
+            {/* 수정 */}
             {timerIsActive ? "Stop" : "Start"} Challenge {/* 수정 */}
           </button>
         </p>
-        <p className={timerIsActive ? "active" : undefined}> {/* 수정 */}
+        <p className={timerIsActive ? "active" : undefined}>
+          {" "}
+          {/* 수정 */}
           {timerIsActive ? "Time is running..." : "Timer inactive"} {/* 수정 */}
         </p>
       </section>
@@ -588,7 +592,7 @@ export default function TimerChallenge({ title, targetTime }) {
   // ============== 수정된 부분 ==============
   if (timeRemaining <= 0) {
     clearInterval(timer.current);
-    dialog.current.open(); 
+    dialog.current.open();
   }
 
   function handleReset() {
@@ -598,12 +602,12 @@ export default function TimerChallenge({ title, targetTime }) {
 
   function handleStart() {
     timer.current = setInterval(() => {
-      setTimeRemaining((prevTimeRemaing) => prevTimeRemaing - 10); 
+      setTimeRemaining((prevTimeRemaing) => prevTimeRemaing - 10);
     }, 10);
   }
 
   function handleStop() {
-    dialog.current.open(); 
+    dialog.current.open();
     clearInterval(timer.current);
   }
 
@@ -665,13 +669,16 @@ const ResultModal = forwardRef(function ResultModal(
       {userLost && <h2>You Lost</h2>} {/* 추가 */}
       {!userLost && <h2>Your score:{score}</h2>} {/* 추가 */}
       <p>
-        The targe time was <strong>{targetTime} seconds.</strong> {/* targetTime 추가 */}
+        The targe time was <strong>{targetTime} seconds.</strong>{" "}
+        {/* targetTime 추가 */}
       </p>
       <p>
         You stopped the timer with
         <strong>{formattedRemainingTime} seconds left.</strong> {/* formattedRemainingTime 추가 */}
       </p>
-      <form method="dialog" onSubmit={onReset}> {/* onReset 추가 */}
+      <form method="dialog" onSubmit={onReset}>
+        {" "}
+        {/* onReset 추가 */}
         <button>Close</button>
       </form>
     </dialog>
@@ -684,4 +691,16 @@ export default ResultModal;
 <br>
 
 #### 결과
+
 ![resultModal](./src/assets/readme/resultModal.gif)
+
+#### (+) ESC 키로 Modal 닫기
+
+```jsx
+// ResultModal.jsx
+return (
+  <dialog ref={dialog} className="result-modal" onClose={onReset}></dialog>
+);
+```
+
+- `<dialog>` 요소에 내장된 `onClose`속성을 추가. 해당 값에 `onReset`을 바인딩한다.
