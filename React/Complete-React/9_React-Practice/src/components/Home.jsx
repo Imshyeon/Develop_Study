@@ -4,6 +4,7 @@ import noPrjImage from "../assets/no-projects.png";
 export default function Home({
   onClick,
   onChange,
+  onDelete,
   projects,
   destination,
   curProject,
@@ -36,7 +37,22 @@ export default function Home({
           <button onClick={() => onChange(task, project.title)}>
             Add Task
           </button>
-          <ul>{project.tasks.length > 0 && project.tasks.map(task => <li key={task}>{task}</li>)}</ul>
+          <ul>
+            {project.tasks.length > 0 &&
+              project.tasks.map((task) => {
+                return (
+                  <div>
+                    <li key={task}>{task}</li>
+                    <button
+                      key={task + "-clear"}
+                      onClick={() => onDelete(task, project.title)}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                );
+              })}
+          </ul>
         </div>
       </div>
     );

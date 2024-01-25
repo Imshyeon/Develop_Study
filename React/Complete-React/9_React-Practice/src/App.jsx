@@ -31,7 +31,7 @@ function App() {
   function goToProjectHandler(e) {
     setDestination(e.target.name);
   }
-
+  
   function addTasksHandler(task, title) {
     allProjects.map((project) => {
       if (project.title === title) {
@@ -47,6 +47,21 @@ function App() {
     task.current.value = '';
   }
 
+  function deleteTaskHandler(task, title) {
+    allProjects.map((project) => {
+      if (project.title === title) {
+        const filteredTasks = project.tasks.filter(target => target !== task)
+        project.tasks = filteredTasks
+        setNewTask(() => {
+          return {
+            prjTitle: title,
+            tasks: project.tasks
+          }
+        })
+      }
+    })
+  }
+
   return (
     <div className="flex">
       <Sidebar
@@ -57,6 +72,7 @@ function App() {
       <Home
         onClick={openModalHandler}
         onChange={addTasksHandler}
+        onDelete={deleteTaskHandler}
         projects={allProjects}
         curProject={createPrj}
         destination={destination}
