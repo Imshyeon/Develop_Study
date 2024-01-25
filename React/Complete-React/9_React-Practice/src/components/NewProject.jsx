@@ -1,20 +1,73 @@
-import Input from "./Input";
-export default function NewProject() {
-    return (
+import { useRef } from "react";
+import Input from "./Input.jsx";
+import Modal from "./Modal.jsx";
+
+export default function NewProject({ onAdd, onCancle }) {
+  const modal = useRef();
+
+  const title = useRef();
+  const description = useRef();
+  const dueDate = useRef();
+
+  function handleSave() {
+    const enteredTitle = title.current.value;
+    const enteredDescription = description.current.value;
+    const enteredDueDate = dueDate.current.value;
+
+    // validation
+    if (
+      enteredTitle.trim() === "" ||
+      enteredDescription.trim() === "" ||
+      enteredDueDate.trim() === ""
+    ) {
+      //show the error modal
+      modal.current.open();
+      return; // 유효하지 않은 입력값을 받은 경우이기 때문에 return;
+    }
+
+    onAdd({
+      title: enteredTitle,
+      description: enteredDescription,
+      dueDate: enteredDueDate,
+    });
+  }
+
+  return (
+    <>
+      <Modal ref={modal} buttonCaption="Okay">
+        <h2 className="text-xl font-bold text-stone-700 my-4">Invalid Input</h2>
+        <p className="text-stone-600 mb-4">
+          Opps... looks like you forgot to enter a value
+        </p>
+        <p className="text-stone-600 mb-4">
+          Plz make sure you provide a valid value for every input field.
+        </p>
+      </Modal>
       <div className="w-[35rem] mt-16">
         <menu className="flex items-center justify-end gap-4 my-4">
           <li>
-            <button className="text-stone-800 hover:text-stone-950">Cancle</button>
+            <button
+              className="text-stone-800 hover:text-stone-950"
+              onClick={onCancle}
+            >
+              Cancle
+            </button>
           </li>
           <li>
-            <button className="px-6 py-2 rounded-md bg-stone-800 text-stone-50 hover:bg-stone-950">Save</button>
+            <button
+              className="px-6 py-2 rounded-md bg-stone-800 text-stone-50 hover:bg-stone-950"
+              onClick={handleSave}
+            >
+              Save
+            </button>
           </li>
         </menu>
         <div>
-          <Input label="Title"/>
-          <Input label="Description" textarea/>
-          <Input label="Due Date"/>
+          <Input type="text" ref={title} label="Title" />
+          <Input ref={description} label="Description" textarea />
+          <Input type="date" ref={dueDate} label="Due Date" />
         </div>
       </div>
-    );
+    </>
+  );
 }

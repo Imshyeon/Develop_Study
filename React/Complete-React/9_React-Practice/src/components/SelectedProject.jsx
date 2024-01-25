@@ -1,0 +1,28 @@
+export default function SelectedProject({ project }) {
+  const formattedDate = new Date(project.dueDate).toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  return (
+    <div className="w-[35rem] mt-16">
+      <header className="pb-4 mb-4 border-b-2 border-stone-300">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-stone-600 mb-2">
+            {project.title}
+          </h1>
+          <button className="text-stone-600 hover:text-stone-950">
+            Delete
+          </button>
+        </div>
+        <p className="mb-4 text-stone-400">{formattedDate}</p>
+        <p className="text-stone-600 whitespace-pre-wrap">
+          {project.description}
+        </p>
+        {/* whitespace-pre-wrap: 상세 내용란에 줄 바꿈이 제거되지 않고 유지될 수 있게 함. */}
+      </header>
+      TASKS
+    </div>
+  );
+}
