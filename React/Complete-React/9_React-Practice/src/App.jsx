@@ -1,85 +1,37 @@
-import Sidebar from "./components/Sidebar.jsx";
-import CreatePrjModal from "./components/CreatePrjModal";
-import Home from "./components/Home.jsx";
-
-import { useRef, useState } from "react";
+import { useState } from "react";
+import ProjectSidebar from "./components/ProjectSidebar";
+import NewProject from "./components/NewProject";
+import NoProjectSelected from "./components/NoProjectSelected";
 
 function App() {
-  const dialog = useRef();
-  const [newTask, setNewTask] = useState();
-  const [createPrj, setCreatePrjs] = useState({
-    title: undefined,
-    description: undefined,
-    dueDate: undefined,
-    tasks: [],
+  const [projectsState, setProjectsState] = useState({
+    selectedProjectId: undefined, // 아무것도 안하고 있다. 라는 신호
+    projects: [],
   });
-  const [allProjects, setAllProjects] = useState([]);
-  const [destination, setDestination] = useState();
 
-  function openModalHandler() {
-    dialog.current.open();
-    console.log("clicked");
-  }
-
-  function createProjectHandler(prj) {
-    setCreatePrjs(prj);
-    setAllProjects((prevProjects) => {
-      return [...prevProjects, prj];
+  function handleStartAddProject() {
+    setProjectsState((prevState) => {
+      return {
+        ...prevState,
+        selectedProjectId: null, // 우리가 새로운 프로젝트를 추가한다는 신호
+      };
     });
   }
 
-  function goToProjectHandler(e) {
-    setDestination(e.target.name);
-  }
-  
-  function addTasksHandler(task, title) {
-    allProjects.map((project) => {
-      if (project.title === title) {
-        project.tasks.push(task.current.value);
-        setNewTask(() => {
-          return {
-            prjTitle: title,
-            tasks: [task.current.value],
-          };
-        });
-      }
-    });
-    task.current.value = '';
-  }
-
-  function deleteTaskHandler(task, title) {
-    allProjects.map((project) => {
-      if (project.title === title) {
-        const filteredTasks = project.tasks.filter(target => target !== task)
-        project.tasks = filteredTasks
-        setNewTask(() => {
-          return {
-            prjTitle: title,
-            tasks: project.tasks
-          }
-        })
-      }
-    })
+  let content;
+  if (projectsState.selectedProjectId === null) {
+    // 새로운 프로젝트를 추가한다는 버튼을 누르면
+    content = <NewProject />;
+  } else if (projectsState.selectedProjectId === undefined) {
+    content = <NoProjectSelected onStartAddProject={handleStartAddProject} />;
   }
 
   return (
-    <div className="flex">
-      <Sidebar
-        onClick={openModalHandler}
-        projects={allProjects}
-        goToProjectHandler={goToProjectHandler}
-      />
-      <Home
-        onClick={openModalHandler}
-        onChange={addTasksHandler}
-        onDelete={deleteTaskHandler}
-        projects={allProjects}
-        curProject={createPrj}
-        destination={destination}
-      />
-      <CreatePrjModal ref={dialog} onSubmit={createProjectHandler} />
-    </div>
+    // h-screen : 화면 세로 길이를 전부 차지
+    <main className="h-screen my-8 flex gap-8">
+      <ProjectSidebar onStartAddProject={handleStartAddProject} />
+      {content}
+    </main>
   );
 }
-
 export default App;
