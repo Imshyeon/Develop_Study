@@ -45,23 +45,23 @@ const CreatePrjModal = forwardRef(function CreatePrjModal(
   });
 
   return createPortal(
-    <dialog ref={dialog}>
+    <dialog ref={dialog} className="w-1/2 h-1/2 p-5">
       <div>
-        <form method="dialog">
-          <button onClick={handleCancleBtn}>CANCLE</button>
-          <button onClick={handleSubmitBtn}>SAVE</button>
+        <form method="dialog" className="flex justify-end">
+          <button className="mx-2 p-2 rounded" onClick={handleCancleBtn}>CANCLE</button>
+          <button className="mx-2 hover:bg-gray-200 p-2 rounded"onClick={handleSubmitBtn}>SAVE</button>
         </form>
-        <div>
-          <h2>TITLE</h2>
-          <input type="text" ref={title} required />
+        <div className="p-2 mt-6 mb-4">
+          <label htmlFor="title" className="block">TITLE</label>
+          <input type="text" id="title" className="bg-gray-200 p-2 mt-2 rounded w-full" ref={title} required />
         </div>
-        <div>
-          <h2>DESCRIPTION</h2>
-          <input type="text" ref={description} required />
+        <div className="p-2 mb-4">
+          <label htmlFor="desc" className="block">DESCRIPTION</label>
+          <input type="text" id="desc" className="bg-gray-200 p-2 mt-2 rounded w-full" ref={description} required />
         </div>
-        <div>
-          <h2>DUE DATE</h2>
-          <input type="date" ref={dueDate} required />
+        <div className="p-2 mb-4">
+          <label htmlFor="date" className="block">DUE DATE</label>
+          <input type="date" id="date" className="bg-gray-200 p-2 mt-2 rounded w-full" ref={dueDate} required />
         </div>
       </div>
     </dialog>,
