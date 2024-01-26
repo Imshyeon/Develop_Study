@@ -5,6 +5,8 @@ import Shop from "./components/Shop.jsx";
 import Product from "./components/Product.jsx";
 import { DUMMY_PRODUCTS } from "./dummy-products.js";
 
+import { CartContext } from "./store/shopping-cart-context.jsx";
+
 function App() {
   const [shoppingCart, setShoppingCart] = useState({
     items: [],
@@ -67,7 +69,8 @@ function App() {
   }
 
   return (
-    <>
+    <CartContext.Provider value={{ items: [] }}>
+      {/* 실제로 사용하게 될 컴포넌트가 된다.*/}
       <Header
         cart={shoppingCart}
         onUpdateCartItemQuantity={handleUpdateCartItemQuantity}
@@ -79,7 +82,7 @@ function App() {
           </li>
         ))}
       </Shop>
-    </>
+    </CartContext.Provider>
   );
 }
 

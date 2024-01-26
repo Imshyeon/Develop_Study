@@ -1,4 +1,10 @@
-export default function Cart({ items, onUpdateItemQuantity }) {
+import { useContext } from 'react';
+import { CartContext } from "../store/shopping-cart-context";
+
+export default function Cart({ onUpdateItemQuantity }) {
+  const {items} = useContext(CartContext); // 연결 구조 형성
+  // 초기값에 items 속성을 추가했기 때문에 이 값은 items 속성을 가진 상태이다.
+
   const totalPrice = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
