@@ -37,7 +37,7 @@
 
 ### 📖 ProjectSidebar 컴포넌트 추가히기
 
-#### App.jsx
+#### 💎 App.jsx
 
 ```jsx
 import ProjectSidebar from "./components/ProjectSidebar";
@@ -52,7 +52,7 @@ function App() {
 export default App;
 ```
 
-#### ProjectSidebar.jsx
+#### 💎 ProjectSidebar.jsx
 
 ```jsx
 export default function ProjectSidebar() {
@@ -108,7 +108,7 @@ export default function ProjectSidebar() {
 
 ### 📖 NewProject 컴포넌트와 재사용 가능한 Input 컴포넌트 추가하기
 
-#### NewProject.jsx
+#### 💎 NewProject.jsx
 
 ```jsx
 import Input from "./Input";
@@ -133,7 +133,7 @@ export default function NewProject() {
 }
 ```
 
-#### Input.jsx
+#### 💎 Input.jsx
 
 ```jsx
 export default function Input({ label, textarea, ...props }) {
@@ -150,7 +150,7 @@ export default function Input({ label, textarea, ...props }) {
 }
 ```
 
-#### App.jsx
+#### 💎 App.jsx
 
 ```jsx
 import ProjectSidebar from "./components/ProjectSidebar";
@@ -168,7 +168,7 @@ function App() {
 export default App;
 ```
 
-#### 결과
+#### 💎 결과
 
 ![결과1](./src/assets/readme/1.png)
 
@@ -229,7 +229,7 @@ export default function Input({ label, textarea, ...props }) {
 
 ### 📖 JSX와 Tailwind CSS 스타일을 위한 컴포넌트 분리 (재사용 가능성 향상)
 
-#### Button.jsx
+#### 💎 Button.jsx
 
 ```jsx
 export default function Button({ children, ...props }) {
@@ -244,7 +244,7 @@ export default function Button({ children, ...props }) {
 }
 ```
 
-#### NoProjectSelected.jsx
+#### 💎 NoProjectSelected.jsx
 
 ```jsx
 import noProjectImage from "../assets/no-projects.png";
@@ -272,7 +272,7 @@ export default function NoProjectSelected() {
 }
 ```
 
-#### ProjectSidebar.jsx
+#### 💎 ProjectSidebar.jsx
 
 ```jsx
 import Button from "./Button";
@@ -295,7 +295,7 @@ export default function ProjectSidebar() {
 
 ### 📖 컴포넌트 간 교환을 위한 State 관리법
 
-#### App.jsx
+#### 💎 App.jsx
 
 ```jsx
 import { useState } from "react";
@@ -341,7 +341,7 @@ export default App;
   > 나는 프로젝트와 관련된 신호를 따로 넣진 않았다. 강사 코드를 보면서 해당 신호(signal)을 주고 받는다면 로직을 짜고 코드를 작성하는데 더 편하게 할 수 있을 것이란 것을 깨달았다!!
   > 🚨 앞으로 신호를 주고받아서 상태를 업데이트하는 방법에 대해서도 생각해보자! 🚨
 
-#### ProjectSidebar.jsx, NoProjectSelected.jsx
+#### 💎 ProjectSidebar.jsx, NoProjectSelected.jsx
 
 ```jsx
 // ProjectSidebar.jsx
@@ -394,7 +394,7 @@ export default function NoProjectSelected({ onStartAddProject }) {
 
 ### 📖 Refs(참조)와 전달된 Refs(참조)로 사용자 입력 받아오기
 
-#### NewProject.jsx
+#### 💎 NewProject.jsx
 
 ```jsx
 import { useRef } from "react";
@@ -447,7 +447,7 @@ export default function NewProject({ onAdd }) {
 
 - `useRef()`를 이용해 입력받을 정보들을 각각 참조한다.
 
-#### Input.jsx
+#### 💎 Input.jsx
 
 ```jsx
 import { forwardRef } from "react";
@@ -481,7 +481,7 @@ export default Input;
 - 위에서 정의한 ref 데이터를 사용하기 위해서는 Input.jsx에서 `forwardRef()`를 사용해야 한다.
 - Input에서 데이터의 값을 전달 받기 때문!
 
-#### App.jsx
+#### 💎 App.jsx
 
 ```jsx
 import { useState } from "react";
@@ -546,7 +546,7 @@ export default App;
 
 ### 📖 프로젝트 생성 핸들링 & UI 업데이트
 
-#### App.jsx
+#### 💎 App.jsx
 
 ```jsx
 function App() {
@@ -585,7 +585,7 @@ function App() {
 export default App;
 ```
 
-#### ProjectSidebar.jsx
+#### 💎 ProjectSidebar.jsx
 
 ```jsx
 import Button from "./Button";
@@ -618,7 +618,7 @@ export default function ProjectSidebar({ onStartAddProject, projects }) {
 
 ### 📖 사용자 입력 유효성 검사 & `useImperativeHandle`로 에러 모달 띄우기.
 
-#### Modal.jsx
+#### 💎 Modal.jsx
 
 ```jsx
 import { useRef, forwardRef, useImperativeHandle } from "react";
@@ -653,7 +653,7 @@ const Modal = forwardRef(function Modal({ children, buttonCaption }, ref) {
 export default Modal;
 ```
 
-#### NewProject.jsx
+#### 💎 NewProject.jsx
 
 ```jsx
 import { useRef } from "react";
@@ -697,11 +697,11 @@ export default function NewProject({ onAdd }) {
 }
 ```
 
-#### 결과
+#### 💎 결과
 
 ![결과2](./src/assets/readme/2.gif)
 
-#### 취소 버튼 동작시키기
+#### 💎 취소 버튼 동작시키기
 
 ```jsx
 // App.jsx
@@ -748,7 +748,7 @@ export default function NewProject({ onAdd, onCancle }) {
 
 ### 📖 SelectedProject.jsx 구현 및 프로젝트 정보 보기
 
-#### SelectedProject.jsx
+#### 💎 SelectedProject.jsx
 
 ```jsx
 export default function SelectedProject({ project }) {
@@ -781,7 +781,7 @@ export default function SelectedProject({ project }) {
 }
 ```
 
-#### App.jsx
+#### 💎 App.jsx
 
 ```jsx
 import { useState } from "react";
@@ -870,7 +870,7 @@ function App() {
 export default App;
 ```
 
-#### ProjectsSidebar.jsx
+#### 💎 ProjectsSidebar.jsx
 
 ```jsx
 import Button from "./Button";
@@ -914,7 +914,7 @@ export default function ProjectSidebar({
 }
 ```
 
-#### 로직 설명
+#### 💎 로직 설명
 
 1. 프로젝트를 생성한다 &rarr; 프로젝트의 타이틀, 설명, 마감날짜 + **id** 가 부여되어 생성된다.
 2. 사이드바에서 한 프로젝트를 선택한다
@@ -945,3 +945,319 @@ projectsState {
 <br>
 
 ### 📖 프로젝트 삭제 핸들링
+
+#### 💎 App.jsx
+
+```jsx
+function App() {
+  const [projectsState, setProjectsState] = useState({
+    selectedProjectId: undefined,
+    projects: [],
+  });
+
+  function handleSelectProject(id) {
+    setProjectsState((prevState) => {
+      console.log("prevState=>", prevState);
+      return {
+        ...prevState,
+        selectedProjectId: id,
+      };
+    });
+  }
+
+  function handleDeleteProject() {
+    setProjectsState((prevState) => {
+      console.log("prevState=>", prevState);
+      return {
+        ...prevState,
+        selectedProjectId: undefined,
+        projects: prevState.projects.filter(
+          (project) => project.id !== prevState.selectedProjectId // id가 동일하다면 지운다!
+          // prevState에 selectedProjectId가 있기 때문에 따로 id를 입력받지 않아도 된다.
+        ),
+      };
+    });
+  }
+
+  const selectedProject = projectsState.projects.find(
+    (project) => project.id === projectsState.selectedProjectId
+  );
+
+  let content = (
+    <SelectedProject project={selectedProject} onDelete={handleDeleteProject} /> // onDelete 속성을 통해 함수 전달.
+  );
+  // ...
+}
+export default App;
+```
+
+- 사이드바에서 프로젝트를 선택한 뒤, 홈화면에 나온 Delete 버튼을 통해 삭제를 하는 것이므로 **따로 id를 부여받지 않아도 이전 상태의 selectedProjectId를 통해 삭제가 가능하다.**
+
+#### 💎 SelectedProject.jsx
+
+```jsx
+export default function SelectedProject({ project, onDelete }) {
+  //...
+  return (
+    <div className="w-[35rem] mt-16">
+      <header className="pb-4 mb-4 border-b-2 border-stone-300">
+        <div className="flex items-center justify-between">
+          {/*...*/}
+          <button
+            className="text-stone-600 hover:text-stone-950"
+            onClick={onDelete} {/* onDelete 속성 전달 */}
+          >
+            Delete
+          </button>
+        </div>
+        {/*...*/}
+      </header>
+      TASKS
+    </div>
+  );
+}
+```
+
+<br>
+
+### 📖 NewTask 및 Task 컴포넌트 추가
+
+#### 💎 Task.jsx
+
+```jsx
+import NewTask from "./NewTask";
+
+export default function Task() {
+  return (
+    <section>
+      <h2 className="text-2xl font-bold text-stone-700 mb-4">Tasks</h2>
+      <NewTask />
+      <p className="text-stone-800 my-4">
+        This project does not have any tasks yet.
+      </p>
+      <ul></ul>
+    </section>
+  );
+}
+```
+
+#### 💎 NewTask.jsx
+
+```jsx
+export default function NewTask() {
+  return (
+    <div className="flex items-center gap-4">
+      <input type="text" className="w-64 px-2 py-1 rounded-sm bg-stone-200" />
+      <button className="text-stone-700 hover:text-stone-950">Add Task</button>
+    </div>
+  );
+}
+```
+
+<br>
+
+### 📖 Task 관리 & Prop Drilling 이해하기
+
+#### 💎 App.jsx
+
+```jsx
+function App() {
+  const [projectsState, setProjectsState] = useState({
+    selectedProjectId: undefined,
+    projects: [],
+    tasks: [], // tasks 추가
+  });
+
+  function handleAddTask(text) {
+    setProjectsState((prevState) => {
+      const taskId = Math.random();
+      const newTask = {
+        text: text,
+        projectId: prevState.selectedProjectId,
+        id: taskId,
+      };
+
+      return {
+        ...prevState,
+        tasks: [...prevState.tasks, newTask],
+      };
+    });
+  }
+
+  function handleDeleteTask() {}
+
+  let content = (
+    <SelectedProject
+      project={selectedProject}
+      onDelete={handleDeleteProject}
+      onAddTask={handleAddTask} {/* 태스크 추가 함수 추가 */}
+      onDeleteTask={handleDeleteTask} {/* 태스크 제거 함수 추가 */}
+      tasks={projectsState.tasks} {/* 태스크 배열 전달 */}
+    />
+  );
+}
+export default App;
+```
+
+#### 💎 SelectedProject.jsx
+
+```jsx
+import Task from "./Task";
+
+export default function SelectedProject({
+  project,
+  onDelete,
+  onAddTask, // App에서 받은 속성
+  onDeleteTask, // App에서 받은 속성
+  tasks, // App에서 받은 속성
+}) {
+  return (
+    //...
+    <Task onAdd={onAddTask} onDelete={onDeleteTask} tasks={tasks} />
+    //...
+  );
+}
+```
+
+#### 💎 Task.jsx
+
+```jsx
+import NewTask from "./NewTask";
+
+export default function Task({ tasks, onAdd, onDelete }) { // App -> SelectedProject에서 받은 속성
+  return (
+    <section>
+      <h2 className="text-2xl font-bold text-stone-700 mb-4">Tasks</h2>
+      <NewTask onAdd={onAdd} /> {/* 속성 전달 */}
+      {tasks.length === 0 && ( {/* tasks 배열이 비어있을 때 */}
+        <p className="text-stone-800 my-4">
+          This project does not have any tasks yet.
+        </p>
+      )}
+      {tasks.length > 0 && ( {/* tasks 배열에 값이 있을 때 */}
+        <ul className="p-4 mt-8 rounded-md bg-stone-100">
+          {tasks.map((task) => (
+            <li key={task.id} className="flex justify-between my-4">
+              <span>{task.text}</span>
+              <button className="text-stone-700 hover:text-red-500">
+                Clear
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+```
+
+#### 💎 NewTask.jsx
+
+```jsx
+import { useState } from "react";
+
+export default function NewTask({ onAdd }) {
+  // App -> SelectedProject -> Task에서 온 속성
+  const [enteredTask, setEnteredTask] = useState();
+
+  function handleChange(e) {
+    setEnteredTask(e.target.value);
+  }
+
+  function handleClick() {
+    onAdd(enteredTask); // 속성 꽂기.(props drilling : App -> SelectedProject -> Task -> NewTask)
+    setEnteredTask(""); // 입력칸을 비도록 만듦.
+  }
+
+  return (
+    <div className="flex items-center gap-4">
+      <input
+        onChange={handleChange}
+        value={enteredTask}
+        type="text"
+        className="w-64 px-2 py-1 rounded-sm bg-stone-200"
+      />
+      <button
+        onClick={handleClick}
+        className="text-stone-700 hover:text-stone-950"
+      >
+        Add Task
+      </button>
+    </div>
+  );
+}
+```
+
+<br>
+
+### 📖 Task 지우기 & 버그 고치기
+
+#### 💎 App.jsx
+
+```jsx
+function App() {
+  //...
+  function handleDeleteTask(id) {
+    setProjectsState((prevState) => {
+      return {
+        ...prevState,
+        tasks: prevState.tasks.filter((task) => task.id !== id),
+      };
+    });
+  }
+  //...
+}
+```
+
+#### 💎 Task.jsx
+
+```jsx
+export default function Task({ tasks, onAdd, onDelete }) {
+  return (
+    <section>
+      {/* ... */}
+      {tasks.length > 0 && (
+        <ul className="p-4 mt-8 rounded-md bg-stone-100">
+          {tasks.map((task) => (
+            <li key={task.id} className="flex justify-between my-4">
+              <span>{task.text}</span>
+              <button
+                onClick={() => onDelete(task.id)}  {/* id 전달 */}
+                className="text-stone-700 hover:text-red-500"
+              >
+                Clear
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+```
+
+#### 💎 결과
+
+![결과3](./src/assets/readme/3.gif)
+
+#### 💎 콘솔의 오류 고치기
+
+- 위의 사진에서 NewTask를 입력할 때 오류가 발생하는 것을 볼 수 있다. &rarr; NewTask.jsx에서 발생
+- NewTask에서 `const [enteredTask, setEnteredTask] = useState();`로 상태를 정의하고 있다. 처음에는 상태를 아무것도 설정해두지 않았는데, 사용자가 입력을 하자 문자열로 업데이트가 된다.
+- 즉, 처음의 input value는 정의되어 있지 않다.
+- 해결 : `const [enteredTask, setEnteredTask] = useState('');`로 하여 초기 설정을 빈 문자열로 둔다.
+
+<br>
+
+### 📖 최종 결과 화면
+
+![최종결과](./src/assets/readme/최종결과.gif)
+
+<br>
+
+## 📌 회고
+
+1. 우선 나는 지난 프로젝트를 통해서 너무 간단하게만 짜려고 생각했다. 최대한 생성하는 컴포넌트 수를 줄이려고 했던 것이 오히려 프로젝트를 복잡하게 만들었다.
+2. signal과 id를 이용하면 프로젝트 관리가 더 쉽다는 것을 깨달았다. 강사의 경우 `undefined, null, id` 세 가지의 신호를 통해서 프로젝트를 선택하지 않았을 때(혹은 아무것도 안한 상태) - 프로젝트를 생성했을 때 - 프로젝트를 선택했을 때의 세 가지 상태를 구분했다. &rarr; 상태(state)를 더 쉽게 사용할 수 있게 된 원인 중 하나이지 않았을까 생각된다.
+3. prop drilling을 통해서 속성을 전달했다. 다음 섹션에서 prop drilling 외의 더 좋은 방법을 배우겠지만, 이 방법도 내가 진행한 프로젝트를 더 쉽게 만들 수 있지 않을까 생각된다.
+4. 테일윈드 CSS에 대해 조금 더 배운 느낌이 든다. 또한 CSS의 flex에 대해 감을 전보다는 더 잡은 것 같다. 이전에는 막연한 느낌으로 무작정 두드려봤다면, 이번에 프로젝트 회고를 하면서 클래스를 이렇게 작성하면 화면이 이렇게 동작하겠구나! 를 바로 알 수 있게 된 것같다. 물론 조금 더 연습이 필요한 것은 사실이다.

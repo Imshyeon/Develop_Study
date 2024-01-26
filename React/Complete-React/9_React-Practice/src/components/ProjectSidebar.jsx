@@ -15,7 +15,6 @@ export default function ProjectSidebar({
       </div>
       <ul className="mt-8">
         {projects.map((project) => {
-          console.log('projectId==>', project.id, 'selectedProjectId==>' ,selectedProjectId)
           let cssClasses =
             "w-full text-left px-2 py-1 rounded-sm my-1 hover:text-stone-200 hover:bg-stone-800";
           if (project.id === selectedProjectId) {

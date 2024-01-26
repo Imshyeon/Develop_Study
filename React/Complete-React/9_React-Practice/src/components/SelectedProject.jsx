@@ -1,4 +1,12 @@
-export default function SelectedProject({ project }) {
+import Task from "./Task";
+
+export default function SelectedProject({
+  project,
+  onDelete,
+  onAddTask,
+  onDeleteTask,
+  tasks
+}) {
   const formattedDate = new Date(project.dueDate).toLocaleDateString("ko-KR", {
     year: "numeric",
     month: "short",
@@ -12,7 +20,10 @@ export default function SelectedProject({ project }) {
           <h1 className="text-3xl font-bold text-stone-600 mb-2">
             {project.title}
           </h1>
-          <button className="text-stone-600 hover:text-stone-950">
+          <button
+            className="text-stone-600 hover:text-stone-950"
+            onClick={onDelete}
+          >
             Delete
           </button>
         </div>
@@ -22,7 +33,7 @@ export default function SelectedProject({ project }) {
         </p>
         {/* whitespace-pre-wrap: 상세 내용란에 줄 바꿈이 제거되지 않고 유지될 수 있게 함. */}
       </header>
-      TASKS
+      <Task onAdd={onAddTask} onDelete={onDeleteTask} tasks={tasks} />
     </div>
   );
 }

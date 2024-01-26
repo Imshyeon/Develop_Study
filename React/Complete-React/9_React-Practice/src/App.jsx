@@ -8,14 +8,39 @@ function App() {
   const [projectsState, setProjectsState] = useState({
     selectedProjectId: undefined, // 아무것도 안하고 있다. 라는 신호
     projects: [],
+    tasks: [],
   });
+
+  function handleAddTask(text) {
+    setProjectsState((prevState) => {
+      const taskId = Math.random();
+      const newTask = {
+        text: text,
+        projectId: prevState.selectedProjectId,
+        id: taskId,
+      };
+
+      return {
+        ...prevState,
+        tasks: [...prevState.tasks, newTask],
+      };
+    });
+  }
+
+  function handleDeleteTask(id) {
+    setProjectsState((prevState) => {
+      return {
+        ...prevState,
+        tasks: prevState.tasks.filter((task) => task.id !== id),
+      };
+    });
+  }
 
   function handleSelectProject(id) {
     setProjectsState((prevState) => {
-      console.log('prevState=>',prevState);
       return {
         ...prevState,
-        selectedProjectId: id, // 우리가 새로운 프로젝트를 추가한다는 신호
+        selectedProjectId: id,
       };
     });
   }
@@ -33,7 +58,7 @@ function App() {
     setProjectsState((prevState) => {
       return {
         ...prevState,
-        selectedProjectId: undefined, // 취소한다..!
+        selectedProjectId: undefined, // 취소한다..! -> NoProjectSelected 화면으로 가겠다.
       };
     });
   }
@@ -53,11 +78,33 @@ function App() {
     });
   }
 
+  function handleDeleteProject() {
+    setProjectsState((prevState) => {
+      console.log("prevState=>", prevState);
+      return {
+        ...prevState,
+        selectedProjectId: undefined,
+        projects: prevState.projects.filter(
+          (project) => project.id !== prevState.selectedProjectId // id가 동일하다면 지운다!
+          // prevState에 selectedProjectId가 있기 때문에 따로 id를 입력받지 않아도 된다.
+        ),
+      };
+    });
+  }
+
   const selectedProject = projectsState.projects.find(
     (project) => project.id === projectsState.selectedProjectId
   );
 
-  let content = <SelectedProject project={selectedProject} />;
+  let content = (
+    <SelectedProject
+      project={selectedProject}
+      onDelete={handleDeleteProject}
+      onAddTask={handleAddTask}
+      onDeleteTask={handleDeleteTask}
+      tasks={projectsState.tasks}
+    />
+  );
 
   if (projectsState.selectedProjectId === null) {
     // 새로운 프로젝트를 추가한다는 버튼을 누르면
@@ -75,6 +122,7 @@ function App() {
         onStartAddProject={handleStartAddProject}
         projects={projectsState.projects}
         onSelectProject={handleSelectProject}
+        selectedProjectId={projectsState.selectedProjectId}
       />
       {content}
     </main>
