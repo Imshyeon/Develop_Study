@@ -2,6 +2,7 @@
 
 [📌 Prop Drilling](#-prop-drilling)<br>
 [📌 컨텍스트 API](#-컨텍스트-api)<br>
+[📌 `useReducer` 훅 소개](#-usereducer-훅-소개)<br>
 <br>
 
 ## 📌 Prop Drilling
@@ -588,7 +589,7 @@ export default App;
 
 <br>
 
-### 📖 `useReducer` 훅 소개
+## 📌 `useReducer` 훅 소개
 
 - 복잡한 리액트 앱을 만들 때는 컨텍스트가 매우 중요한 기능이 될 수 있다.
 - shopping-cart-context.jsx에서 이제 상태 관리도 하게 된다. &rarr; 상태 업데이트용 함수는 아직 복잡.
@@ -781,4 +782,3 @@ export default function CartContextProvider({ children }) {
   );
 }
 ```
-
