@@ -559,9 +559,9 @@ export default function DeleteConfirmation({ onConfirm, onCancel }) {
 ## 📌 `useCallback`
 
 - 의존성에 함수를 추가하는 것은 자제해야한다. 자세한 이유는 바로 위에서 설명했다.
-- App.jsx의 handleRemovePlace 함수를 useCallback 훅 안에 넣어주면 된다.
+- App.jsx의 `handleRemovePlace` 함수를 `useCallback` 훅 안에 넣어주면 된다.
 - 이 훅은 첫번째 인자인 함수를 리턴한다. `useCallback( 함수, 의존성 배열 )` &rarr; 주변 컴포넌트 함수가 다시 실행되는 경우마다 재생성되지 않게 한다.
-  > useCallback을 사용하면 useCallback 안의 함수가 재생성되지 않도록 한다. 그 대신, 메모리로서 내부에 저장한다. 따라서 해당 컴포넌트가 재실행될 때마다 메모리로서 저장된 함수를 재사용한다.
+  > `useCallback`을 사용하면 `useCallback` 안의 함수가 재생성되지 않도록 한다. 그 대신, 메모리로서 내부에 저장한다. 따라서 해당 컴포넌트가 재실행될 때마다 메모리로서 저장된 함수를 재사용한다.
 
 ```jsx
 // App.jsx
@@ -580,7 +580,7 @@ const handleRemovePlace = useCallback(function handleRemovePlace() {
 }, []);
 ```
 
-> useEffect의 의존성으로 함수를 사용할 경우, useCallback을 사용한다.
+> `useEffect`의 의존성으로 함수를 사용할 경우, `useCallback`을 사용한다.
 
-- 종속성 배열이 비어있다 &rarr; useEffect의 종속성 배열이 빈 것과 같은 의미이다.
-- 종속성을 추가하고 싶다면 useEffect와 같은 의미이므로 prop이나 state값을 전달하면 된다.
+- 종속성 배열이 비어있다 &rarr; `useEffect`의 종속성 배열이 빈 것과 같은 의미이다.
+- 종속성을 추가하고 싶다면 `useEffect`와 같은 의미이므로 prop이나 state값을 전달하면 된다.
