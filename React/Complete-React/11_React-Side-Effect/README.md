@@ -281,3 +281,82 @@ function App() {
 - 부수 효과 3-3 : 부수 효과 3-2를 사용하지 않고 `useEffect`를 사용하여 이미 저장된 장소들을 표현한 것이다.
   - 의존성을 `[]`로 했기 때문에 초기에만 실행된다.
   - 불필요한 `useEffect`이다. &rarr; `navigator`는 `getCurrentPosition` 함수의 특성상 약간의 시간차가 발생하지만 이 부수효과 코드는 시간차 없이 즉시 실행된다. 따라서 굳이 `useEffect`를 쓰지 않아도 되며, 부수 효과 3-2처럼 작성해도 된다!
+
+#### 💎 결과
+
+![결과2](./src/assets/readme/sideEffectThatNouseEffect.gif)
+
+🔗[레파지토리에서 해당 코드 보기](https://github.com/Imshyeon/Develop_Study/commit/bd9844c06502f3c765d714e719bbf4070324654d?diff=split&w=0#diff-85ce9fcc9ce30fa2ceb9041c2288dc05a5918b8e4c64f37b84fdb91a30eb753d)
+
+<br>
+
+### 📖 `use Effect`를 활용하는 다른 적용 사례
+
+#### 💎 Modal.jsx | `useEffect`를 이용해 모달 열고 닫기
+
+1. 방법 1: `useEffect` 사용하지 않고 모달 동작시키기
+
+```jsx
+// Modal.jsx
+
+import { useRef } from "react";
+import { createPortal } from "react-dom";
+
+export default function Modal({ open, children }) {
+  const dialog = useRef();
+
+  if (open) {
+    dialog.current.showModal();
+  } else {
+    dialog.current.close();
+  }
+
+  return createPortal(
+    <dialog className="modal" ref={dialog}>
+      {children}
+    </dialog>,
+    document.getElementById("modal")
+  );
+}
+
+// App.jsx
+import { useRef, useState, useEffect } from "react";
+import Modal from "./components/Modal.jsx";
+
+function App() {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
+  function handleStartRemovePlace(id) {
+    setModalIsOpen(true);
+    selectedPlace.current = id;
+  }
+
+  function handleStopRemovePlace() {
+    setModalIsOpen(false);
+  }
+
+  function handleRemovePlace() {
+    //...
+    setModalIsOpen(false)
+    //...
+  }
+
+  return (
+    <>
+      <Modal open={modalIsOpen}>
+        {/* ... */}
+      </Modal>
+      {/* ... */}
+  );
+}
+```
+
+![error1](./src/assets/readme/modalCloseError.png)
+
+- `showModal(), close()` 메서드를 컴포넌트 함수의 내부에서 호출하고 있으므로 오류가 발생한다.
+- 이 컴포넌트가 처음을 실행될 때, `dialog` 참조는 아직 설정이 되지 않았다. &rarr; JSX 코드가 실행되기 이전이기 때문이다. 아직 연결이 안됨!
+- 따라서 if문 안에서 애초에 `dialog`는 `undefined` 상태였다.
+
+🔗 [레파지토리에서 해당 코드 보기]()
+
+- 따라서 `showModal(), close()` 메서드와 같은 DOM API와 속성값(혹은 상태값)이 동기화될 수 있도록 `useEffect`를 이용하여 JSX 코드 실행 이후(컴포넌트 이후 실행)로 해당 메서드들(`showModal, close`)이 실행되도록 해야한다. 그래야지 `dialog` 참조가 연결이 된다.
