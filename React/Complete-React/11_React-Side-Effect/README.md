@@ -509,23 +509,24 @@ export default function DeleteConfirmation({ onConfirm, onCancel }) {
 import { useEffect } from "react";
 
 export default function DeleteConfirmation({ onConfirm, onCancel }) {
+  useEffect(
+    () => {
+      // ==== Effect ====
+      const timer = setTimeout(() => {
+        console.log("TIMER SET");
+        onConfirm();
+      }, 3000);
 
-  useEffect(() => {
+      // ==== cleanup ====
+      return () => {
+        console.log("Cleaning up timer");
+        clearTimeout(timer);
+      };
+      // ==== cleanup ====
+    },
     // ==== Effect ====
-    const timer = setTimeout(() => {
-      console.log('TIMER SET')
-      onConfirm();
-    }, 3000);
-
-    // ==== cleanup ====
-    return () => {
-      console.log('Cleaning up timer')
-      clearTimeout(timer);
-    }
-    // ==== cleanup ====
-  }
-  // ==== Effect ====
-  , [onConfirm]);
+    [onConfirm]
+  );
 
   return (
     <div id="delete-confirmation">
@@ -543,17 +544,43 @@ export default function DeleteConfirmation({ onConfirm, onCancel }) {
   );
 }
 ```
+
 - cleanup 함수는 Effect 함수가 다시 작동할 때 실행되고 클린업 함수는 그 직전인 Effect 함수가 작동하기 바로 전에 실행된다.
 - 클린업 함수는 Effect 함수가 최초로 작동되기 바로 전에 작동하지 않는다. 즉, cleanup 함수는 Effect 함수의 최초 실행 다음부터 차후 실행 바로 전에만 적용 &rarr; 컴포넌트 삭제를 위해 아이템을 클릭할 때 작동한다는 것을 잊지 말자.
 - 🚨 주의 : 의존성에 `onConfirm` 함수를 등록했다. 🚨
-    - 의존성으로 함수를 추가한다? 의존성으로 함수를 추가할 때는 무한루프를 생성하게 될 위험이 있다. 자바스크립트에서 함수는 객체(내용은 같더라도 객체는 같지 않다. 주소 자체가 다름.).
-        - 함수 객체는 앱 컴포넌트가 재실행될때마다 재생성된다.(`onConfirm` = App.jsx에서 `handleRemovePlace` 함수)
-        - 따라서 의존성으로 넣어도 앱이 재실행 될 때마다 재생성 되므로 결국, 계속해서 다른 함수 객체를 가리키는 것과 같다. => 무한 루프
-    - 그러나 해당 프로젝트의 경우 App.jsx의 `handleRemovePlace를` 실행할 때마다 isModalOpen 상태를 업데이트 하고 해당 상태에 따라서 Modal이 열림/닫힘을 결정한다
-    - 모달이 열림/닫힘을 결정되는 것에 따라 `DeleteConfirmation` 컴포넌트가 실행/실행되지 않음을 조건을 통해 결정했기 때문에 이 프로젝트는 무한 루프에 빠지지 않으나, 함수를 이용해 의존성을 파악하는 것은 좋은 방법이 아니다.
+  - 의존성으로 함수를 추가한다? 의존성으로 함수를 추가할 때는 무한루프를 생성하게 될 위험이 있다. 자바스크립트에서 함수는 객체(내용은 같더라도 객체는 같지 않다. 주소 자체가 다름.).
+    - 함수 객체는 앱 컴포넌트가 재실행될때마다 재생성된다.(`onConfirm` = App.jsx에서 `handleRemovePlace` 함수)
+    - 따라서 의존성으로 넣어도 앱이 재실행 될 때마다 재생성 되므로 결국, 계속해서 다른 함수 객체를 가리키는 것과 같다. => 무한 루프
+  - 그러나 해당 프로젝트의 경우 App.jsx의 `handleRemovePlace를` 실행할 때마다 isModalOpen 상태를 업데이트 하고 해당 상태에 따라서 Modal이 열림/닫힘을 결정한다
+  - 모달이 열림/닫힘을 결정되는 것에 따라 `DeleteConfirmation` 컴포넌트가 실행/실행되지 않음을 조건을 통해 결정했기 때문에 이 프로젝트는 무한 루프에 빠지지 않으나, 함수를 이용해 의존성을 파악하는 것은 좋은 방법이 아니다.
 
 <br>
 
 ## 📌 `useCallback`
 
 - 의존성에 함수를 추가하는 것은 자제해야한다. 자세한 이유는 바로 위에서 설명했다.
+- App.jsx의 handleRemovePlace 함수를 useCallback 훅 안에 넣어주면 된다.
+- 이 훅은 첫번째 인자인 함수를 리턴한다. `useCallback( 함수, 의존성 배열 )` &rarr; 주변 컴포넌트 함수가 다시 실행되는 경우마다 재생성되지 않게 한다.
+  > useCallback을 사용하면 useCallback 안의 함수가 재생성되지 않도록 한다. 그 대신, 메모리로서 내부에 저장한다. 따라서 해당 컴포넌트가 재실행될 때마다 메모리로서 저장된 함수를 재사용한다.
+
+```jsx
+// App.jsx
+
+const handleRemovePlace = useCallback(function handleRemovePlace() {
+  setPickedPlaces((prevPickedPlaces) =>
+    prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
+  );
+  setModalIsOpen(false);
+
+  const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
+  localStorage.setItem(
+    "selectedPlaces",
+    JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current))
+  );
+}, []);
+```
+
+> useEffect의 의존성으로 함수를 사용할 경우, useCallback을 사용한다.
+
+- 종속성 배열이 비어있다 &rarr; useEffect의 종속성 배열이 빈 것과 같은 의미이다.
+- 종속성을 추가하고 싶다면 useEffect와 같은 의미이므로 prop이나 state값을 전달하면 된다.

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 
 import Places from "./components/Places.jsx";
 import { AVAILABLE_PLACES } from "./data.js";
@@ -76,11 +76,11 @@ function App() {
     }
   }
 
-  function handleRemovePlace() {
+  const handleRemovePlace = useCallback(function handleRemovePlace() {
     setPickedPlaces((prevPickedPlaces) =>
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
-    setModalIsOpen(false)
+    setModalIsOpen(false);
 
     const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
     localStorage.setItem(
@@ -88,7 +88,8 @@ function App() {
       JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current))
     ); // filter : 조건문이 만족되면 삭제하고자 하는 항목이 아니다 -> true 반환 => 항목을 그대로 유지
     // 조건문이 맞지 않다면(id가 매치되면) 삭제하고자 하는 항목이다 -> false 반환 => 항목에서 배제.
-  }
+  }, []);
+  
 
   return (
     <>
