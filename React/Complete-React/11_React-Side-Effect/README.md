@@ -403,9 +403,9 @@ export default function Modal({ open, children }) {
 ### 📖 Effect Dependencies(의존성) 이해하기
 
 - 속성이나 상태값으로 이해할 수 있다. (**_In addition, other effect dependecies would be functions of context values that depend on or use state or props_**)
-- 컴포넌트 함수를 다시 실행하도록 하는 값이다. (useEffect에서 사용된다면,,)
-- 참조(ref)나 브라우저에 구축된 객체와 메서드(ex. navigator,..)들은 의존성을 분류되지 않는다.
-- useEffect는 컴포넌트 함수가 다시 실행되도록 하는 의존성에 대해서만 적용되기 때문이다. &rarr; 의존성이 변경될 때마다 useEffect가 동작하기 때문이다.
+- 컴포넌트 함수를 다시 실행하도록 하는 값이다. (`useEffect`에서 사용된다면,,)
+- 참조(`ref`)나 브라우저에 구축된 객체와 메서드(ex. `navigator`,..)들은 의존성을 분류되지 않는다.
+- `useEffect`는 컴포넌트 함수가 다시 실행되도록 하는 의존성에 대해서만 적용되기 때문이다. &rarr; 의존성이 변경될 때마다 `useEffect`가 동작하기 때문이다.
 
 ```jsx
 // Modal.jsx
@@ -436,3 +436,34 @@ export default function Modal({ open, children }) {
 ```
 
 ![modalOpen](./src/assets/readme/modalOpen.gif)
+
+<br>
+
+#### (+) ESC 버튼을 통해 모달 닫기
+
+```jsx
+// App.jsx
+<Modal open={modalIsOpen} onClose={handleStopRemovePlace}>
+  <DeleteConfirmation
+    onCancel={handleStopRemovePlace}
+    onConfirm={handleRemovePlace}
+  />
+</Modal>;
+
+// Modal.jsx
+import { useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+
+export default function Modal({ open, children, onClose }) {
+  return createPortal(
+    <dialog className="modal" ref={dialog} onClose={onClose}>
+      {/* onClose 속성 전달 */}
+      {children}
+    </dialog>,
+    document.getElementById("modal")
+  );
+}
+```
+
+### 📖 useEffect의 도움으로 고칠 수 있는 다른 문제들
+
