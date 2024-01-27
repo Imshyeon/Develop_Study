@@ -450,11 +450,335 @@ export default function Product({ id, image, title, price, description }) {
 ### 📖 컨텍스트 값이 바뀌면 생기는 일
 
 - 컴포넌트의 컨텍스트 값에 접근할 때, 해당 값은 그 값에 접근하는 컴포넌트의 함수를 바꾼다. 즉 업데이트된 내부 상태가 사용되었거나 부모 컴포넌트가 다시 실행됬거나 컴포넌트 함수가 재실행되는 것 같이 리액트에 의한 재실행이 이뤄진다.
-> 컴포넌트가 useContext 훅을 사용함으로 관련 컨텍스트 값에 연결되었을 때 재실행된다.
+  > 컴포넌트가 useContext 훅을 사용함으로 관련 컨텍스트 값에 연결되었을 때 재실행된다.
 
 > 정리 : 연결된 컨텍스트 값이 변경되었을 때 리액트가 컴포넌트 함수를 재실행하는 이유는 해당 컴포넌트 함수를 통해 새로운 UI를 만들어낼 수 있게 하기 위해서이다.
 
 <br>
 
 ### 📖 전체 데모 앱에 컨텍스트 API 적용하기
+
+🔗 [레파지토리에서 전체 데모 앱에 컨텍스트 API 적용한 코드 보기](https://github.com/Imshyeon/Develop_Study/tree/ba4f8c49a81e2a1aecef337729afa7e62aa23621/React/Complete-React/10_React-Advanced-State-Management/src)
+
+<br>
+
+### 📖 컨텍스트 아웃소싱 & 분리된 제공자(Provider) 컴포넌트에 State(상태) 부여
+
+- 현재 데모 앱은 잘 동작하지만 아직 많이 무거운 상태이다.
+- 조금 더 복잡한 프로젝트의 경우 한 컴포넌트에 여러개의 컨텍스트가 들어갈 가능성이 있다. 이러한 가능성은 피하는 것이 좋다.
+
+#### 💎 src/store/shopping-cart-context.jsx
+
+```jsx
+import { createContext, useState } from "react";
+import { DUMMY_PRODUCTS } from "../dummy-products";
+
+export const CartContext = createContext({
+  items: [],
+  addItemToCart: () => {},
+  updateItemQuantity: () => {},
+});
+
+export default function CartContextProvider({ children }) {
+  // 컨텍스트 데이터를 관리하고 그 데이터를 앱에 제공하는 등 장바구니 쪽 컨텍스트와 관련.
+  // 목적 : 앱 컴포넌트에 있던 모든 상태와 컨텍스트 값의 관리(management) 코드를 가져오는 것.
+  const [shoppingCart, setShoppingCart] = useState({
+    items: [],
+  });
+
+  function handleAddItemToCart(id) {
+    setShoppingCart((prevShoppingCart) => {
+      const updatedItems = [...prevShoppingCart.items];
+
+      const existingCartItemIndex = updatedItems.findIndex(
+        (cartItem) => cartItem.id === id
+      );
+      const existingCartItem = updatedItems[existingCartItemIndex];
+
+      if (existingCartItem) {
+        const updatedItem = {
+          ...existingCartItem,
+          quantity: existingCartItem.quantity + 1,
+        };
+        updatedItems[existingCartItemIndex] = updatedItem;
+      } else {
+        const product = DUMMY_PRODUCTS.find((product) => product.id === id);
+        updatedItems.push({
+          id: id,
+          name: product.title,
+          price: product.price,
+          quantity: 1,
+        });
+      }
+
+      return {
+        items: updatedItems,
+      };
+    });
+  }
+
+  function handleUpdateCartItemQuantity(productId, amount) {
+    setShoppingCart((prevShoppingCart) => {
+      const updatedItems = [...prevShoppingCart.items];
+      const updatedItemIndex = updatedItems.findIndex(
+        (item) => item.id === productId
+      );
+
+      const updatedItem = {
+        ...updatedItems[updatedItemIndex],
+      };
+
+      updatedItem.quantity += amount;
+
+      if (updatedItem.quantity <= 0) {
+        updatedItems.splice(updatedItemIndex, 1);
+      } else {
+        updatedItems[updatedItemIndex] = updatedItem;
+      }
+
+      return {
+        items: updatedItems,
+      };
+    });
+  }
+
+  const ctxValue = {
+    items: shoppingCart.items,
+    addItemToCart: handleAddItemToCart,
+    updateItemQuantity: handleUpdateCartItemQuantity,
+  };
+
+  return (
+    <CartContext.Provider value={ctxValue}>{children}</CartContext.Provider>
+  );
+}
+```
+
+- 기존의 App에 있던 상태, 컨텍스트 관련 코드를 가져와 shopping-cart-context.jsx에 맞게 가볍게 코드 수정했다.
+
+#### 💎 App.jsx
+
+```jsx
+import Header from "./components/Header.jsx";
+import Shop from "./components/Shop.jsx";
+import Product from "./components/Product.jsx";
+import { DUMMY_PRODUCTS } from "./dummy-products.js";
+
+import CartContextProvider from "./store/shopping-cart-context.jsx";
+
+function App() {
+  return (
+    <CartContextProvider>
+      <Header />
+      <Shop>
+        {DUMMY_PRODUCTS.map((product) => (
+          <li key={product.id}>
+            <Product {...product} />
+          </li>
+        ))}
+      </Shop>
+    </CartContextProvider>
+  );
+}
+
+export default App;
+```
+
+- 이렇게 App.jsx는 상대적으로 가볍게 유지할 수 있다.
+
+<br>
+
+### 📖 `useReducer` 훅 소개
+
+- 복잡한 리액트 앱을 만들 때는 컨텍스트가 매우 중요한 기능이 될 수 있다.
+- shopping-cart-context.jsx에서 이제 상태 관리도 하게 된다. &rarr; 상태 업데이트용 함수는 아직 복잡.
+- 복잡한 상태를 가진 프로젝트일 수록 상태 업데이트 함수에서 이전 상태 스냅샷을 많이 사용할 것이다. 즉, `setUpdateState((prevState)=>{})` 와 같은 함수 형태를 띌 것이다.
+
+> `useState`같은 코드를 사용해 상태 관리를 하는 대신 `useReducer`라는 또다른 상태 관리 훅을 사용할 수 있다.
+
+#### 💎 Reducer 란?
+
+- 리액트 앱과 자바스크립트 프로그래밍에서 Reducer란 대개 하나 또는 그 이상의 복잡한 값을 더 단순한 형태로 만드는 함수이다.
+  - `[5, 10, 100] ==reduce==> [115]`
+
+```jsx
+// Cart.jsx
+const totalPrice = items.reduce(
+  (acc, item) => acc + item.price * item.quantity,
+  0
+);
+```
+
+- `useReducer` 훅은 상태 관리의 목적을 가지로 하나 또는 그 이상의 값을 보다 단순하게 하나의 값으로 줄인다.
+
+<br>
+
+#### 💎 useReducer 사용을 위한 세팅
+
+```jsx
+// src/store/shopping-cart-context.jsx
+import { createContext, useState, useReducer } from "react";
+import { DUMMY_PRODUCTS } from "../dummy-products";
+
+export const CartContext = createContext({
+  items: [],
+  addItemToCart: () => {},
+  updateItemQuantity: () => {},
+});
+
+function shoppingCartReducer(state, action) {
+  return state;
+}
+
+export default function CartContextProvider({ children }) {
+  const [shoppingCartState, shoppingCartDispatch] = useReducer(
+    shoppingCartReducer,
+    {
+      items: [],
+    }
+  );
+
+  // const [shoppingCart, setShoppingCart] = useState({
+  //   items: [],
+  // });
+
+  // ...
+
+  const ctxValue = {
+    items: shoppingCartState.items, // useReducer에서 정의한 상태(shoppingCartState) 전달.
+    addItemToCart: handleAddItemToCart,
+    updateItemQuantity: handleUpdateCartItemQuantity,
+  };
+
+  return (
+    <CartContext.Provider value={ctxValue}>{children}</CartContext.Provider>
+  );
+}
+```
+
+> `const [ useReducer로 관리되는 상태, dispatch 함수] = useReducer( reducer 함수, 초기값 )`
+
+- `useReducer`에서 받아오는 두번째 요소는 `useState`에서와 같은 상태 업데이트 함수가 아닌 dispatch 함수이다. 이는 action(액션)을 보낼 수 있는데, 보내진 액션은 추후 리듀서(reducer) 기능에 의해서 사용된다.
+
+<br>
+
+- `shoppingCartReducer( state(상태) , action(액션) )`
+  - 컴포넌트 밖에서 함수를 정의한다. 재생성이 되지 않도록 하기 위함이다. (따로 컴포넌트로 부터 속성을 전달받지는 않는다.)
+  - 액션(action)이 디스패치를 통해 보내진 후에 리액트가 shoppingCartReducer 함수를 호출할 것. &rarr; `shoppingCartDispatch`의 액션 === `shoppinCartReducer`의 `action`
+  - `state`는 `useReducer`로 관리되는 상태의 최신 상태 스냅샷이다.
+
+<br>
+
+#### 💎 Action 보내기 & `useReducer`로 State(상태) 수정하기
+
+```jsx
+// src/store/shopping-cart-context.jsx
+import { createContext, useReducer } from "react";
+import { DUMMY_PRODUCTS } from "../dummy-products";
+
+export const CartContext = createContext({
+  items: [],
+  addItemToCart: () => {},
+  updateItemQuantity: () => {},
+});
+
+function shoppingCartReducer(state, action) {
+  // type에 맞게 액션을 정의했다.
+  if (action.type === "ADD_ITEM") {
+    // prevShoppingCart => state
+    const updatedItems = [...state.items];
+
+    const existingCartItemIndex = updatedItems.findIndex(
+      (cartItem) => cartItem.id === action.payload
+    );
+    const existingCartItem = updatedItems[existingCartItemIndex];
+
+    if (existingCartItem) {
+      const updatedItem = {
+        ...existingCartItem,
+        quantity: existingCartItem.quantity + 1,
+      };
+      updatedItems[existingCartItemIndex] = updatedItem;
+    } else {
+      const product = DUMMY_PRODUCTS.find(
+        (product) => product.id === action.payload
+      );
+      updatedItems.push({
+        id: action.payload,
+        name: product.title,
+        price: product.price,
+        quantity: 1,
+      });
+    }
+
+    return {
+      // ...state,  => 현재는 필요하지 않지만 더 복잡한 상태라면 이렇게 사용가능.
+      items: updatedItems,
+    };
+  }
+
+  if (action.type === "UPDATE_ITEM") {
+    const updatedItems = [...state.items];
+    const updatedItemIndex = updatedItems.findIndex(
+      (item) => item.id === action.payload.productId
+    );
+
+    const updatedItem = {
+      ...updatedItems[updatedItemIndex],
+    };
+
+    updatedItem.quantity += action.payload.amount;
+
+    if (updatedItem.quantity <= 0) {
+      updatedItems.splice(updatedItemIndex, 1);
+    } else {
+      updatedItems[updatedItemIndex] = updatedItem;
+    }
+
+    return {
+      ...state,
+      items: updatedItems,
+    };
+  }
+  return state;
+}
+
+export default function CartContextProvider({ children }) {
+  const [shoppingCartState, shoppingCartDispatch] = useReducer(
+    shoppingCartReducer,
+    {
+      items: [],
+    }
+  );
+
+  function handleAddItemToCart(id) {
+    shoppingCartDispatch({
+      // 각각의 액션을 구분하고 리듀서 내에서 다르게 처리하기 위해 type이나 id를 전달 (숫자나 문자열로만 전달해도 가능하긴 하다..!)
+      type: "ADD_ITEM", 
+      // handleAddItemToCart에서 매개변수로 받는 id를 액션 오브젝트에서 payload로 설정.
+      payload: id, 
+    });
+  }
+
+  function handleUpdateCartItemQuantity(productId, amount) {
+    shoppingCartDispatch({
+      type: "UPDATE_ITEM",
+      payload: {
+        productId: productId,
+        amount: amount,
+      },
+    });
+  }
+
+  const ctxValue = {
+    items: shoppingCartState.items,
+    addItemToCart: handleAddItemToCart,
+    updateItemQuantity: handleUpdateCartItemQuantity,
+  };
+
+  return (
+    <CartContext.Provider value={ctxValue}>{children}</CartContext.Provider>
+  );
+}
+```
 
