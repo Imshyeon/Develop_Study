@@ -1,7 +1,8 @@
 # Dealing with Side Effect | 부수 효과 다루기, `useEffect` 훅 사용하기
 
 [📌 Side Effect(부수 효과)](#-side-effect부수-효과)<br>
-[📌 `useEffect`](#📌-useeffect)<br>
+[📌 `useEffect`](#-useeffect)<br>
+[📌 `useCallback`](#-usecallback)<br>
 <br>
 
 ## 📌 Side Effect(부수 효과)
@@ -467,3 +468,92 @@ export default function Modal({ open, children, onClose }) {
 
 ### 📖 useEffect의 도움으로 고칠 수 있는 다른 문제들
 
+#### 💎 DeleteConfirmation.jsx | 3초 뒤 모달이 자동적으로 닫히고 장소가 삭제되는 기능 구현하기
+
+```jsx
+// DeleteConfirmation.jsx
+
+export default function DeleteConfirmation({ onConfirm, onCancel }) {
+  setTimeout(() => {
+    onConfirm();
+  }, 3000);
+
+  return (
+    <div id="delete-confirmation">
+      <h2>Are you sure?</h2>
+      <p>Do you really want to remove this place?</p>
+      <div id="confirmation-actions">
+        <button onClick={onCancel} className="button-text">
+          No
+        </button>
+        <button onClick={onConfirm} className="button">
+          Yes
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+- 이 컴포넌트는 항상 App.jsx에서 렌더링된다. 항상 DOM의 일부분이고 앱이 최초로 렌더링될 때 타이머도 동작하게 된다. &rarr; 문제 발생
+- 이 문제는 Modal.jsx에서 `{ open ? { children } : null }` 조건을 통하면 해결이 가능하다.
+- 🚨 그러나 아이템 삭제 취소 버튼을 눌러도 타이머가 작동하여 삭제가 되는 문제가 발생한다. 🚨
+
+<br>
+
+### 📖 useEffect의 Cleanup 함수
+
+#### 💎 DeleteConfirmation.jsx
+
+```jsx
+import { useEffect } from "react";
+
+export default function DeleteConfirmation({ onConfirm, onCancel }) {
+
+  useEffect(() => {
+    // ==== Effect ====
+    const timer = setTimeout(() => {
+      console.log('TIMER SET')
+      onConfirm();
+    }, 3000);
+
+    // ==== cleanup ====
+    return () => {
+      console.log('Cleaning up timer')
+      clearTimeout(timer);
+    }
+    // ==== cleanup ====
+  }
+  // ==== Effect ====
+  , [onConfirm]);
+
+  return (
+    <div id="delete-confirmation">
+      <h2>Are you sure?</h2>
+      <p>Do you really want to remove this place?</p>
+      <div id="confirmation-actions">
+        <button onClick={onCancel} className="button-text">
+          No
+        </button>
+        <button onClick={onConfirm} className="button">
+          Yes
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+- cleanup 함수는 Effect 함수가 다시 작동할 때 실행되고 클린업 함수는 그 직전인 Effect 함수가 작동하기 바로 전에 실행된다.
+- 클린업 함수는 Effect 함수가 최초로 작동되기 바로 전에 작동하지 않는다. 즉, cleanup 함수는 Effect 함수의 최초 실행 다음부터 차후 실행 바로 전에만 적용 &rarr; 컴포넌트 삭제를 위해 아이템을 클릭할 때 작동한다는 것을 잊지 말자.
+- 🚨 주의 : 의존성에 `onConfirm` 함수를 등록했다. 🚨
+    - 의존성으로 함수를 추가한다? 의존성으로 함수를 추가할 때는 무한루프를 생성하게 될 위험이 있다. 자바스크립트에서 함수는 객체(내용은 같더라도 객체는 같지 않다. 주소 자체가 다름.).
+        - 함수 객체는 앱 컴포넌트가 재실행될때마다 재생성된다.(`onConfirm` = App.jsx에서 `handleRemovePlace` 함수)
+        - 따라서 의존성으로 넣어도 앱이 재실행 될 때마다 재생성 되므로 결국, 계속해서 다른 함수 객체를 가리키는 것과 같다. => 무한 루프
+    - 그러나 해당 프로젝트의 경우 App.jsx의 `handleRemovePlace를` 실행할 때마다 isModalOpen 상태를 업데이트 하고 해당 상태에 따라서 Modal이 열림/닫힘을 결정한다
+    - 모달이 열림/닫힘을 결정되는 것에 따라 `DeleteConfirmation` 컴포넌트가 실행/실행되지 않음을 조건을 통해 결정했기 때문에 이 프로젝트는 무한 루프에 빠지지 않으나, 함수를 이용해 의존성을 파악하는 것은 좋은 방법이 아니다.
+
+<br>
+
+## 📌 `useCallback`
+
+- 의존성에 함수를 추가하는 것은 자제해야한다. 자세한 이유는 바로 위에서 설명했다.
