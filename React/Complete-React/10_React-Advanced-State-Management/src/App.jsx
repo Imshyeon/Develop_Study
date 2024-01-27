@@ -68,8 +68,13 @@ function App() {
     });
   }
 
+  const ctxValue = {
+    items: shoppingCart.items,
+    addItemToCart: handleAddItemToCart, // 속성, 장바구니에 새로운 물건을 담아주는 기능을 가진 함수 => 컨텍스트를 통해 함수 자체를 노출.
+  };
+
   return (
-    <CartContext.Provider value={{ items: [] }}>
+    <CartContext.Provider value={ctxValue}>
       {/* 실제로 사용하게 될 컴포넌트가 된다.*/}
       <Header
         cart={shoppingCart}
