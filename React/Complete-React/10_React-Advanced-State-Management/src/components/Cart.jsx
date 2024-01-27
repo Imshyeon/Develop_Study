@@ -1,8 +1,8 @@
-import { useContext } from 'react';
+import { useContext } from "react";
 import { CartContext } from "../store/shopping-cart-context";
 
-export default function Cart({ onUpdateItemQuantity }) {
-  const {items} = useContext(CartContext); // 연결 구조 형성
+export default function Cart() {
+  const { items, updateItemQuantity } = useContext(CartContext); //연결 구조 형성
   // 초기값에 items 속성을 추가했기 때문에 이 값은 items 속성을 가진 상태이다.
 
   const totalPrice = items.reduce(
@@ -26,11 +26,11 @@ export default function Cart({ onUpdateItemQuantity }) {
                   <span> ({formattedPrice})</span>
                 </div>
                 <div className="cart-item-actions">
-                  <button onClick={() => onUpdateItemQuantity(item.id, -1)}>
+                  <button onClick={() => updateItemQuantity(item.id, -1)}>
                     -
                   </button>
                   <span>{item.quantity}</span>
-                  <button onClick={() => onUpdateItemQuantity(item.id, 1)}>
+                  <button onClick={() => updateItemQuantity(item.id, 1)}>
                     +
                   </button>
                 </div>
