@@ -584,3 +584,130 @@ const handleRemovePlace = useCallback(function handleRemovePlace() {
 
 - 종속성 배열이 비어있다 &rarr; `useEffect`의 종속성 배열이 빈 것과 같은 의미이다.
 - 종속성을 추가하고 싶다면 `useEffect`와 같은 의미이므로 prop이나 state값을 전달하면 된다.
+
+<br>
+
+### 📖 `useEffect`의 `Cleanup` 함수 : 다른 예시
+
+- 3초 뒤에 아이템이 사라진다는 것을 유저에게 알려줘야 한다.
+- built-in progress를 이용한다.
+
+```jsx
+import { useEffect, useState } from "react";
+
+const TIMER = 3000;
+
+export default function DeleteConfirmation({ onConfirm, onCancel }) {
+  const [remainingTime, setRemainingTime] = useState(TIMER);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("INTERVAL");
+      setRemainingTime((prevTime) => prevTime - 10); // 매 10밀리초 마다 계속 State를 업데이트 -> DeleteConfirmation 컴포넌트 업데이트
+    }, 10);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []); // 의존성 없음. DeleteConfirmation 컴포넌트가 삭제될 때 같이 삭제.
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("TIMER SET");
+      onConfirm();
+    }, 3000);
+
+    return () => {
+      console.log("Cleaning up timer");
+      clearTimeout(timer);
+    };
+  }, [onConfirm]);
+
+  return (
+    <div id="delete-confirmation">
+      <h2>Are you sure?</h2>
+      <p>Do you really want to remove this place?</p>
+      <div id="confirmation-actions">
+        <button onClick={onCancel} className="button-text">
+          No
+        </button>
+        <button onClick={onConfirm} className="button">
+          Yes
+        </button>
+      </div>
+      <progress value={remainingTime} max={TIMER} />
+    </div>
+  );
+}
+```
+
+#### 💎 결과
+
+![progress](./src/assets/readme/progress.gif)
+
+<br>
+
+### 📖 State 업데이트 최적화
+
+- 매 10밀리초마다 상태를 업데이트한다는 것은 DeleteConfirmation 컴포넌트도 계속 재실행한다는 의미이다. &rarr; 최적화 필요
+
+#### 💎 ProgressBar.jsx
+
+```jsx
+import { useState, useEffect } from "react";
+
+export default function ProgressBar({timer}) {
+  const [remainingTime, setRemainingTime] = useState(timer);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("INTERVAL");
+      setRemainingTime((prevTime) => prevTime - 10);
+    }, 10);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []); // 의존성 없음. DeleteConfirmation 컴포넌트가 삭제될 때 같이 삭제.
+
+  return <progress value={remainingTime} max={timer} />;
+}
+```
+
+#### 💎 DeleteConfirmation.jsx
+
+```jsx
+import { useEffect } from "react";
+import ProgressBar from "./ProgressBar.jsx";
+
+const TIMER = 3000;
+
+export default function DeleteConfirmation({ onConfirm, onCancel }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("TIMER SET");
+      onConfirm();
+    }, 3000);
+
+    return () => {
+      console.log("Cleaning up timer");
+      clearTimeout(timer);
+    };
+  }, [onConfirm]);
+
+  return (
+    <div id="delete-confirmation">
+      <h2>Are you sure?</h2>
+      <p>Do you really want to remove this place?</p>
+      <div id="confirmation-actions">
+        <button onClick={onCancel} className="button-text">
+          No
+        </button>
+        <button onClick={onConfirm} className="button">
+          Yes
+        </button>
+      </div>
+      <ProgressBar timer={TIMER} />
+    </div>
+  );
+}
+```
