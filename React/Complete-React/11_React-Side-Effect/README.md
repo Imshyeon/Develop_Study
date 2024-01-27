@@ -357,6 +357,82 @@ function App() {
 - 이 컴포넌트가 처음을 실행될 때, `dialog` 참조는 아직 설정이 되지 않았다. &rarr; JSX 코드가 실행되기 이전이기 때문이다. 아직 연결이 안됨!
 - 따라서 if문 안에서 애초에 `dialog`는 `undefined` 상태였다.
 
-🔗 [레파지토리에서 해당 코드 보기]()
+🔗 [레파지토리에서 해당 코드 보기](https://github.com/Imshyeon/Develop_Study/commit/4cef25043f7c31fa5cc4e502f466ab3b7cebe9c1)
 
 - 따라서 `showModal(), close()` 메서드와 같은 DOM API와 속성값(혹은 상태값)이 동기화될 수 있도록 `useEffect`를 이용하여 JSX 코드 실행 이후(컴포넌트 이후 실행)로 해당 메서드들(`showModal, close`)이 실행되도록 해야한다. 그래야지 `dialog` 참조가 연결이 된다.
+
+<br>
+
+---
+
+<br>
+
+2. 방법 2 : `useEffect` 이용하기
+
+```jsx
+// Modal.jsx
+
+import { useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+
+export default function Modal({ open, children }) {
+  const dialog = useRef();
+
+  useEffect(() => {
+    if (open) {
+      dialog.current.showModal();
+    } else {
+      dialog.current.close();
+    }
+  }, []);
+  // 의존성 배열에 Effect 함수가 필요로 하는 의존성을 추가해야 한다.
+
+  return createPortal(
+    <dialog className="modal" ref={dialog}>
+      {children}
+    </dialog>,
+    document.getElementById("modal")
+  );
+}
+```
+
+- `useEffect`를 사용하여 컴포넌트의 실행 이후로 부수 효과가 실행되도록 했다. 그러나! 해당 코드에는 의존성을 추가해야한다.
+
+<br>
+
+### 📖 Effect Dependencies(의존성) 이해하기
+
+- 속성이나 상태값으로 이해할 수 있다. (**_In addition, other effect dependecies would be functions of context values that depend on or use state or props_**)
+- 컴포넌트 함수를 다시 실행하도록 하는 값이다. (useEffect에서 사용된다면,,)
+- 참조(ref)나 브라우저에 구축된 객체와 메서드(ex. navigator,..)들은 의존성을 분류되지 않는다.
+- useEffect는 컴포넌트 함수가 다시 실행되도록 하는 의존성에 대해서만 적용되기 때문이다. &rarr; 의존성이 변경될 때마다 useEffect가 동작하기 때문이다.
+
+```jsx
+// Modal.jsx
+
+import { useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+
+export default function Modal({ open, children }) {
+  const dialog = useRef();
+
+  useEffect(() => {
+    if (open) {
+      dialog.current.showModal();
+    } else {
+      dialog.current.close();
+    }
+  }, [open]); // open 속성을 추가하여 의존성 검사
+  // 의존성 배열에 Effect 함수가 필요로 하는 의존성을 추가해야 한다.
+  // Modal : open 속성 사용하여 열고 닫고를 정한다.
+
+  return createPortal(
+    <dialog className="modal" ref={dialog}>
+      {children}
+    </dialog>,
+    document.getElementById("modal")
+  );
+}
+```
+
+![modalOpen](./src/assets/readme/modalOpen.gif)
