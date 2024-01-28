@@ -33,7 +33,7 @@ export default function Question() {
     });
 
     return sortedAnswers.map((answer) => (
-      <Answer key={answer.id} isCorrect={answer.isTrue}>
+      <Answer key={answer.id} data={answer}>
         {answer.data}
       </Answer>
     ));

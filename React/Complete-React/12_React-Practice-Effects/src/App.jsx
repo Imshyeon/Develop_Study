@@ -1,23 +1,32 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import quizLogo from "./assets/quiz-logo.png";
 import Question from "./components/Question.jsx";
+import { QuestionContext } from "./store/question-context.jsx";
 
 function App() {
-  const [isCorrectOrNot, setIsCorrectOrNot] = useState({
-    question: {
-      data: undefined,
-      isCorrect: undefined,
-    },
-  });
+  const [isCorrectOrNot, setIsCorrectOrNot] = useState([]);
 
   function handleQuizClick(curQuestion) {
-    setIsCorrectOrNot((prevQuiz) => {
-      [...prevQuiz, curQuestion];
+    setIsCorrectOrNot((prevState) => {
+      return [
+        ...prevState,
+        {
+          data: curQuestion.data,
+          isCorrect: curQuestion.isCorrect,
+        },
+      ];
     });
   }
+  console.log(isCorrectOrNot);
+
+  const questionCtx = {
+    data: isCorrectOrNot.data,
+    isCorrect: isCorrectOrNot.isCorrect,
+    onQuizClick: handleQuizClick,
+  };
 
   return (
-    <>
+    <QuestionContext.Provider value={questionCtx}>
       <header>
         <img src={quizLogo} alt="quiz logo" />
         <h1>SHINee Quiz!</h1>
@@ -25,7 +34,7 @@ function App() {
       <section id="quiz">
         <Question />
       </section>
-    </>
+    </QuestionContext.Provider>
   );
 }
 
