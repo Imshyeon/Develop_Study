@@ -1,12 +1,14 @@
 export function deleteData(qid) {
-  // console.log(qid)
   quizDatas = quizDatas.filter((quiz) => quiz.question.qid !== qid);
-  console.log(quizDatas);
 }
 
 export function getDatas() {
   const rndNum = Math.floor(Math.random() * quizDatas.length);
   return quizDatas[rndNum];
+}
+
+export function getDatasLength() {
+  return quizDatas.length;
 }
 
 let quizDatas = [
