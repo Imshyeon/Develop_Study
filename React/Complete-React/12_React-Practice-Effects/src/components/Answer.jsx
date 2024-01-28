@@ -5,7 +5,12 @@ export default function Answer({ children, question, answer }) {
   const { onQuizClick } = useContext(QuestionContext);
   return (
     <p className="answer">
-      <button onClick={()=>onQuizClick(question,answer)} >{children}</button>
+      <button
+        onClick={() => onQuizClick(question, answer)}
+        className=""
+      >
+        {children}
+      </button>
     </p>
   );
 }

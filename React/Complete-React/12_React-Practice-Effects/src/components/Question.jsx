@@ -1,6 +1,6 @@
 import ProgressBar from "./ProgressBar.jsx";
 import Answer from "./Answer.jsx";
-import quizData from "../quizDatas.js";
+import { getDatas } from "../quizDatas.js";
 import { useEffect, useContext } from "react";
 import { QuestionContext } from "../store/question-context.jsx";
 
@@ -11,10 +11,8 @@ function createRandomNumber(num) {
 }
 
 export default function Question() {
-  const { question, answer } = quizData[createRandomNumber(9)];
-  const { quiz, onSkipQuiz } = useContext(QuestionContext);
-
-  onSkipQuiz(question);
+  const { question, answer } = getDatas();
+  const { quiz } = useContext(QuestionContext);
 
   useEffect(() => {
     const timer = setTimeout(() => {

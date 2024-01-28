@@ -2,11 +2,15 @@ import { useState } from "react";
 import quizLogo from "./assets/quiz-logo.png";
 import Question from "./components/Question.jsx";
 import { QuestionContext } from "./store/question-context.jsx";
+import {deleteData} from "./quizDatas.js";
 
 function App() {
   const [isCorrectOrNot, setIsCorrectOrNot] = useState([]);
 
   function handleQuizClick(curQuestion, curAnswer) {
+    handleCorrectOrNot(curAnswer.isCorrect)
+    console.log(curQuestion)
+    deleteData(curQuestion.qid);
     setIsCorrectOrNot((prevState) => {
       return [
         ...prevState,
@@ -21,18 +25,20 @@ function App() {
   const questionCtx = {
     quiz: isCorrectOrNot,
     onQuizClick: handleQuizClick,
-    onSkipQuiz: handleSkipSameQuiz,
+    printCorrectOrNot: handleCorrectOrNot
   };
 
-  function handleSkipSameQuiz(curQuestion) {
-    questionCtx.quiz.map(q => {
-      if (curQuestion.qid === q.question.qid) {
-        console.log('이미 낸 문제=>', q.question,'내려했던 문제=>',curQuestion)
-        return;
-      }
-    })
+  function handleCorrectOrNot(isCorrect) {
+    // let className;
+    // if (isCorrect) {
+    //   className="correct"
+    // } else {
+    //   className="wrong"
+    // }
+    // console.log(className)
+    console.log(isCorrect)
   }
-
+  
   return (
     <QuestionContext.Provider value={questionCtx}>
       <header>
