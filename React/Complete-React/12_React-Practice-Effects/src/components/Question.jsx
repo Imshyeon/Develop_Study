@@ -1,7 +1,8 @@
 import ProgressBar from "./ProgressBar.jsx";
 import Answer from "./Answer.jsx";
 import quizData from "../quizDatas.js";
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
+import { QuestionContext } from "../store/question-context.jsx";
 
 const TIME = 5000;
 
@@ -11,6 +12,9 @@ function createRandomNumber(num) {
 
 export default function Question() {
   const { question, answer } = quizData[createRandomNumber(9)];
+  const { quiz, onSkipQuiz } = useContext(QuestionContext);
+
+  onSkipQuiz(question);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -22,7 +26,7 @@ export default function Question() {
     };
   }, []); // 의존성에 오답함수 연결 -> useCallback 사용해야함.
 
-  function printAnswersHandler(answers) {
+  function printAnswersHandler(question, answers) {
     // id 오름차순 정렬
     const ids = [];
     answers.map((answer) => ids.push(answer.id));
@@ -33,7 +37,7 @@ export default function Question() {
     });
 
     return sortedAnswers.map((answer) => (
-      <Answer key={answer.id} data={answer}>
+      <Answer key={answer.id} question={question} answer={answer}>
         {answer.data}
       </Answer>
     ));
@@ -42,8 +46,8 @@ export default function Question() {
   return (
     <div id="question">
       <ProgressBar />
-      <h2>{question}</h2>
-      <div id="answers">{printAnswersHandler(answer)}</div>
+      <h2>{question.data}</h2>
+      <div id="answers">{printAnswersHandler(question, answer)}</div>
     </div>
   );
 }

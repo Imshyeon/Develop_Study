@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { QuestionContext } from "../store/question-context";
 
-export default function Answer({ children, data }) {
+export default function Answer({ children, question, answer }) {
   const { onQuizClick } = useContext(QuestionContext);
   return (
     <p className="answer">
-      <button onClick={()=>onQuizClick(data)}>{children}</button>
+      <button onClick={()=>onQuizClick(question,answer)} >{children}</button>
     </p>
   );
 }

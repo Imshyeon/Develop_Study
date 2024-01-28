@@ -1,6 +1,6 @@
 const quizDatas = [
   {
-    question: "샤이니의 데뷔일은?",
+    question: { data: "샤이니의 데뷔일은?", qid: Math.random() },
     answer: [
       { id: Math.random(), data: "2008년 5월 25일", isCorrect: true },
       { id: Math.random(), data: "2008년 1월 25일", isCorrect: false },
@@ -9,7 +9,10 @@ const quizDatas = [
     ],
   },
   {
-    question: "샤이니가 음악 방송에서 첫 1위를 한 곡은?",
+    question: {
+      data: "샤이니가 음악 방송에서 첫 1위를 한 곡은?",
+      qid: Math.random(),
+    },
     answer: [
       { id: Math.random(), data: "산소 같은 너", isCorrect: true },
       { id: Math.random(), data: "누난 너무 예뻐", isCorrect: false },
@@ -18,7 +21,7 @@ const quizDatas = [
     ],
   },
   {
-    question: "샤이니 막내 태민의 생년월일은?",
+    question: { data: "샤이니 막내 태민의 생년월일은?", qid: Math.random() },
     answer: [
       {
         id: Math.random(),
@@ -31,7 +34,7 @@ const quizDatas = [
     ],
   },
   {
-    question: "샤이니 키의 이모티콘은?",
+    question: { data: "샤이니 키의 이모티콘은?", qid: Math.random() },
     answer: [
       {
         id: Math.random(),
@@ -44,7 +47,7 @@ const quizDatas = [
     ],
   },
   {
-    question: "샤이니 종현이 진행했던 라디오는?",
+    question: { data: "샤이니 종현이 진행했던 라디오는?", qid: Math.random() },
     answer: [
       {
         id: Math.random(),
@@ -57,7 +60,7 @@ const quizDatas = [
     ],
   },
   {
-    question: "다음 중 탬또롤이 아닌 사람은?",
+    question: { data: "다음 중 탬또롤이 아닌 사람은?", qid: Math.random() },
     answer: [
       {
         id: Math.random(),
@@ -70,7 +73,7 @@ const quizDatas = [
     ],
   },
   {
-    question: "샤이니 태민의 솔로곡이 아닌 것은?",
+    question: { data: "샤이니 태민의 솔로곡이 아닌 것은?", qid: Math.random() },
     answer: [
       {
         id: Math.random(),
@@ -83,8 +86,10 @@ const quizDatas = [
     ],
   },
   {
-    question:
-      "샤이니 민호는 갓생을 사는 것으로 팬들 사이에서 유명하다. 그의 평소 루틴은?",
+    question: {
+      data: "샤이니 민호는 갓생을 사는 것으로 팬들 사이에서 유명하다. 그의 평소 루틴은?",
+      qid: Math.random(),
+    },
     answer: [
       {
         id: Math.random(),
@@ -97,8 +102,10 @@ const quizDatas = [
     ],
   },
   {
-    question:
-      "다음은 샤이니 태민의 솔로곡(한국)을 나열한 것이다. 순서대로 배열된 것을 고르시오.",
+    question: {
+      data: "다음은 샤이니 태민의 솔로곡(한국)을 나열한 것이다. 순서대로 배열된 것을 고르시오.",
+      qid: Math.random(),
+    },
     answer: [
       {
         id: Math.random(),
@@ -123,8 +130,10 @@ const quizDatas = [
     ],
   },
   {
-    question:
-      "샤이니 태민의 무대 중 '미디어 성경' 안에 들어가는 곡이 아닌 것은?",
+    question: {
+      data: "샤이니 태민의 무대 중 '미디어 성경' 안에 들어가는 곡이 아닌 것은?",
+      qid: Math.random(),
+    },
     answer: [
       {
         id: Math.random(),
