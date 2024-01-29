@@ -39,5 +39,9 @@
 3. 따라서 상태에 `isSkiped` 속성을 추가하였고 skip이면 true, skip이 아니면 false로 속성값을 부여했다. &rarr; 이 속성을 의존성 배열에 추가했더니 타이머가 정상적으로 동작했다.
 4. 이로써 skip, correct, incorrect에 대한 상태를 가지게 되었고 이를 이용해 Summary.jsx에 stats와 정답/오답/skip을 표시했다.
 
-#### 💎 Progress.jsx
+#### 💎 ProgressBar.jsx
 
+1. Question에서 TIME 정보를 전달받고 해당 컴포넌트 안에 interval을 설정.
+2. 첫 문제에서는 Progress bar가 줄어드는 것을 볼 수 있으나 두번째부터는 보이지 않았다. 콘솔로 보니 두번째부터 interval clear가 되지 않았다.
+3. 따라서 progress bar에서 quiz 데이터를 받아와 해당 데이터가 변할때마다 clear 되도록 의존성 배열에 추가하였다.
+4. 의존성 배열 추가로 interval clear는 되었으나 value가 다시 초기값(5000)으로 돌아오지 않고 계속 감소되었다. 따라서 interval clear하기 전에 상태를 업데이트하였다.

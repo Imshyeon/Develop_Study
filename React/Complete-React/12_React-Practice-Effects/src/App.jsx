@@ -8,7 +8,7 @@ import { deleteData, getDatasLength } from "./quizDatas.js";
 function App() {
   const [isCorrectOrNot, setIsCorrectOrNot] = useState([]);
 
-  console.log('state=>',isCorrectOrNot)
+  // ============ State 업데이트 -> 버튼 클릭 시 동작
   function handleQuizClick(curQuestion, curAnswer) {
     deleteData(curQuestion.qid);
     setIsCorrectOrNot((prevState) => {
@@ -23,10 +23,9 @@ function App() {
     });
   }
 
-  function handleQuizSkip(curQuestion) {
-    console.log("skip", curQuestion);
+  // ============= State 업데이트 -> 타이머 만료로 Skip
+  const handleQuizSkip = useCallback(function handleQuizSkip(curQuestion) {
     deleteData(curQuestion.qid);
-    console.log(getDatasLength())
     setIsCorrectOrNot((prevState) => {
       return [
         ...prevState,
@@ -36,12 +35,12 @@ function App() {
         },
       ];
     });
-  }
+  }, []);
 
+  // ======= Context 등록
   const questionCtx = {
     quiz: isCorrectOrNot,
     onQuizClick: handleQuizClick,
-    onQuizSkip: handleQuizSkip,
   };
 
   return (
@@ -52,7 +51,7 @@ function App() {
       </header>
       {getDatasLength() !== 0 && (
         <section id="quiz">
-          <Question />
+          <Question onQuizSkip={handleQuizSkip} />
         </section>
       )}
       {getDatasLength() === 0 && <Summary />}

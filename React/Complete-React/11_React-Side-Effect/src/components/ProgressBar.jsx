@@ -9,6 +9,7 @@ export default function ProgressBar({timer}) {
     }, 10);
 
     return () => {
+      console.log('interval out')
       clearInterval(interval);
     };
   }, []); // 의존성 없음. DeleteConfirmation 컴포넌트가 삭제될 때 같이 삭제.

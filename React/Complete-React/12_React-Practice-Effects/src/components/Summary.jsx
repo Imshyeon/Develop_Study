@@ -5,28 +5,28 @@ import { QuestionContext } from "../store/question-context";
 export default function Summary() {
   const { quiz } = useContext(QuestionContext);
 
-  // console.log(quiz)
+  // ======== Summary Stats 계산 및 출력 ========
   function calculateSummaryStats() {
     let skipped = 0;
     let correct = 0;
     let incorrect = 0;
     quiz.map((q) => {
-      console.log('sum=>',q)
+      console.log("sum=>", q);
       if (q.isSkiped) {
         skipped += 10;
       } else if (!q.answer.isCorrect) {
         incorrect += 10;
-      } else if(q.answer.isCorrect) {
+      } else if (q.answer.isCorrect) {
         correct += 10;
       }
     });
     return (
       <>
         <div className="number">
-          {skipped}%<p className="text">answered incorrectly</p>
+          {skipped}%<p className="text">Skipped</p>
         </div>
         <div className="number">
-          {correct}%<p className="text">answered incorrectly</p>
+          {correct}%<p className="text">answered correctly</p>
         </div>
         <div className="number">
           {incorrect}%<p className="text">answered incorrectly</p>
