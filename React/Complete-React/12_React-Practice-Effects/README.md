@@ -291,7 +291,7 @@ export default function Quiz() {
 
 <br>
 
-### 📖 Effect 의존성 & useCallback 활용법
+### 📖 Effect 의존성 & useCallback 활용법 🚨
 
 #### 💎 QuestionTimer.jsx
 
@@ -399,7 +399,7 @@ export default function Quiz() {
 
 <br>
 
-### 📖 Effect Cleanup 함수 활용 & 컴포넌트 초기화 Key 사용법
+### 📖 Effect Cleanup 함수 활용 & 컴포넌트 초기화 Key 사용법 🚨
 
 - 콘솔을 보았을 때 SETTING INTERVAL이 두 번 작동한다는 것을 알 수 있다. &rarr; 리액트의 엄격 모드를 사용하고 있기 때문이다.
 - 엄격모드는 특정한 에러를 잡아내기 위해 두 번 작동시킨다.
@@ -478,3 +478,124 @@ export default function Quiz() {
 ```
 
 ![결과](./src/assets/강사6.gif)
+
+<br>
+
+### 📖 선택된 답변 강조 & 추가 State 관리 🚨
+
+#### 💎 Quiz.jsx
+
+```jsx
+import { useState, useCallback } from "react";
+import QUESTIONS from "../questions.js";
+import quizComplteImg from "../assets/quiz-complete.png";
+import QuestionTimer from "./QuestionTimer.jsx";
+
+export default function Quiz() {
+  const [answerState, setAnswerState] = useState("");
+  const [userAnswers, setUserAnswers] = useState([]);
+  const activeQuestionIndex =
+    answerState === "" ? userAnswers.length : userAnswers.length - 1; // 이전 질문에 머무르도록 함.
+  const quizIsComplete = activeQuestionIndex === QUESTIONS.length;
+
+  const handleSelectAnswer = useCallback(
+    function handleSelectAnswer(selectedAnswer) {
+      setAnswerState("answered"); // 사용자가 답변을 고른다면 해당 상태를 업데이트
+      setUserAnswers((prevUserAnswers) => {
+        return [...prevUserAnswers, selectedAnswer];
+      });
+
+      setTimeout(() => {
+        if (selectedAnswer === QUESTIONS[activeQuestionIndex].answers[0]) {
+          // 정답이면
+          setAnswerState("correct");
+        } else {
+          // 오답이면
+          setAnswerState("wrong");
+        }
+
+        setTimeout(() => {
+          // 다시 답변을 초기화 함으로써 다음 질문으로 넘어가도록 함.
+          setAnswerState("");
+        }, 2000);
+      }, 1000); // 1초 뒤에 답변에 대한 클래스 네임 추가
+    },
+    [activeQuestionIndex]
+  ); // 현재 QUESTIONS[activeQuestionIndex].answers[0]를 사용하므로 의존성 추가 필요.
+  // activeQuestionIndex 값이 변경될 때마다 재실행될 필요가 있다.
+
+  const handleSkipAnswer = useCallback(() => {
+    handleSelectAnswer(null);
+  }, [handleSelectAnswer]);
+
+  if (quizIsComplete) {
+    return (
+      <div id="summary">
+        <img src={quizComplteImg} alt="Trophy icon" />
+        <h2>Quiz Completed!</h2>
+      </div>
+    );
+  }
+
+  const shuffledAnswers = [...QUESTIONS[activeQuestionIndex].answers];
+  shuffledAnswers.sort(() => Math.random() - 0.5);
+
+  return (
+    <div id="quiz">
+      <div id="question">
+        <QuestionTimer
+          key={activeQuestionIndex}
+          timeout={10000}
+          onTimeout={handleSkipAnswer}
+        />
+        <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
+        <ul id="answers">
+          {shuffledAnswers.map((answer) => {
+            // 클래스 이름 부여
+            const isSelcted = userAnswers[userAnswers.length - 1] === answer;
+            let cssClasses = "";
+            if (answerState === "answered" && isSelcted) {
+              cssClasses = "selected";
+            }
+
+            if (
+              (answerState === "correct" || answerState === "wrong") &&
+              isSelcted
+            ) {
+              cssClasses = answerState;
+            }
+
+            return (
+              <li key={answer} className="answer">
+                <button
+                  onClick={() => handleSelectAnswer(answer)}
+                  className={cssClasses}
+                >
+                  {answer}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
+  );
+}
+```
+
+- 새로운 상태를 추가한다. (`answerState`)
+- 해당 상태는 초기에 빈 문자열로 되어있다. 만약 유저가 답변을 제출한 적이 없다면(첫 문제라면), activeQuestionIndex(현재 문제 인덱스)를 `userAnswers.length`로 설정한다. 그러나 만약 유저가 답변을 제출한 적이 있다면(첫 문제가 아니라면), activeQuestionIndex을 `userAnswers.length-1`로 설정하여 잠시동안 이전 문제에 머무르도록 한다.
+- `handleSelectAnswer` 함수에서 상태를 업데이트한다.
+  1. `setAnswerState`를 우선 `answered`로 설정한다.
+  2. `setUserAnswers`를 업데이트한다.
+  3. 1초 뒤에 유저가 선택한 답변(selectedAnswer)과 현재 문제에 대한 정답이 일치하다면, `setAnswerState('correct')`로 업데이트한다. 만약 일치하지 않는다면 `setAnswerState('wrong')`으로 업데이트한다.
+  4. 2초 뒤, 다시 `answerState`를 빈 문자열로 추가한다. 이는 그 다음 문제로 넘어가기 위함이다.(`activeQuestionIndex` 이용함)
+  5. 이때 의존성에 `activeQuestionIndex`을 추가해야한다. 해당 인덱스가 바뀔 때마다 함수를 재실행할 필요가 있기 때문이다.
+- `shuffledAnswers.map()`에서 클래스를 부여하기 위한 로직을 작성한다.
+  1. 만약 userAnswers에 추가된 답변이 `shuffledAnswers`의 answer 중 하나와 일치한다면 해당 답변은 `isSelected = true`가 된다.
+  2. `answerState`가 `answered`이고 `isSelcted===true`라면 해당 답변 버튼의 클래스는 selected가 된다.
+  3. `answerState`가 `correct`이거나 `wrong`이고 `isSelected===true`이면 해당 답변 버튼의 클래스는 `answerState`의 값이 된다.
+
+#### 💎 결과
+
+![결과7](./src/assets/강사7.gif)

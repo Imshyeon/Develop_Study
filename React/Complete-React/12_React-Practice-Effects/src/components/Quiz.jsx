@@ -4,21 +4,38 @@ import quizComplteImg from "../assets/quiz-complete.png";
 import QuestionTimer from "./QuestionTimer.jsx";
 
 export default function Quiz() {
+  const [answerState, setAnswerState] = useState("");
   const [userAnswers, setUserAnswers] = useState([]); // 답 등록
-  const activeQuestionIndex = userAnswers.length;
+  const activeQuestionIndex =
+    answerState === "" ? userAnswers.length : userAnswers.length - 1; // 이전 질문에 머무르도록 함.
 
   const quizIsComplete = activeQuestionIndex === QUESTIONS.length; // 존재하고있는 질문 양과 인덱스값이 같으면 true 반환
 
-  const handleSelectAnswer = useCallback(function handleSelectAnswer(
-    selectedAnswer
-  ) {
-    setUserAnswers((prevUserAnswers) => {
-      return [...prevUserAnswers, selectedAnswer];
-    });
-  },
-  []); // 여기엔 추가하지 않아도 됨.
-  // handleSelectAnswer 함수에서 상태나 속성 그리고 이에 의존하는 다른 어떠한 값도 사용하고 있지 않다.
-  // 상태를 업데이트하는 함수(setUserAnswers)는 추가될 필요 없다. -> 리액트가 그들이 절대 바뀌지 않도록 보장하기 때문이다.
+  const handleSelectAnswer = useCallback(
+    function handleSelectAnswer(selectedAnswer) {
+      setAnswerState("answered"); // 사용자가 답변을 고른다면 해당 상태를 업데이트
+      setUserAnswers((prevUserAnswers) => {
+        return [...prevUserAnswers, selectedAnswer];
+      });
+
+      setTimeout(() => {
+        if (selectedAnswer === QUESTIONS[activeQuestionIndex].answers[0]) {
+          // 정답이면
+          setAnswerState("correct");
+        } else {
+          // 오답이면
+          setAnswerState("wrong");
+        }
+
+        setTimeout(() => {
+          // 다시 답변을 초기화 함으로써 다음 질문으로 넘어가도록 함.
+          setAnswerState("");
+        }, 2000);
+      }, 1000); // 1초 뒤에 답변에 대한 클래스 네임 추가
+    },
+    [activeQuestionIndex]
+  ); // 현재 QUESTIONS[activeQuestionIndex].answers[0]를 사용하므로 의존성 추가 필요.
+  // activeQuestionIndex 값이 변경될 때마다 재실행될 필요가 있다.
 
   const handleSkipAnswer = useCallback(() => {
     handleSelectAnswer(null); // handleSelectAnswer 의존성을 사용함. => 해당 컴포넌트 함수에서 생성된 된 값이니까!
@@ -50,13 +67,31 @@ export default function Quiz() {
         />
         <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
         <ul id="answers">
-          {shuffledAnswers.map((answer) => (
-            <li key={answer} className="answer">
-              <button onClick={() => handleSelectAnswer(answer)}>
-                {answer}
-              </button>
-            </li>
-          ))}
+          {shuffledAnswers.map((answer) => {
+            const isSelcted = userAnswers[userAnswers.length - 1] === answer;
+            let cssClasses = "";
+            if (answerState === "answered" && isSelcted) {
+              cssClasses = "selected";
+            }
+
+            if (
+              (answerState === "correct" || answerState === "wrong") &&
+              isSelcted
+            ) {
+              cssClasses = answerState;
+            }
+
+            return (
+              <li key={answer} className="answer">
+                <button
+                  onClick={() => handleSelectAnswer(answer)}
+                  className={cssClasses}
+                >
+                  {answer}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>
