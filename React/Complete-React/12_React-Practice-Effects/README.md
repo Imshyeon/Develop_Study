@@ -170,6 +170,7 @@ export default function Quiz() {
   }
 
   // 위의 quizIsComplete와 관련된 로직 아래에 위치해야한다. 해당 부분을 먼저 검사 후 셔플을 진행 -> 화면에 렌더링하는 순서여야 함.
+  // 즉 다음의 것들은 남은 질문들이 있을 때 수행되는 것이다.
   const shuffledAnswers = [...QUESTIONS[activeQuestionIndex].answers];
   shuffledAnswers.sort(() => Math.random() - 0.5);
 
@@ -200,3 +201,202 @@ export default function Quiz() {
 #### 💎 결과
 
 ![결과2](./src/assets/강사2.gif)
+
+<br>
+
+### 📖 질문 타이머 추가
+
+#### 💎 QuestionTimer.jsx
+
+```jsx
+import { useState, useEffect } from "react";
+export default function QuestionTimer({ timeout, onTimeout }) {
+  const [remainingTime, setRemainingTime] = useState(timeout);
+
+  useEffect(() => {
+    // onTimeout : 부모에게 넘겨서 해당 문제를 못 풀었음을 알려야함.
+    setTimeout(onTimeout, timeout); // onTimeout, timeout 속성을 사용함. => 의존성이 변경되면 재실행
+  }, [onTimeout, timeout]);
+  // 부모 컴포넌트가 QuestionTimer의 timeout이 변경되어야 하는 지 결정하기 때문에 타이머를 초기화하고 다시 실행할 필요가 있다.
+
+  useEffect(() => {
+    setInterval(() => {
+      setRemainingTime((prevRemainingTime) => prevRemainingTime - 100);
+    }, 100);
+  }, []);
+
+  return <progress id="question-time" value={remainingTime} max={timeout} />;
+}
+```
+
+#### 💎 Quiz.jsx
+
+```jsx
+import { useState } from "react";
+import QUESTIONS from "../questions.js";
+import quizComplteImg from "../assets/quiz-complete.png";
+import QuestionTimer from "./QuestionTimer.jsx";
+
+export default function Quiz() {
+  const [userAnswers, setUserAnswers] = useState([]);
+  const activeQuestionIndex = userAnswers.length;
+
+  const quizIsComplete = activeQuestionIndex === QUESTIONS.length;
+
+  function handleSelectAnswer(selectedAnswer) {
+    setUserAnswers((prevUserAnswers) => {
+      return [...prevUserAnswers, selectedAnswer];
+    });
+  }
+
+  if (quizIsComplete) {
+    return (
+      <div id="summary">
+        <img src={quizComplteImg} alt="Trophy icon" />
+        <h2>Quiz Completed!</h2>
+      </div>
+    );
+  }
+
+  const shuffledAnswers = [...QUESTIONS[activeQuestionIndex].answers];
+  shuffledAnswers.sort(() => Math.random() - 0.5);
+
+  return (
+    <div id="quiz">
+      <div id="question">
+        {/* handleSelectAnswer(null)로 설정함으로써 해당 질문에 어떠한 답변하지 않고 넘어갔음을 상태에 알림 */}
+        <QuestionTimer
+          timeout={10000}
+          onTimeout={() => handleSelectAnswer(null)}
+        />
+        <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
+        <ul id="answers">
+          {shuffledAnswers.map((answer) => (
+            <li key={answer} className="answer">
+              <button onClick={() => handleSelectAnswer(answer)}>
+                {answer}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+```
+
+#### 💎 결과
+
+![결과3](./src/assets/강사3-오류.gif)
+
+<br>
+
+### 📖 Effect 의존성 & useCallback 활용법
+
+#### 💎 QuestionTimer.jsx
+
+```jsx
+import { useState, useEffect } from "react";
+export default function QuestionTimer({ timeout, onTimeout }) {
+  const [remainingTime, setRemainingTime] = useState(timeout);
+
+  useEffect(() => {
+    console.log("SETTING TIMEOUT");
+    setTimeout(onTimeout, timeout);
+  }, [onTimeout, timeout]);
+
+  useEffect(() => {
+    console.log("SETTING INTERVAL");
+    setInterval(() => {
+      setRemainingTime((prevRemainingTime) => prevRemainingTime - 100);
+    }, 100);
+  }, []);
+
+  return <progress id="question-time" value={remainingTime} max={timeout} />;
+}
+```
+
+![콘솔](./src/assets/강사4-콘솔.png)
+
+- 타이머에 대한 useEffect가 계속해서 실행된다는 것을 알 수 있다. &rarr; 하지만 이론상 해당 Effect 함수를 재실행되서는 안된다.
+  - Quiz.jsx에서 QuestionTimer 컴포넌트는 퀴즈가 렌더링될때 한번만 렌더링되어야 한다. 그리고 그 후에 재생성되지 않는다.
+  - 퀴즈 컴포넌트는 answer를 선택할 때마다 렌더링되는 것이 맞다. 그러나 QuestionTimer의 컴포넌트 인스턴스(instance)는 변경되지 않는다. 예전 JSX 코드의 일부였고 현재 새로운 JSX 코드의 일부이기 때문이다.
+  - interval에 대한 Effect 함수가 다시 실행되지 않는것고 마찬가지이다.
+- 타이머에 대한 Effect 함수가 재실행되는 것은 의존성과 연관있다!
+  - 퀴즈 컴포넌트가 재실행될 때마다 `onTimeout={()=> handleSelectAnswer(null)}`이 재실행된다.
+  - 이 부분이 타이머 재실행의 원인.
+
+#### 💎 Quiz.jsx
+
+```jsx
+import { useState, useCallback } from "react";
+import QUESTIONS from "../questions.js";
+import quizComplteImg from "../assets/quiz-complete.png";
+import QuestionTimer from "./QuestionTimer.jsx";
+
+export default function Quiz() {
+  const [userAnswers, setUserAnswers] = useState([]);
+  const activeQuestionIndex = userAnswers.length;
+
+  const quizIsComplete = activeQuestionIndex === QUESTIONS.length;
+
+  const handleSelectAnswer = useCallback(function handleSelectAnswer(
+    selectedAnswer
+  ) {
+    setUserAnswers((prevUserAnswers) => {
+      return [...prevUserAnswers, selectedAnswer];
+    });
+  },
+  []); // 여기엔 추가하지 않아도 됨.
+  // handleSelectAnswer 함수에서 상태나 속성 그리고 이에 의존하는 다른 어떠한 값도 사용하고 있지 않다.
+  // 상태를 업데이트하는 함수(setUserAnswers)는 추가될 필요 없다. -> 리액트가 그들이 절대 바뀌지 않도록 보장하기 때문이다.
+
+  const handleSkipAnswer = useCallback(() => {
+    handleSelectAnswer(null); // handleSelectAnswer 의존성을 사용함. => 해당 컴포넌트 함수에서 생성된 된 값이니까!
+  }, [handleSelectAnswer]);
+
+  if (quizIsComplete) {
+    return (
+      <div id="summary">
+        <img src={quizComplteImg} alt="Trophy icon" />
+        <h2>Quiz Completed!</h2>
+      </div>
+    );
+  }
+
+  const shuffledAnswers = [...QUESTIONS[activeQuestionIndex].answers];
+  shuffledAnswers.sort(() => Math.random() - 0.5);
+
+  return (
+    <div id="quiz">
+      <div id="question">
+        {/* handleSelectAnswer(null)로 설정함으로써 해당 질문에 어떠한 답변하지 않고 넘어갔음을 상태에 알림 */}
+        <QuestionTimer timeout={10000} onTimeout={handleSkipAnswer} />
+        <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
+        <ul id="answers">
+          {shuffledAnswers.map((answer) => (
+            <li key={answer} className="answer">
+              <button onClick={() => handleSelectAnswer(answer)}>
+                {answer}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+```
+
+- 타이머 업데이트하는 `onTimeout` 부분을 useCallback을 사용해야한다.
+- 해당 부분은 `handleSkipAnswer` 함수로 만들었다. 또한 이 함수는 `handleSelectAnswer`을 이용해 상태를 업데이트 하므로 `handleSelectAnswer`을 의존성 추가해야 한다. &rarr; 해당 컴포넌트 함수에서 사용된 값 이니깐.
+- `handleSelectAnswer`도 useCallback을 사용하되, 해당 함수는 컴포넌트에서 사용하는 상태나 속성이 없으므로 의존성을 추가하지 않는다.
+  - 상태 업데이트 함수는 의존성에 추가할 필요없다. &rarr; 리액트에서 그들이 절대 바뀌지 않도록 보장하기 때문임.
+
+![콘솔2](./src/assets/강사4-콘솔2.png)
+
+- 타이머가 재생성이 되진 않지만, 타이머가 만료되도 다음 질문으로 넘어가지 않는 문제가 지속해서 발생한다.
+
+<br>
+
+### 📖 Effect Cleanup 함수 활용 & 컴포넌트 초기화 Key 사용법
