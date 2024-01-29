@@ -1119,4 +1119,125 @@ export default function Quiz() {
 
 ![결과10](./src/assets/강사10.gif)
 
+🔗 [해당 코드 레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/76c4e183f668f40d4b8c3f1f9a656653a899ecd6)
+
+<br>
+
+### 📖 타이머 수정하기 🚨
+
+#### 💎 Question.jsx
+
+```jsx
+import QuestionTimer from "./QuestionTimer.jsx";
+import Answers from "./Answers.jsx";
+import QUESTIONS from "../questions.js";
+import { useState } from "react";
+
+export default function Question({
+  questionIdx,
+  onSelectAnswer,
+  onSkipAnswer,
+}) {
+  const [answer, setAnswer] = useState({
+    selectedAnswer: "",
+    isCorrect: null,
+  });
+
+  let timer = 10000;
+
+  if (answer.selectedAnswer) {
+    timer = 1000; // 1초 뒤 정답/오답 보여주기 위함
+  }
+
+  if (answer.isCorrect !== null) {
+    timer = 2000; // 다음 질문으로 넘어가는데 걸리는 시간
+  }
+
+  function handleSelectAnswer(answer) {
+    setAnswer({
+      selectedAnswer: answer,
+      isCorrect: null, // 아직 correct인지 wrong인지 모름 -> 1초 정도 뒤에 다시 업데이트를 해야한다.(Quiz 컴포넌트의 영향)
+    });
+
+    setTimeout(() => {
+      setAnswer({
+        selectedAnswer: answer,
+        isCorrect: answer === QUESTIONS[questionIdx].answers[0],
+      });
+
+      setTimeout(() => {
+        onSelectAnswer(answer);
+      }, 2000);
+    }, 1000);
+  }
+
+  let answerState = "";
+  if (answer.selectedAnswer && answer.isCorrect !== null) {
+    answerState = answer.isCorrect ? "correct" : "wrong";
+  } else if (answer.selectedAnswer) {
+    answerState = "answered";
+  }
+
+  return (
+    <div id="question">
+      <QuestionTimer
+        key={timer}
+        timeout={timer}
+        onTimeout={answer.selectedAnswer === "" ? onSkipAnswer : null}
+        mode={answerState}
+      />
+      <h2>{QUESTIONS[questionIdx].text}</h2>
+      <Answers
+        answers={QUESTIONS[questionIdx].answers}
+        selectedAnswer={answer.selectedAnswer}
+        answerState={answerState}
+        onSelect={handleSelectAnswer}
+      />
+    </div>
+  );
+}
+```
+
+#### 💎 QuestionTImer.jsx
+
+```jsx
+import { useState, useEffect } from "react";
+export default function QuestionTimer({ timeout, onTimeout, mode }) {
+  const [remainingTime, setRemainingTime] = useState(timeout);
+
+  useEffect(() => {
+    console.log("SETTING TIMEOUT");
+    const timer = setTimeout(onTimeout, timeout);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [onTimeout, timeout]);
+
+  useEffect(() => {
+    console.log("SETTING INTERVAL");
+    const interval = setInterval(() => {
+      setRemainingTime((prevRemainingTime) => prevRemainingTime - 100);
+    }, 100);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  return (
+    <progress
+      id="question-time"
+      value={remainingTime}
+      max={timeout}
+      className={mode}
+    />
+  );
+}
+```
+
+#### 💎 결과
+
+![결과11](./src/assets/강사11.gif)
+
 🔗 [해당 코드 레파지토리에서 보기]()
