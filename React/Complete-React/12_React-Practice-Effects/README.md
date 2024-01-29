@@ -602,7 +602,7 @@ export default function Quiz() {
 
 <br>
 
-### 📖 컴포넌트 분리를 통해 문제 해결하기
+### 📖 컴포넌트 분리를 통해 문제 해결하기 🚨
 
 - 위의 움짤처럼 답변이 계속 바뀌는 이유는 Quiz 컴포넌트 안의 shuffledAnswers를 통해 계속 바뀌기 때문이다. 하나의 컴포넌트로 되어있기 때문에 해당 퀴즈 컴포넌트가 실행될 때마다 셔플이 된다.
 
@@ -850,14 +850,14 @@ import Question from "./Question.jsx";
 
 export default function Quiz() {
   const [answerState, setAnswerState] = useState("");
-  const [userAnswers, setUserAnswers] = useState([]); 
+  const [userAnswers, setUserAnswers] = useState([]);
   const activeQuestionIndex =
-    answerState === "" ? userAnswers.length : userAnswers.length - 1; 
-  const quizIsComplete = activeQuestionIndex === QUESTIONS.length; 
+    answerState === "" ? userAnswers.length : userAnswers.length - 1;
+  const quizIsComplete = activeQuestionIndex === QUESTIONS.length;
 
   const handleSelectAnswer = useCallback(
     function handleSelectAnswer(selectedAnswer) {
-      setAnswerState("answered"); 
+      setAnswerState("answered");
       setUserAnswers((prevUserAnswers) => {
         return [...prevUserAnswers, selectedAnswer];
       });
@@ -872,13 +872,13 @@ export default function Quiz() {
         setTimeout(() => {
           setAnswerState("");
         }, 2000);
-      }, 1000); 
+      }, 1000);
     },
     [activeQuestionIndex]
-  ); 
+  );
 
   const handleSkipAnswer = useCallback(() => {
-    handleSelectAnswer(null); 
+    handleSelectAnswer(null);
   }, [handleSelectAnswer]);
 
   if (quizIsComplete) {
@@ -983,3 +983,140 @@ export default function Answers({
 ```
 
 ![결과9](./src/assets/강사9.gif)
+
+🔗 [해당 코드 레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/9b606e106aaba4836ccb0bd9a0d86d3217c4ddad#diff-e46bc3b1dee53212f4262f52fae83d70f7c980afef740ba71590498a1c44299d)
+
+<br>
+
+### 📖 컴포넌트에 필요한 로직 이동하기(State 하위 이동) 🚨
+
+- 위처럼 컴포넌트를 분리하여 오류는 잡았지만 너무 많은 속성을 전달하고 있다. &rarr; 개선 필요
+- Quiz 컴포넌트에서 answerState를 관리할 필요가 없다!
+
+#### 💎 Question.jsx
+
+```jsx
+import QuestionTimer from "./QuestionTimer.jsx";
+import Answers from "./Answers.jsx";
+import QUESTIONS from "../questions.js";
+import { useState } from "react";
+
+export default function Question({
+  questionIdx,
+  onSelectAnswer,
+  onSkipAnswer,
+}) {
+  const [answer, setAnswer] = useState({
+    selectedAnswer: "",
+    isCorrect: null,
+  });
+
+  function handleSelectAnswer(answer) {
+    setAnswer({
+      selectedAnswer: answer,
+      isCorrect: null, // 아직 correct인지 wrong인지 모름 -> 1초 정도 뒤에 다시 업데이트를 해야한다.(Quiz 컴포넌트의 영향)
+    });
+
+    setTimeout(() => {
+      setAnswer({
+        selectedAnswer: answer,
+        isCorrect: answer === QUESTIONS[questionIdx].answers[0],
+      });
+
+      setTimeout(() => {
+        onSelectAnswer(answer);
+      }, 2000);
+    }, 1000);
+  }
+
+  let answerState = "";
+  if (answer.selectedAnswer && answer.isCorrect !== null) {
+    answerState = answer.isCorrect ? "correct" : "wrong";
+  } else if (answer.selectedAnswer) {
+    answerState = "answered";
+  }
+
+  return (
+    <div id="question">
+      <QuestionTimer timeout={10000} onTimeout={onSkipAnswer} />
+      <h2>{QUESTIONS[questionIdx].text}</h2>
+      <Answers
+        answers={QUESTIONS[questionIdx].answers}
+        selectedAnswer={answer.selectedAnswer}
+        answerState={answerState}
+        onSelect={handleSelectAnswer}
+      />
+    </div>
+  );
+}
+```
+
+#### 💎 Quiz.jsx
+
+```jsx
+import { useState, useCallback } from "react";
+import QUESTIONS from "../questions.js";
+import quizComplteImg from "../assets/quiz-complete.png";
+import Question from "./Question.jsx";
+
+export default function Quiz() {
+  const [userAnswers, setUserAnswers] = useState([]);
+  const activeQuestionIndex = userAnswers.length;
+
+  const quizIsComplete = activeQuestionIndex === QUESTIONS.length;
+
+  const handleSelectAnswer = useCallback(function handleSelectAnswer(
+    selectedAnswer
+  ) {
+    setUserAnswers((prevUserAnswers) => {
+      return [...prevUserAnswers, selectedAnswer];
+    });
+  },
+  []);
+
+  const handleSkipAnswer = useCallback(() => {
+    handleSelectAnswer(null);
+  }, [handleSelectAnswer]);
+
+  if (quizIsComplete) {
+    return (
+      <div id="summary">
+        <img src={quizComplteImg} alt="Trophy icon" />
+        <h2>Quiz Completed!</h2>
+      </div>
+    );
+  }
+
+  return (
+    <div id="quiz">
+      <Question
+        // 이제 Question 컴포넌트만 업데이트하면 하위 컴포넌트는 자동 업데이트 된다.
+        key={activeQuestionIndex}
+        questionIdx={activeQuestionIndex}
+        onSelectAnswer={handleSelectAnswer}
+        onSkipAnswer={handleSkipAnswer}
+      />
+    </div>
+  );
+}
+```
+
+#### 💎 (+) 질문에 대한 답변을 고르면 버튼에 disabled 추가하기
+
+```jsx
+// Answers.jsx
+
+<button
+  onClick={() => onSelect(answer)}
+  className={cssClasses}
+  disabled={answerState !== ""}
+>
+  {answer}
+</button>
+```
+
+#### 💎 결과
+
+![결과10](./src/assets/강사10.gif)
+
+🔗 [해당 코드 레파지토리에서 보기]()
