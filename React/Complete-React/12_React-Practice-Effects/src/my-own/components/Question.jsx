@@ -1,6 +1,6 @@
 import ProgressBar from "./ProgressBar.jsx";
 import Answer from "./Answer.jsx";
-import { getDatas } from "../quizDatas.js";
+import { getDatas } from "../../quizDatas.js";
 import { useEffect, useContext } from "react";
 import { QuestionContext } from "../store/question-context.jsx";
 

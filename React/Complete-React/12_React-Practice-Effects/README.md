@@ -1,6 +1,7 @@
 # React Practice with Effects
 
 [📌 스스로 만들어보기](#📌-스스로-만들어보기)<br>
+[📌 강사 코드](#-강사-코드)<br>
 <br>
 
 ## 📌 스스로 만들어보기
@@ -34,6 +35,7 @@
 1. context를 통해서 quiz정보를 받아오고 해당 정보에서 정답/오답 데이터를 가지고 연산 &rarr; 화면에 렌더링했다.
 
 #### 💎 Question.jsx
+
 1. 타이머 등록 -> 타이머가 끝나면 다음 문제로 넘어가고 skip으로 표현된다.
 2. 의존성 배열에 아무것도 추가하지 않으면, 첫번째 skip만 되고 그 다음부터는 타이머가 동작하지 않아 skip 동작이 되지 않는다.
 3. 따라서 상태에 `isSkiped` 속성을 추가하였고 skip이면 true, skip이 아니면 false로 속성값을 부여했다. &rarr; 이 속성을 의존성 배열에 추가했더니 타이머가 정상적으로 동작했다.
@@ -49,3 +51,92 @@
 ### 📖 결과
 
 ![결과](./src/assets/결과.gif)
+
+🔗 [레파지토리에서 코드 보기](https://github.com/Imshyeon/Develop_Study/tree/f8a3182e0fd189406d1605198c659798f4888ace/React/Complete-React/12_React-Practice-Effects)
+
+<br>
+
+## 📌 강사 코드
+
+### 📖 Header.jsx
+
+```jsx
+import logoImg from "../assets/quiz-logo.png";
+
+export default function Header() {
+  return (
+    <header>
+      <img src={logoImg} alt="Quiz logo" />
+      <h1>ReactQuiz</h1>
+    </header>
+  );
+}
+```
+
+<br>
+
+### 📖 Quiz.jsx
+
+```jsx
+import { useState } from "react";
+import QUESTIONS from "../questions.js";
+
+export default function Quiz() {
+  const [userAnswers, setUserAnswers] = useState([]); // 답 등록
+  const activeQuestionIndex = userAnswers.length;
+
+  function handleSelectAnswer(selectedAnswer) {
+    setUserAnswers((prevUserAnswers) => {
+      return [...prevUserAnswers, selectedAnswer];
+    });
+  }
+
+  return (
+    <div id="quiz">
+      <div id="question">
+        <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
+        <ul id="answers">
+          {QUESTIONS[activeQuestionIndex].answers.map((answer) => (
+            <li key={answer} className="answer">
+              <button onClick={() => handleSelectAnswer(answer)}>
+                {answer}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+```
+
+- questions.js 파일 내의 데이터를 이용한다. 해당 데이터에서 `answers` 배열안의 첫번째 text가 문제에 대한 답이고 이를 `userAnswers` 상태에 저장/업데이트 할 것이다.
+- `userAnswers`의 길이가 곧 현재 활성화 된 질문의 인덱스번호이다. &rarr; 초기에는 이 배열의 길이는 0이므로 0번째 인덱스에 접근하게 되며 0번째 인덱스의 질문이 첫번째 질문이 된다.
+
+#### 💎 App.jsx
+
+```jsx
+import Header from "./components/Header";
+import Quiz from "./components/Quiz";
+
+function App() {
+  return (
+    <>
+      <Header />
+      <main>
+        <Quiz />
+      </main>
+    </>
+  );
+}
+
+export default App;
+```
+
+#### 💎 결과
+
+![결과1](./src/assets/강사1.gif)
+
+<br>
+
+### 📖 
