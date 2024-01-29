@@ -11,12 +11,13 @@ export default function Summary() {
     let correct = 0;
     let incorrect = 0;
     quiz.map((q) => {
-      if (q.answer.isCorrect) {
-        correct += 10;
+      console.log('sum=>',q)
+      if (q.isSkiped) {
+        skipped += 10;
       } else if (!q.answer.isCorrect) {
         incorrect += 10;
-      } else {
-        skipped += 10;
+      } else if(q.answer.isCorrect) {
+        correct += 10;
       }
     });
     return (
@@ -45,7 +46,15 @@ export default function Summary() {
             <li key={i}>
               <h3>{i + 1}</h3>
               <div className="question">{q.question.data}</div>
-              <div className="user-answer">{q.answer.data}</div>
+              {q.isSkiped && (
+                <div className="user-answer skipped">You Skiped!</div>
+              )}
+              {!q.isSkiped && q.answer.isCorrect && (
+                <div className="user-answer correct">{q.answer.data}</div>
+              )}
+              {!q.isSkiped && !q.answer.isCorrect && (
+                <div className="user-answer incorrect">{q.answer.data}</div>
+              )}
             </li>
           );
         })}

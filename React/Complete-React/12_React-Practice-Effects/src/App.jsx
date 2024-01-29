@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import quizLogo from "./assets/quiz-logo.png";
 import Question from "./components/Question.jsx";
 import Summary from "./components/Summary.jsx";
@@ -8,6 +8,7 @@ import { deleteData, getDatasLength } from "./quizDatas.js";
 function App() {
   const [isCorrectOrNot, setIsCorrectOrNot] = useState([]);
 
+  console.log('state=>',isCorrectOrNot)
   function handleQuizClick(curQuestion, curAnswer) {
     deleteData(curQuestion.qid);
     setIsCorrectOrNot((prevState) => {
@@ -16,6 +17,22 @@ function App() {
         {
           question: curQuestion,
           answer: { ...curAnswer },
+          isSkiped: false,
+        },
+      ];
+    });
+  }
+
+  function handleQuizSkip(curQuestion) {
+    console.log("skip", curQuestion);
+    deleteData(curQuestion.qid);
+    console.log(getDatasLength())
+    setIsCorrectOrNot((prevState) => {
+      return [
+        ...prevState,
+        {
+          question: curQuestion,
+          isSkiped: true,
         },
       ];
     });
@@ -24,6 +41,7 @@ function App() {
   const questionCtx = {
     quiz: isCorrectOrNot,
     onQuizClick: handleQuizClick,
+    onQuizSkip: handleQuizSkip,
   };
 
   return (
@@ -37,7 +55,7 @@ function App() {
           <Question />
         </section>
       )}
-      {getDatasLength() === 0 && <Summary/>}
+      {getDatasLength() === 0 && <Summary />}
     </QuestionContext.Provider>
   );
 }

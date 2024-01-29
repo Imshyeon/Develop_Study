@@ -1,28 +1,28 @@
 import ProgressBar from "./ProgressBar.jsx";
 import Answer from "./Answer.jsx";
-import { getDatas } from "../quizDatas.js";
+import { getDatas, getDatasLength } from "../quizDatas.js";
 import { useEffect, useContext } from "react";
 import { QuestionContext } from "../store/question-context.jsx";
 
 const TIME = 5000;
 
-function createRandomNumber(num) {
-  return Math.floor(Math.random() * num);
-}
-
 export default function Question() {
   const { question, answer } = getDatas();
-  const { quiz } = useContext(QuestionContext);
+  const { quiz, onQuizSkip } = useContext(QuestionContext);
+
+  const isSkiped = quiz.map((q) => q.isSkiped);
+  console.log(isSkiped);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      //오답 함수 실행
+      console.log("set Timer");
+      onQuizSkip(question);
     }, TIME);
 
     return () => {
       clearTimeout(timer);
     };
-  }, []); // 의존성에 오답함수 연결 -> useCallback 사용해야함.
+  }, [isSkiped]);
 
   function printAnswersHandler(question, answers) {
     // id 오름차순 정렬
