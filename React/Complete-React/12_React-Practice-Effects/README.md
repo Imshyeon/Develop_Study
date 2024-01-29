@@ -45,3 +45,7 @@
 2. 첫 문제에서는 Progress bar가 줄어드는 것을 볼 수 있으나 두번째부터는 보이지 않았다. 콘솔로 보니 두번째부터 interval clear가 되지 않았다.
 3. 따라서 progress bar에서 quiz 데이터를 받아와 해당 데이터가 변할때마다 clear 되도록 의존성 배열에 추가하였다.
 4. 의존성 배열 추가로 interval clear는 되었으나 value가 다시 초기값(5000)으로 돌아오지 않고 계속 감소되었다. 따라서 interval clear하기 전에 상태를 업데이트하였다.
+
+### 📖 결과
+
+![결과](./src/assets/결과.gif)
