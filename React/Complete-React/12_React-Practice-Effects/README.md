@@ -599,3 +599,387 @@ export default function Quiz() {
 #### 💎 결과
 
 ![결과7](./src/assets/강사7.gif)
+
+<br>
+
+### 📖 컴포넌트 분리를 통해 문제 해결하기
+
+- 위의 움짤처럼 답변이 계속 바뀌는 이유는 Quiz 컴포넌트 안의 shuffledAnswers를 통해 계속 바뀌기 때문이다. 하나의 컴포넌트로 되어있기 때문에 해당 퀴즈 컴포넌트가 실행될 때마다 셔플이 된다.
+
+#### 💎 Quiz.jsx - 방법 1 : useRef() 이용하기
+
+```jsx
+import { useState, useCallback, useRef } from "react";
+import QUESTIONS from "../questions.js";
+import quizComplteImg from "../assets/quiz-complete.png";
+import QuestionTimer from "./QuestionTimer.jsx";
+
+export default function Quiz() {
+  const shuffledAnswers = useRef(); // 몇가지의 값만을 관리할 것.
+
+  const [answerState, setAnswerState] = useState("");
+  const [userAnswers, setUserAnswers] = useState([]);
+  const activeQuestionIndex =
+    answerState === "" ? userAnswers.length : userAnswers.length - 1;
+  const quizIsComplete = activeQuestionIndex === QUESTIONS.length;
+  const handleSelectAnswer = useCallback(
+    function handleSelectAnswer(selectedAnswer) {
+      setAnswerState("answered");
+      setUserAnswers((prevUserAnswers) => {
+        return [...prevUserAnswers, selectedAnswer];
+      });
+
+      setTimeout(() => {
+        if (selectedAnswer === QUESTIONS[activeQuestionIndex].answers[0]) {
+          setAnswerState("correct");
+        } else {
+          setAnswerState("wrong");
+        }
+
+        setTimeout(() => {
+          setAnswerState("");
+        }, 2000);
+      }, 1000);
+    },
+    [activeQuestionIndex]
+  );
+
+  const handleSkipAnswer = useCallback(() => {
+    handleSelectAnswer(null);
+  }, [handleSelectAnswer]);
+
+  if (quizIsComplete) {
+    return (
+      <div id="summary">
+        <img src={quizComplteImg} alt="Trophy icon" />
+        <h2>Quiz Completed!</h2>
+      </div>
+    );
+  }
+
+  // shuffledAnswerrs.current가 undefined일때. => 아직 shuffledAnswers = useRef()로 선언만 했을 뿐이다.
+  if (!shuffledAnswers.current) {
+    shuffledAnswers.current = [...QUESTIONS[activeQuestionIndex].answers];
+    shuffledAnswers.current.sort(() => Math.random() - 0.5);
+  }
+
+  return (
+    <div id="quiz">
+      <div id="question">
+        <QuestionTimer
+          key={activeQuestionIndex}
+          timeout={10000}
+          onTimeout={handleSkipAnswer}
+        />
+        <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
+        <ul id="answers">
+          {shuffledAnswers.current.map((answer) => {
+            const isSelcted = userAnswers[userAnswers.length - 1] === answer;
+            let cssClasses = "";
+            if (answerState === "answered" && isSelcted) {
+              cssClasses = "selected";
+            }
+
+            if (
+              (answerState === "correct" || answerState === "wrong") &&
+              isSelcted
+            ) {
+              cssClasses = answerState;
+            }
+
+            return (
+              <li key={answer} className="answer">
+                <button
+                  onClick={() => handleSelectAnswer(answer)}
+                  className={cssClasses}
+                >
+                  {answer}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
+  );
+}
+```
+
+![결과8](./src/assets/강사8.gif)
+
+#### 💎 방법 2 : 새로운 컴포넌트 추가하기
+
+```jsx
+// Answers.jx
+
+import { useRef } from "react";
+
+export default function Answers({
+  answers,
+  selectedAnswer,
+  answerState,
+  onSelect,
+}) {
+  const shuffledAnswers = useRef(); // 몇가지의 값만을 관리할 것.
+
+  // shuffledAnswerrs.current가 undefined일때. => 아직 shuffledAnswers = useRef()로 선언만 했을 뿐이다.
+  if (!shuffledAnswers.current) {
+    shuffledAnswers.current = [...answers];
+    shuffledAnswers.current.sort(() => Math.random() - 0.5);
+  }
+  return (
+    <ul id="answers">
+      {shuffledAnswers.current.map((answer) => {
+        const isSelcted = selectedAnswer === answer;
+        let cssClasses = "";
+        if (answerState === "answered" && isSelcted) {
+          cssClasses = "selected";
+        }
+
+        if (
+          (answerState === "correct" || answerState === "wrong") &&
+          isSelcted
+        ) {
+          cssClasses = answerState;
+        }
+
+        return (
+          <li key={answer} className="answer">
+            <button onClick={() => onSelect(answer)} className={cssClasses}>
+              {answer}
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+```
+
+<br>
+
+```jsx
+// Quiz.jsx
+
+import { useState, useCallback } from "react";
+import QUESTIONS from "../questions.js";
+import quizComplteImg from "../assets/quiz-complete.png";
+import QuestionTimer from "./QuestionTimer.jsx";
+import Answers from "./Answers.jsx";
+
+export default function Quiz() {
+  const [answerState, setAnswerState] = useState("");
+  const [userAnswers, setUserAnswers] = useState([]);
+  const activeQuestionIndex =
+    answerState === "" ? userAnswers.length : userAnswers.length - 1;
+  const quizIsComplete = activeQuestionIndex === QUESTIONS.length;
+
+  const handleSelectAnswer = useCallback(
+    function handleSelectAnswer(selectedAnswer) {
+      setAnswerState("answered");
+      setUserAnswers((prevUserAnswers) => {
+        return [...prevUserAnswers, selectedAnswer];
+      });
+
+      setTimeout(() => {
+        if (selectedAnswer === QUESTIONS[activeQuestionIndex].answers[0]) {
+          setAnswerState("correct");
+        } else {
+          setAnswerState("wrong");
+        }
+
+        setTimeout(() => {
+          setAnswerState("");
+        }, 2000);
+      }, 1000);
+    },
+    [activeQuestionIndex]
+  );
+
+  const handleSkipAnswer = useCallback(() => {
+    handleSelectAnswer(null);
+  }, [handleSelectAnswer]);
+
+  if (quizIsComplete) {
+    return (
+      <div id="summary">
+        <img src={quizComplteImg} alt="Trophy icon" />
+        <h2>Quiz Completed!</h2>
+      </div>
+    );
+  }
+
+  return (
+    <div id="quiz">
+      <div id="question">
+        {/* handleSelectAnswer(null)로 설정함으로써 해당 질문에 어떠한 답변하지 않고 넘어갔음을 상태에 알림 */}
+        <QuestionTimer
+          key={activeQuestionIndex}
+          timeout={10000}
+          onTimeout={handleSkipAnswer}
+        />
+        <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
+        {/* key를 통해서 리액트가 컴포넌트를 삭제하고 재생성할 수 있게 함. -> 셔플 */}
+        {/* 같은 div에서 같은 key를 사용하면 안된다. */}
+        <Answers
+          key={activeQuestionIndex}
+          answers={QUESTIONS[activeQuestionIndex].answers}
+          selectedAnswer={userAnswers[userAnswers.length - 1]}
+          answerState={answerState}
+          onSelect={handleSelectAnswer}
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+- 이때, Quiz.jsx에서 같은 div 안에 있는 타이머와 Answers가 같은 key를 가진다.
+- 또다른 컴포넌트로 분리해서 같은 키를 가지는 것을 방지한다.
+
+<br>
+
+#### 💎 최종
+
+```jsx
+// =========================== Quiz.jsx ===========================
+import { useState, useCallback } from "react";
+import QUESTIONS from "../questions.js";
+import quizComplteImg from "../assets/quiz-complete.png";
+import Question from "./Question.jsx";
+
+export default function Quiz() {
+  const [answerState, setAnswerState] = useState("");
+  const [userAnswers, setUserAnswers] = useState([]); 
+  const activeQuestionIndex =
+    answerState === "" ? userAnswers.length : userAnswers.length - 1; 
+  const quizIsComplete = activeQuestionIndex === QUESTIONS.length; 
+
+  const handleSelectAnswer = useCallback(
+    function handleSelectAnswer(selectedAnswer) {
+      setAnswerState("answered"); 
+      setUserAnswers((prevUserAnswers) => {
+        return [...prevUserAnswers, selectedAnswer];
+      });
+
+      setTimeout(() => {
+        if (selectedAnswer === QUESTIONS[activeQuestionIndex].answers[0]) {
+          setAnswerState("correct");
+        } else {
+          setAnswerState("wrong");
+        }
+
+        setTimeout(() => {
+          setAnswerState("");
+        }, 2000);
+      }, 1000); 
+    },
+    [activeQuestionIndex]
+  ); 
+
+  const handleSkipAnswer = useCallback(() => {
+    handleSelectAnswer(null); 
+  }, [handleSelectAnswer]);
+
+  if (quizIsComplete) {
+    return (
+      <div id="summary">
+        <img src={quizComplteImg} alt="Trophy icon" />
+        <h2>Quiz Completed!</h2>
+      </div>
+    );
+  }
+
+  return (
+    <div id="quiz">
+      <Question
+        // 이제 Question 컴포넌트만 업데이트하면 하위 컴포넌트는 자동 업데이트 된다.
+        key={activeQuestionIndex}
+        questionText={QUESTIONS[activeQuestionIndex].text}
+        answers={QUESTIONS[activeQuestionIndex].answers}
+        onSelectAnswer={handleSelectAnswer}
+        selectedAnswer={userAnswers[userAnswers.length - 1]}
+        answerState={answerState}
+        onSkipAnswer={handleSkipAnswer}
+      />
+    </div>
+  );
+}
+
+
+// =========================== Question.jsx ===========================
+import QuestionTimer from "./QuestionTimer.jsx";
+import Answers from "./Answers.jsx";
+
+export default function Question({
+  questionText,
+  answers,
+  onSelectAnswer,
+  selectedAnswer,
+  answerState,
+  onSkipAnswer,
+}) {
+  return (
+    <div id="question">
+      <QuestionTimer
+        timeout={10000}
+        onTimeout={onSkipAnswer}
+      />
+      <h2>{questionText}</h2>
+      <Answers
+        answers={answers}
+        selectedAnswer={selectedAnswer}
+        answerState={answerState}
+        onSelect={onSelectAnswer}
+      />
+    </div>
+  );
+}
+
+
+// =========================== Answers.jsx ===========================
+import { useRef } from "react";
+
+export default function Answers({
+  answers,
+  selectedAnswer,
+  answerState,
+  onSelect,
+}) {
+  const shuffledAnswers = useRef(); // 몇가지의 값만을 관리할 것.
+
+  // shuffledAnswerrs.current가 undefined일때. => 아직 shuffledAnswers = useRef()로 선언만 했을 뿐이다.
+  if (!shuffledAnswers.current) {
+    shuffledAnswers.current = [...answers];
+    shuffledAnswers.current.sort(() => Math.random() - 0.5);
+  }
+  return (
+    <ul id="answers">
+      {shuffledAnswers.current.map((answer) => {
+        const isSelcted = selectedAnswer === answer;
+        let cssClasses = "";
+        if (answerState === "answered" && isSelcted) {
+          cssClasses = "selected";
+        }
+
+        if (
+          (answerState === "correct" || answerState === "wrong") &&
+          isSelcted
+        ) {
+          cssClasses = answerState;
+        }
+
+        return (
+          <li key={answer} className="answer">
+            <button onClick={() => onSelect(answer)} className={cssClasses}>
+              {answer}
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+```
+
+![결과9](./src/assets/강사9.gif)
