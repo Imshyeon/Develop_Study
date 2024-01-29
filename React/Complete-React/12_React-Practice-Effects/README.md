@@ -1319,4 +1319,4 @@ if (quizIsComplete) {
 
 ![결과12](./src/assets/결과12.png)
 
-🔗 [해당 코드 레파지토리에서 보기]()
+🔗 [해당 코드 레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/0ad18a56bed7f31822245f5a2cb6b13dd4b2e30f)
