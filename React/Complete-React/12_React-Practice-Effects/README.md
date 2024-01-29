@@ -1240,4 +1240,83 @@ export default function QuestionTimer({ timeout, onTimeout, mode }) {
 
 ![결과11](./src/assets/강사11.gif)
 
+🔗 [해당 코드 레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/1bd6abd9856c505625492a4c4667917d82b4e566#diff-0ce55d940c9255a807f219204375cf155146a6172de87a53dca9bb6db378a640)
+
+<br>
+
+### 📖 퀴즈 결과 출력하기
+
+#### 💎 Summary.jsx
+
+```jsx
+import quizComplteImg from "../assets/quiz-complete.png";
+import QUESTIONS from "../questions.js";
+
+export default function Summary({ userAnswers }) {
+  const skippedAnswers = userAnswers.filter((answer) => answer === null);
+  const correctAnswers = userAnswers.filter(
+    (answer, index) => answer === QUESTIONS[index].answers[0]
+  );
+  const skippedAnswersShare = Math.round(
+    (skippedAnswers.length / userAnswers.length) * 100
+  );
+  const correctAnswersShare = Math.round(
+    (correctAnswers.length / userAnswers.length) * 100
+  );
+  const wrongAnswersShare = 100 - skippedAnswersShare - correctAnswersShare;
+
+  return (
+    <div id="summary">
+      <img src={quizComplteImg} alt="Trophy icon" />
+      <h2>Quiz Completed!</h2>
+      <div id="summary-stats">
+        <p>
+          <span className="number">{skippedAnswersShare}%</span>
+          <span className="text">skipped</span>
+        </p>
+        <p>
+          <span className="number">{correctAnswersShare}%</span>
+          <span className="text">answered correctly</span>
+        </p>
+        <p>
+          <span className="number">{wrongAnswersShare}%</span>
+          <span className="text">answered incorrectly</span>
+        </p>
+      </div>
+      <ol>
+        {userAnswers.map((answer, index) => {
+          let cssClass = "user-answer";
+          if (answer === null) {
+            // skipped
+            cssClass += " skipped";
+          } else if (answer === QUESTIONS[index].answers[0]) {
+            cssClass += " correct";
+          } else {
+            cssClass += " wrong";
+          }
+
+          return (
+            <li key={index}>
+              <h3>{index + 1}</h3>
+              <p className="question">{QUESTIONS[index].text}</p>
+              <p className={cssClass}>{answer ?? "Skipped"}</p>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+```
+
+#### 💎 Quiz.jsx
+
+```jsx
+if (quizIsComplete) {
+  return <Summary userAnswers={userAnswers} />;
+}
+```
+
+![결과12](./src/assets/결과12.png)
+
 🔗 [해당 코드 레파지토리에서 보기]()
