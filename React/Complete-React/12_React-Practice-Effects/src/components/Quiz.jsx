@@ -44,6 +44,7 @@ export default function Quiz() {
       <div id="question">
         {/* handleSelectAnswer(null)로 설정함으로써 해당 질문에 어떠한 답변하지 않고 넘어갔음을 상태에 알림 */}
         <QuestionTimer
+          key={activeQuestionIndex}
           timeout={10000}
           onTimeout={handleSkipAnswer}
         />

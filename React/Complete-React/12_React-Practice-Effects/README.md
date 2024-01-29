@@ -400,3 +400,81 @@ export default function Quiz() {
 <br>
 
 ### 📖 Effect Cleanup 함수 활용 & 컴포넌트 초기화 Key 사용법
+
+- 콘솔을 보았을 때 SETTING INTERVAL이 두 번 작동한다는 것을 알 수 있다. &rarr; 리액트의 엄격 모드를 사용하고 있기 때문이다.
+- 엄격모드는 특정한 에러를 잡아내기 위해 두 번 작동시킨다.
+- 엄격모드로 인해서 interval이 두 번 생성되어 실행된다. &rarr; 더 빨리 타이머가 소진. &rarr; cleanup이 필요하다.
+
+#### 💎 QuestionTimer.jsx
+
+```jsx
+import { useState, useEffect } from "react";
+export default function QuestionTimer({ timeout, onTimeout }) {
+  const [remainingTime, setRemainingTime] = useState(timeout);
+
+  useEffect(() => {
+    console.log("SETTING TIMEOUT");
+    const timer = setTimeout(onTimeout, timeout);
+
+    return () => {
+      // summary에 들어가면 타이머도 사라져야 함.
+      clearTimeout(timer);
+    };
+  }, [onTimeout, timeout]);
+
+  useEffect(() => {
+    console.log("SETTING INTERVAL");
+    const interval = setInterval(() => {
+      setRemainingTime((prevRemainingTime) => prevRemainingTime - 100);
+    }, 100);
+
+    return () => {
+      // 클린업 함수는 Effect 함수를 다시 작동하기 전이나 컴포넌트가 DOM으로부터 삭제될 때(스크린에서 사라지면) 리액트에서 자동으로 실행됨.
+      clearInterval(interval);
+    };
+  }, []);
+
+  return <progress id="question-time" value={remainingTime} max={timeout} />;
+}
+```
+
+![결과5](./src/assets/강사5.gif)
+
+- 이제 타이머가 너무 빨리 줄어들지도 않고, 해당 타이머가 끝나면 다음 문제로 넘어간다.
+- 그러나 스스로 프로젝트를 만드는 과정에서 처럼 타이머와 진행표시줄이 초기화되지 않는 문제가 발생했다. &rarr; 타이머 컴포넌트가 재생성되지 않았기 때문이다.
+- Quiz.jsx에서 QuestionTimer는 이전에도 DOM의 일부였고 현재도 DOM의 일부이기 때문에 바뀌지 않는다. 바뀌는 것은 오직 그 아래의 문제에 대한 정보(문제와 답변 버튼)들 뿐이다. &rarr; 그러므로 QuestionTimer는 삭제되지도 생성되지도 않는다.
+- 그러나 우리는 문제가 바뀔 때마다 해당 부분이 초기화되기를 원한다!
+
+#### 💎 Quiz.jsx
+
+- 컴포넌트에 key를 추가함으로써 초기화될 수 있게 하자. &rarr; 🚨 스스로 만든 프로젝트에 적용 가능.
+- 새로운 질문으로 교체될 때마다 타이머도 교체가 될 것이다!
+
+```jsx
+export default function Quiz() {
+  return (
+    <div id="quiz">
+      <div id="question">
+        {/* key를 부여하여 타이머도 질문이 바뀔 때마다 업데이트(초기화) 되도록 함 */}
+        <QuestionTimer
+          key={activeQuestionIndex}
+          timeout={10000}
+          onTimeout={handleSkipAnswer}
+        />
+        <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
+        <ul id="answers">
+          {shuffledAnswers.map((answer) => (
+            <li key={answer} className="answer">
+              <button onClick={() => handleSelectAnswer(answer)}>
+                {answer}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+```
+
+![결과](./src/assets/강사6.gif)
