@@ -137,3 +137,104 @@ export default App;
 ```
 
 ![log](./src/assets/configurecounter.png)
+
+<br>
+
+## 📌 `useCallback()` 훅 이해하기
+
+- IconButton.jsx에서 속성은 `children, icon, ...props`가 있다.
+- `children`은 텍스트이고 이 값은 변하지 않는다.
+- `icon` 속성은 Counter 속성에서 포인터(pointer, ex. `MinusIcon, PlusIcon`)를 받는다. 컴포넌트의 이름으로만 전달하고 IconButton.jsx에 와서야 JSX코드로 바뀌게 된다. &rarr; 포인터(함수들의 이름)들은 바뀌지 않는 성질을 갖는다.
+- `...props`에는 나머지 속성들을 가지는데, Counter 컴포넌트에서 IconButton에게 onClick 속성을 전달한다.
+  - onClick에는 함수의 포인터를 전달하는데, 해당 함수는 Counter 컴포넌트에서 생성된다.
+  - 함수는 객체로 해당 컴포넌트가 재생성될 때 함수의 주소 또한 변경된다. &rarr; 새 속성 값이 된다.
+  - 이렇게 함수의 포인터를 변경하는 것을 막는 훅이 바로 `useCallback`이다.
+
+#### 💎 useCallback 이용하기
+
+```jsx
+// IconButton.jsx -> memo 사용
+import { memo } from "react";
+import { log } from "../../log.js";
+
+const IconButton = memo(function IconButton({ children, icon, ...props }) {
+  log("<IconButton /> rendered", 2);
+
+  const Icon = icon;
+  return (
+    <button {...props} className="button">
+      <Icon className="button-icon" />
+      <span className="button-text">{children}</span>
+    </button>
+  );
+});
+export default IconButton;
+
+
+// Counter.jsx
+import { useState, memo, useCallback } from "react";
+
+import IconButton from "../UI/IconButton.jsx";
+import MinusIcon from "../UI/Icons/MinusIcon.jsx";
+import PlusIcon from "../UI/Icons/PlusIcon.jsx";
+import CounterOutput from "./CounterOutput.jsx";
+import { log } from "../../log.js";
+
+function isPrime(number) {
+  log("Calculating if is prime number", 2, "other");
+  if (number <= 1) {
+    return false;
+  }
+
+  const limit = Math.sqrt(number);
+
+  for (let i = 2; i <= limit; i++) {
+    if (number % i === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export default function Counter({ initialCount }) {
+  log("<Counter /> rendered", 1);
+  const initialCountIsPrime = isPrime(initialCount);
+
+  const [counter, setCounter] = useState(initialCount);
+
+  const handleDecrement = useCallback(function handleDecrement() {
+    setCounter((prevCounter) => prevCounter - 1);
+  }, []);
+
+  const handleIncrement = useCallback(function handleIncrement() {
+    setCounter((prevCounter) => prevCounter + 1);
+  }, []);
+
+  return (
+    <section className="counter">
+      <p className="counter-info">
+        The initial counter value was <strong>{initialCount}</strong>. It{" "}
+        <strong>is {initialCountIsPrime ? "a" : "not a"}</strong> prime number.
+      </p>
+      <p>
+        <IconButton icon={MinusIcon} onClick={handleDecrement}>
+          Decrement
+        </IconButton>
+        <CounterOutput value={counter} />
+        <IconButton icon={PlusIcon} onClick={handleIncrement}>
+          Increment
+        </IconButton>
+      </p>
+    </section>
+  );
+}
+```
+
+- `useCallback` : 함수의 재생성 방지를 위해 사용.
+  1. memo를 사용하여 불필요한 컴포넌트 재실행을 방지하기 위해 사용.
+  2. useEffect의 의존성으로 함수를 가지고 있을 때 사용된다.
+
+![useCallback](./src/assets/useCallback.png)
+
+Increment, Decrement 버튼을 눌러도 불필요하게 IconButton이 재실행되지 않는다.
