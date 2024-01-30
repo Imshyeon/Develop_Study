@@ -238,3 +238,89 @@ export default function Counter({ initialCount }) {
 ![useCallback](./src/assets/useCallback.png)
 
 Increment, Decrement 버튼을 눌러도 불필요하게 IconButton이 재실행되지 않는다.
+
+<br>
+
+## 📌 `useMemo()` 훅 이해하기
+
+Counter.jsx의 `isPrime()`함수가 Increment, Decrement 버튼을 누를 때마다 재실행되는 것을 알 수 있다.(Calculation if is prime number log로 확인 가능.)
+
+- 해당 함수는 Counter 컴포넌트의 `initialCount` 속성을 입력값으로 받고 그에 대한 리턴값을 제공한다.
+- 이 값은 오로지 input에서 새로운 값을 입력하고 Set 버튼을 누를 때만 바뀌게 된다.
+- 그러므로 입력값이 변하지 않는 이상 해당 함수를 굳이 실행될 필요가 없다. &rarr; `useMemo`훅을 이용해 불필요한 일반 함수의 재실행도 방지
+
+> `memo`는 컴포넌트 함수를 감싸는데 사용하고, `useMemo`는 컴포넌트 안에 있는 일반 함수들을 감싸고 그들의 실행을 방지한다. 이 `useMemo`는 복잡한 계산이 있을 때만 사용해야 한다.
+
+#### 💎 Counter.jsx
+
+```jsx
+import { useState, memo, useCallback, useMemo } from "react";
+
+import IconButton from "../UI/IconButton.jsx";
+import MinusIcon from "../UI/Icons/MinusIcon.jsx";
+import PlusIcon from "../UI/Icons/PlusIcon.jsx";
+import CounterOutput from "./CounterOutput.jsx";
+import { log } from "../../log.js";
+
+function isPrime(number) {
+  log("Calculating if is prime number", 2, "other");
+  if (number <= 1) {
+    return false;
+  }
+
+  const limit = Math.sqrt(number);
+
+  for (let i = 2; i <= limit; i++) {
+    if (number % i === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+const Counter = memo(function Counter({ initialCount }) {
+  log("<Counter /> rendered", 1);
+  const initialCountIsPrime = useMemo(
+    () => isPrime(initialCount),
+    [initialCount]
+  );
+  // 의존성이 없다면 다시 재실행하지 않음(바뀔 수 있는 의존성이 없으니까)
+  // 여기서는 initialPrime이 바뀌면 해당 Memo함수가 실행되니까 의존성에 넣어줘야 한다.
+
+  const [counter, setCounter] = useState(initialCount);
+
+  const handleDecrement = useCallback(function handleDecrement() {
+    setCounter((prevCounter) => prevCounter - 1);
+  }, []);
+
+  const handleIncrement = useCallback(function handleIncrement() {
+    setCounter((prevCounter) => prevCounter + 1);
+  }, []);
+
+  return (
+    <section className="counter">
+      <p className="counter-info">
+        The initial counter value was <strong>{initialCount}</strong>. It{" "}
+        <strong>is {initialCountIsPrime ? "a" : "not a"}</strong> prime number.
+      </p>
+      <p>
+        <IconButton icon={MinusIcon} onClick={handleDecrement}>
+          Decrement
+        </IconButton>
+        <CounterOutput value={counter} />
+        <IconButton icon={PlusIcon} onClick={handleIncrement}>
+          Increment
+        </IconButton>
+      </p>
+    </section>
+  );
+});
+export default Counter;
+```
+
+![useMemo](./src/assets/useMemo.png)
+
+- `useMemo`를 너무 남용해선 안된다. `memo`처럼 의존성 값 비교를 계속해서 수행하기 때문이다!
+
+<br>

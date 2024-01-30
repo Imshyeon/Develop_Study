@@ -1,4 +1,4 @@
-import { useState, memo, useCallback } from "react";
+import { useState, memo, useCallback, useMemo } from "react";
 
 import IconButton from "../UI/IconButton.jsx";
 import MinusIcon from "../UI/Icons/MinusIcon.jsx";
@@ -23,9 +23,11 @@ function isPrime(number) {
   return true;
 }
 
-export default function Counter({ initialCount }) {
+const Counter = memo(function Counter({ initialCount }) {
   log("<Counter /> rendered", 1);
-  const initialCountIsPrime = isPrime(initialCount);
+  const initialCountIsPrime = useMemo(() => isPrime(initialCount), [initialCount]);
+  // 의존성이 없다면 다시 재실행하지 않음(바뀔 수 있는 의존성이 없으니까)
+  // 여기서는 initialPrime이 바뀌면 해당 Memo함수가 실행되니까 의존성에 넣어줘야 한다.
 
   const [counter, setCounter] = useState(initialCount);
 
@@ -54,4 +56,5 @@ export default function Counter({ initialCount }) {
       </p>
     </section>
   );
-}
+})
+export default Counter;
