@@ -2,7 +2,7 @@
 
 [📌 리액트는 어떻게 DOM을 업데이트 하는가?](#-리액트는-어떻게-dom을-업데이트-하는가)<br>
 [📌 리액트 DevTools Profiler로 컴포넌트 함수 실행 분석하기](#-리액트-devtools-profiler로-컴포넌트-함수-실행-분석하기)<br>
-[📌 컴포넌트 함수 실행 방지](#-컴포넌트-함수-실행-방지)<br>
+[📌 재실행이 불필요한 컴포넌트 함수 실행 방지](#-재실행이-불필요한-컴포넌트-함수-실행-방지)<br>
 <br>
 
 ## 📌 리액트는 어떻게 DOM을 업데이트 하는가?
@@ -43,25 +43,97 @@
 
 <br>
 
-## 📌 컴포넌트 함수 실행 방지
+## 📌 재실행이 불필요한 컴포넌트 함수 실행 방지
 
 - 화면에서 input에 새로운 숫자를 입력하면, 모든 컴포넌트가 재실행된다는 것을 로그를 통해 알 수 있다. &rarr; input 상태가 App 컴포넌트에 정의되어있기 떄문
 
 ### 📖 해결 방법 1 | `memo()`로 컴포넌트 함수 실행 방지하기
 
 - `memo` : 리액트는 내장함수를 지원하기 때문에 이를 이용해 컴포넌트 함수들을 감쌀 수 있다. `memo`의 경우 불필요한 컴포넌트 함수 실행을 방지한다.
-    - `memo`가 이전 속성 값과 새로받을 속성값을 살펴본다. 만약 컴포넌트 함수가 실행됐을 대 속성 값들이 완전히 동일하다면(배열과 객체가 메모리 내의 배열, 객체와 동일하다) 해당 컴포넌트 함수 실행을 `memo`가 저지한다. 
-    - `memo`는 오직 부모 컴포넌트에 의해 함수가 실행되었을 때만 이를 저지한다. &rarr; 컴포넌트의 속성이 변경되지 않았다면 부모 컴포넌트가 실행되도 해당 컴포넌트가 재실행될 이유가 없기 때문이다.
-    - 물론 내부의 상태가 변경된다면 컴포넌트 함수는 작동한다. &rarr; 내부적인 변화는 저지하지 않음.
+  - `memo`가 이전 속성 값과 새로받을 속성값을 살펴본다. 만약 컴포넌트 함수가 실행됐을 대 속성 값들이 완전히 동일하다면(배열과 객체가 메모리 내의 배열, 객체와 동일하다) 해당 컴포넌트 함수 실행을 `memo`가 저지한다.
+  - `memo`는 오직 부모 컴포넌트에 의해 함수가 실행되었을 때만 이를 저지한다. &rarr; 컴포넌트의 속성이 변경되지 않았다면 부모 컴포넌트가 실행되도 해당 컴포넌트가 재실행될 이유가 없기 때문이다.
+  - 물론 내부의 상태가 변경된다면 컴포넌트 함수는 작동한다. &rarr; 내부적인 변화는 저지하지 않음.
 
 ```jsx
-import {memo} from 'react';
+import { memo } from "react";
 
-const Counter = memo(function Counter({prop}){})
+const Counter = memo(function Counter({ prop }) {});
 
 export default Couter;
 ```
 
-- `memo`를 가지고 모든 컴포넌트를 감싸서는 안된다. 
+- `memo`를 가지고 모든 컴포넌트를 감싸서는 안된다.
 - 최대한 상위 트리에 속한 컴포넌트를 감싸라! &rarr; 최대한 상위 트리를 감싸야 그 아래에 있는 중첩 컴포넌트들 또한 재실행되지 않기 때문!
 - 자주 속성이 바뀌는 컴포넌트에는 사용해선 안된다. `memo`를 가지고 속성을 체크하는 것은 성능에 영향을 준다!
+
+<br>
+
+### 📖 컴포넌트 함수 실행을 방지하기 위한 구조
+
+- `memo`보다 더 강력한 방법. &rarr; 컴포넌트 분리하기
+- 컴포넌트를 분리하였다면 `memo`를 없애야 한다!
+
+#### 💎 ConfigureCounter.jsx
+
+```jsx
+import { useState } from "react";
+import { log } from "../../log";
+
+export default function ConfigureCounter({ onSet }) {
+  log("<ConfigureCounter />");
+
+  const [enteredNumber, setEnteredNumber] = useState(0);
+
+  function handleChange(event) {
+    setEnteredNumber(+event.target.value);
+  }
+
+  function handleSetClick() {
+    onSet(enteredNumber);
+    setEnteredNumber(0);
+  }
+
+  return (
+    <section id="configure-counter">
+      <h2>Set Counter</h2>
+      <input type="number" onChange={handleChange} value={enteredNumber} />
+      <button onClick={handleSetClick}>Set</button>
+    </section>
+  );
+}
+```
+
+#### 💎 App.jsx
+
+```jsx
+import { useState } from "react";
+
+import Counter from "./components/Counter/Counter.jsx";
+import Header from "./components/Header.jsx";
+import ConfigureCounter from "./components/Counter/ConfigureCounter.jsx";
+import { log } from "./log.js";
+
+function App() {
+  log("<App /> rendered");
+
+  const [chosenCount, setChosenCount] = useState(0);
+
+  function handleSetCount(newCount) {
+    setChosenCount(newCount);
+  }
+
+  return (
+    <>
+      <Header />
+      <main>
+        <ConfigureCounter onSet={handleSetCount} />
+        <Counter initialCount={chosenCount} />
+      </main>
+    </>
+  );
+}
+
+export default App;
+```
+
+![log](./src/assets/configurecounter.png)
