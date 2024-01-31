@@ -329,11 +329,11 @@ export default Counter;
 ## 📌 리액트의 가상 DOM 사용하기
 
 - 컴포넌트가 재실행됐다고해서 컴포넌트 함수가 생성한 모든 JSX 코드가 DOM으로 재삽입되지 않는다.
-- 리액트가 가상 DOM을 사용해서 실제 DOM의 어떤 부분들이 업데이트되어야 하는지 찾는다. 
+- 리액트가 가상 DOM을 사용해서 실제 DOM의 어떤 부분들이 업데이트되어야 하는지 찾는다.
 - 가상 DOM을 사용하면 이는 메모리 안에서만 존재하고, 실제 DOM을 사용하는 것보다 훨씬 빠르다.
 - 리액트는 컴포넌트 트리를 만들고 마지막에는 렌더링되어야 하는 실제 HTML 코드를 그 컴포넌트 트리로부터 전달한다. 그리고 가상 DOM 스냅샷(snapshot)을 생성한다. 실제 DOM이 어떻게 보여져야하는지 가상으로 정의하는 것이다.
 - 그 다음, 리액트는 생성됐었던 마지막 가상 DOM 스냅샷과 비교한다.(초기에는 이전 스냅샷이 없으므로 리액트는 전부 바뀐 것으로 판단한다.)
-> 리액트는 트리에서 변경된 부분을 파악하고 실행된 컴포넌트 함수들만 찾는다. 그리고 업데이트된 HTML코드를 전달 &rarr; 이전 가상 DOM과 비교 &rarr; 변동사항들을 실제 DOM에 적용한다.  
+  > 리액트는 트리에서 변경된 부분을 파악하고 실행된 컴포넌트 함수들만 찾는다. 그리고 업데이트된 HTML코드를 전달 &rarr; 이전 가상 DOM과 비교 &rarr; 변동사항들을 실제 DOM에 적용한다.
 
 <br>
 
@@ -352,7 +352,7 @@ export default Counter;
 ```jsx
 // CounterHistory.jsx
 export default function CounterHistory({ history }) {
-  log('<CounterHistory /> rendered', 2);
+  log("<CounterHistory /> rendered", 2);
 
   return (
     <ol>
@@ -363,10 +363,70 @@ export default function CounterHistory({ history }) {
   );
 }
 ```
+
 - 여기서 HistoryItem에 대한 key값을 index로 설정했다. 해당 인덱스를 키로 설정했기 때문에 제대로 아이템 선택이 되지 않았다. &rarr; 꼭 특정 값과 연결된 키 값을 써야한다.
 
-#### 💎 Counter.jsx에서 특정한 키 값 설정하기
+#### 💎 특정한 키 값 설정하기
 
 ```jsx
+// Counter.jsx
+const Counter = memo(function Counter({ initialCount }) {
+  log("<Counter /> rendered", 1);
+  const initialCountIsPrime = useMemo(
+    () => isPrime(initialCount),
+    [initialCount]
+  );
 
+  const [counterChanges, setCounterChanges] = useState([
+    { value: initialCount, id: Math.random() * 1000 }, // value, id 값 설정
+  ]);
+
+  const currentCounter = counterChanges.reduce(
+    (prevCounter, counterChanges) => prevCounter + counterChanges.value,
+    0
+  );
+
+  const handleDecrement = useCallback(function handleDecrement() {
+    // setCounter((prevCounter) => prevCounter - 1);
+    setCounterChanges((prevCounterChanges) => [
+      { value: -1, id: Math.random() * 1000 },
+      ...prevCounterChanges,
+    ]);
+  }, []);
+
+  const handleIncrement = useCallback(function handleIncrement() {
+    // setCounter((prevCounter) => prevCounter + 1);
+    setCounterChanges((prevCounterChanges) => [
+      { value: 1, id: Math.random() * 1000 },
+      ...prevCounterChanges,
+    ]);
+  }, []);
+});
+export default Counter;
+
+
+// CounterHistory.jsx
+export default function CounterHistory({ history }) {
+  log("<CounterHistory /> rendered", 2);
+
+  return (
+    <ol>
+      {history.map((count) => (
+        {/* key값이 id 전달 */}
+        <HistoryItem key={count.id} count={count.value} />
+      ))}
+    </ol>
+  );
+}
 ```
+
+![stateKey](./src/assets/stateKey.gif)
+
+<br>
+
+- `key` : 위의 예시처럼 state가 건너뛰는 것을 방지하는 역할을 한다. 또한 개발자 창의 Elements에서 보면 `count.id`를 사용하여 키를 설정했을 때 해당 목록(ol)의 부분(li)만 업데이트 된다. 즉, li 첫번째 요소만 업데이트 된다. &rarr; 이전 DOM 요소들을 재사용하게 된다.
+
+<br>
+
+### 📖 Key를 사용한 컴포넌트 초기화
+
