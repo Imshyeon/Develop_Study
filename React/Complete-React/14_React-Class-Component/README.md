@@ -1,6 +1,8 @@
 # Class-based Components
 
 [📌 클래스 기반 컴포넌트](#-클래스-기반-컴포넌트)<br>
+[📌 클래스 컴포넌트 vs. 함수형 컴포넌트](#-클래스-컴포넌트-vs-함수형-컴포넌트)<br>
+[📌 오류 경계 소개](#-오류-경계-소개)<br>
 <br>
 
 ## 📌 클래스 기반 컴포넌트
@@ -264,3 +266,26 @@ export default UserFinder;
 
 - 클래스 컴포넌트는 컨텍스트 하나만 접근 가능하다. 함수형 컴포넌트에 비해서 유연성이 떨어짐.
 
+<br>
+
+## 📌 클래스 컴포넌트 vs. 함수형 컴포넌트
+
+- 클래스 컴포넌트를 이용해서 어플리케이션을 작성하는 방법을 알아보았다.
+- 최근의 리액트 앱에서는 함수형 컴포넌트가 유연성이 좋고 더 쉽기 때문에 함수형 컴포넌트를 주로 사용한다.
+- 그러나 무조건 함수형 컴포넌트를 사용할 필요는 없다.
+
+다음은 커밋 순서이다. 순서대로 복습을 하면 된다!
+
+1. 🔗 [초기 세팅](https://github.com/Imshyeon/Develop_Study/tree/c81db1f552d5fb07a5df8467a5dddb2897345f1b/React/Complete-React/14_React-Class-Component)
+2. 🔗 [클래스 컴포넌트 추가](https://github.com/Imshyeon/Develop_Study/tree/0ec9b9e69fede516518dd42e6fa4dc741ac7804b/React/Complete-React/14_React-Class-Component)
+3. 🔗 [상태와 이벤트 다루기](https://github.com/Imshyeon/Develop_Study/tree/c5e9d23565ae64893a7b40dee5b55a1783792c78/React/Complete-React/14_React-Class-Component)
+4. 🔗 [컴포넌트 생명 주기 -1](https://github.com/Imshyeon/Develop_Study/tree/3038aa53d3f3dc4479f64ce54db69048a18fba24/React/Complete-React/14_React-Class-Component)
+5. 🔗 [컴포넌트 생명 주기 -2 | componentDidUpdate()](https://github.com/Imshyeon/Develop_Study/tree/8a99e2f39cadac796b52a3cfc35fc7e4da2381fe/React/Complete-React/14_React-Class-Component)
+6. 🔗 [컴포넌트 생명 주기 -3 | componentDidMount()](https://github.com/Imshyeon/Develop_Study/tree/be42acf78d1ba32bfc451c767898450f26f4e5e5/React/Complete-React/14_React-Class-Component)
+7. 🔗 [Context](https://github.com/Imshyeon/Develop_Study/tree/ac8732c2dc745d01dea2a2a207099ce77f7aadc1/React/Complete-React/14_React-Class-Component)
+
+<br>
+
+## 📌 오류 경계 소개
+
+서버가 일시적으로 응답이 없을 경우에는 앱에서는 오류가 발생했다는 것을 볼 수 있다. 이런 식으로 오류가 발생할 수 있다.
