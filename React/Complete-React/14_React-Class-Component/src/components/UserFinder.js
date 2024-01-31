@@ -3,13 +3,13 @@ import { Fragment, useState, useEffect, Component } from "react";
 import Users from "./Users";
 import classes from "./UserFinder.module.css";
 
-const DUMMY_USERS = [
-  { id: "u1", name: "Max" },
-  { id: "u2", name: "Manuel" },
-  { id: "u3", name: "Julie" },
-];
+import UsersContext from "../store/users-context.js";
 
 class UserFinder extends Component {
+  // 클래스 컴포넌트는 한번에 하나의 컨텍스트만 연결 가능.
+
+  static contextType = UsersContext; // 이 컴포넌트는 해당 컨텍스트에 접근 가능하다. 정적 프로퍼티는 한번만 설정 가능하다.
+
   constructor() {
     super();
     this.state = {
@@ -20,7 +20,7 @@ class UserFinder extends Component {
 
   componentDidMount() {
     // http 요청을 보내서 받는 경우.. => 가장 처음 렌더링을 했을 때 실행. useEffect에서 의존성 배열이 빈 경우이다.
-    this.setState({ filteredUsers: DUMMY_USERS });
+    this.setState({ filteredUsers: this.context.users });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -28,7 +28,7 @@ class UserFinder extends Component {
     //-> 의존성을 추가하여 의존성 배열에 있는 조건이 변화되면 그때 이 메서드 실행하도록 함.
     if (prevState.searchTerm !== this.state.searchTerm) {
       this.setState({
-        filteredUsers: DUMMY_USERS.filter((user) =>
+        filteredUsers: this.context.users.filter((user) =>
           user.name.includes(this.state.searchTerm)
         ),
       });
