@@ -4,6 +4,7 @@ import IconButton from "../UI/IconButton.jsx";
 import MinusIcon from "../UI/Icons/MinusIcon.jsx";
 import PlusIcon from "../UI/Icons/PlusIcon.jsx";
 import CounterOutput from "./CounterOutput.jsx";
+import CounterHistory from './CounterHistory.jsx'
 import { log } from "../../log.js";
 
 function isPrime(number) {
@@ -25,18 +26,29 @@ function isPrime(number) {
 
 const Counter = memo(function Counter({ initialCount }) {
   log("<Counter /> rendered", 1);
-  const initialCountIsPrime = useMemo(() => isPrime(initialCount), [initialCount]);
+  const initialCountIsPrime = useMemo(
+    () => isPrime(initialCount),
+    [initialCount]
+  );
   // 의존성이 없다면 다시 재실행하지 않음(바뀔 수 있는 의존성이 없으니까)
   // 여기서는 initialPrime이 바뀌면 해당 Memo함수가 실행되니까 의존성에 넣어줘야 한다.
 
-  const [counter, setCounter] = useState(initialCount);
+  // const [counter, setCounter] = useState(initialCount);
+  const [counterChanges, setCounterChanges] = useState([initialCount]);
+
+  const currentCounter = counterChanges.reduce(
+    (prevCounter, counterChanges) => prevCounter + counterChanges,
+    0
+  );
 
   const handleDecrement = useCallback(function handleDecrement() {
-    setCounter((prevCounter) => prevCounter - 1);
+    // setCounter((prevCounter) => prevCounter - 1);
+    setCounterChanges((prevCounterChanges)=>[-1, ...prevCounterChanges])
   }, []);
 
   const handleIncrement = useCallback(function handleIncrement() {
-    setCounter((prevCounter) => prevCounter + 1);
+    // setCounter((prevCounter) => prevCounter + 1);
+    setCounterChanges((prevCounterChanges) => [1, ...prevCounterChanges]);
   }, []);
 
   return (
@@ -49,12 +61,13 @@ const Counter = memo(function Counter({ initialCount }) {
         <IconButton icon={MinusIcon} onClick={handleDecrement}>
           Decrement
         </IconButton>
-        <CounterOutput value={counter} />
+        <CounterOutput value={currentCounter} />
         <IconButton icon={PlusIcon} onClick={handleIncrement}>
           Increment
         </IconButton>
       </p>
+      <CounterHistory history={counterChanges}/>
     </section>
   );
-})
+});
 export default Counter;

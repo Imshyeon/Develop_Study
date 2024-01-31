@@ -3,6 +3,7 @@
 [📌 리액트는 어떻게 DOM을 업데이트 하는가?](#-리액트는-어떻게-dom을-업데이트-하는가)<br>
 [📌 리액트 DevTools Profiler로 컴포넌트 함수 실행 분석하기](#-리액트-devtools-profiler로-컴포넌트-함수-실행-분석하기)<br>
 [📌 재실행이 불필요한 컴포넌트 함수 실행 방지](#-재실행이-불필요한-컴포넌트-함수-실행-방지)<br>
+[📌 리액트의 가상 DOM 사용하기](#-리액트의-가상-dom-사용하기)<br>
 <br>
 
 ## 📌 리액트는 어떻게 DOM을 업데이트 하는가?
@@ -140,7 +141,7 @@ export default App;
 
 <br>
 
-## 📌 `useCallback()` 훅 이해하기
+### 📖 `useCallback()` 훅 이해하기
 
 - IconButton.jsx에서 속성은 `children, icon, ...props`가 있다.
 - `children`은 텍스트이고 이 값은 변하지 않는다.
@@ -241,7 +242,7 @@ Increment, Decrement 버튼을 눌러도 불필요하게 IconButton이 재실행
 
 <br>
 
-## 📌 `useMemo()` 훅 이해하기
+### 📖 `useMemo()` 훅 이해하기
 
 Counter.jsx의 `isPrime()`함수가 Increment, Decrement 버튼을 누를 때마다 재실행되는 것을 알 수 있다.(Calculation if is prime number log로 확인 가능.)
 
@@ -324,3 +325,48 @@ export default Counter;
 - `useMemo`를 너무 남용해선 안된다. `memo`처럼 의존성 값 비교를 계속해서 수행하기 때문이다!
 
 <br>
+
+## 📌 리액트의 가상 DOM 사용하기
+
+- 컴포넌트가 재실행됐다고해서 컴포넌트 함수가 생성한 모든 JSX 코드가 DOM으로 재삽입되지 않는다.
+- 리액트가 가상 DOM을 사용해서 실제 DOM의 어떤 부분들이 업데이트되어야 하는지 찾는다. 
+- 가상 DOM을 사용하면 이는 메모리 안에서만 존재하고, 실제 DOM을 사용하는 것보다 훨씬 빠르다.
+- 리액트는 컴포넌트 트리를 만들고 마지막에는 렌더링되어야 하는 실제 HTML 코드를 그 컴포넌트 트리로부터 전달한다. 그리고 가상 DOM 스냅샷(snapshot)을 생성한다. 실제 DOM이 어떻게 보여져야하는지 가상으로 정의하는 것이다.
+- 그 다음, 리액트는 생성됐었던 마지막 가상 DOM 스냅샷과 비교한다.(초기에는 이전 스냅샷이 없으므로 리액트는 전부 바뀐 것으로 판단한다.)
+> 리액트는 트리에서 변경된 부분을 파악하고 실행된 컴포넌트 함수들만 찾는다. 그리고 업데이트된 HTML코드를 전달 &rarr; 이전 가상 DOM과 비교 &rarr; 변동사항들을 실제 DOM에 적용한다.  
+
+<br>
+
+### 📖 State를 관리할 때 Key의 역할
+
+- 상태(State)는 해당 상태가 정의된 컴포넌트의 범위 내에 속해있다. &rarr; 컴포넌트를 재사용할 때마다 재생성이 된다.
+- 위와 같은 특징을 통해서 상태를 가진 컴포넌트를 재활용할 수 있는 것이다.
+- 리액트는 컴포넌트 트리에서 컴포넌트 타입과 위치에 의해 상태를 추적한다.(React tracks state by component type & position(of that component) in the tree.)
+
+![state](./src/assets/state1.gif)
+
+- 위의 사진에서, counterHistory에 -1을 선택했고 증가/감소 버튼을 누르면 선택된 -1이 계속 고정이 되는 것이 아니라 이동하는 것을 볼 수 있다.
+- 이는 ComponentHistory의 컴포넌트 인스턴스 위치가 바뀌기 때문이다. (새로운 요소를 추가할 수록 선택된 요소가 아래로 내려감)
+- 이러한 동작을 피하기 위해서 리액트는 키(Key)를 제공한다. 키는 리액트에서 상태를 구체적인 컴포넌트 인스턴스에 매핑할 때 고려되는 요소이다.
+
+```jsx
+// CounterHistory.jsx
+export default function CounterHistory({ history }) {
+  log('<CounterHistory /> rendered', 2);
+
+  return (
+    <ol>
+      {history.map((count, index) => (
+        <HistoryItem key={index} count={count} />
+      ))}
+    </ol>
+  );
+}
+```
+- 여기서 HistoryItem에 대한 key값을 index로 설정했다. 해당 인덱스를 키로 설정했기 때문에 제대로 아이템 선택이 되지 않았다. &rarr; 꼭 특정 값과 연결된 키 값을 써야한다.
+
+#### 💎 Counter.jsx에서 특정한 키 값 설정하기
+
+```jsx
+
+```
