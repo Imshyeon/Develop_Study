@@ -5,6 +5,8 @@ import classes from "./UserFinder.module.css";
 
 import UsersContext from "../store/users-context.js";
 
+import ErrorBoundary from "./ErrorBoundary.js";
+
 class UserFinder extends Component {
   // 클래스 컴포넌트는 한번에 하나의 컨텍스트만 연결 가능.
 
@@ -50,7 +52,9 @@ class UserFinder extends Component {
             onChange={this.#searchChangeHandler.bind(this)}
           />
         </div>
-        <Users users={this.state.filteredUsers} />
+        <ErrorBoundary>
+          <Users users={this.state.filteredUsers} />
+        </ErrorBoundary>
       </Fragment>
     );
   }

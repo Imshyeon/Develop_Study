@@ -19,6 +19,13 @@ class Users extends Component {
     };
   }
 
+  // 오류 경계
+  componentDidUpdate() {
+    if (this.props.users.length === 0) {
+      throw new Error('No users provided!') // 오류 생성 -> 컴포넌트에 이 오류를 전달하고 어플리케이션이 중단됨.
+    }
+  }
+
   #toggleUsersHandler() {
     this.setState((curState) => {
       return { showUsers: !curState.showUsers };
