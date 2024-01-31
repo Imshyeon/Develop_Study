@@ -4,6 +4,8 @@
 [📌 리액트 DevTools Profiler로 컴포넌트 함수 실행 분석하기](#-리액트-devtools-profiler로-컴포넌트-함수-실행-분석하기)<br>
 [📌 재실행이 불필요한 컴포넌트 함수 실행 방지](#-재실행이-불필요한-컴포넌트-함수-실행-방지)<br>
 [📌 리액트의 가상 DOM 사용하기](#-리액트의-가상-dom-사용하기)<br>
+[📌 State(상태) 스케줄링](#-state상태-스케줄링)<br>
+[📌 MillionJS로 리액트 최적화하기](#-millionjs로-리액트-최적화하기)<br>
 <br>
 
 ## 📌 리액트는 어떻게 DOM을 업데이트 하는가?
@@ -430,3 +432,43 @@ export default function CounterHistory({ history }) {
 
 ### 📖 Key를 사용한 컴포넌트 초기화
 
+#### 💎 App.jsx
+```jsx
+function App(){
+    return(
+      <main>
+        <Counter key={chosenCount} initialCount={chosenCount} />
+      </main>
+    )
+}
+```
+- key값이 변경될 때마다 chosenCount 상태도 변경이 된다 &rarr; 리액트는 이전 컴포넌트 인스턴스를 삭제하고 재생성한다. &rarr; Counter 컴포넌트를 처음 렌더링하는 것처럼 초기화한다.
+- 이러한 패턴은 외부에서 보이는 컴포넌트 내에서 변경될 수 있는 state(상태)가 있는 경우에 사용한다.
+
+![key2](./src/assets/stateKey2.gif)
+
+<br>
+
+## 📌 State(상태) 스케줄링
+
+- 상태 업데이트 함수를 불러오면 상태 업데이틑 리액트로부터 일정이 조정된다. 바로 실행되는 것이 아니다.
+- 따라서 이전 상태 값에 의존하는 상태 업데이트를 수행하기 위해서 `setUpdate(prevState => !prevState)` 형식의 함수 형태를 사용한다.
+- State Batching(배칭) : 같은 함수 내에서 여러 State(상태) 업데이트가 있을 때 다같이 배칭되어서 한 번의 컴포넌트 함수 실행을 유도한다.
+
+<br>
+
+## 📌 MillionJS로 리액트 최적화하기
+
+1. 설치 : `npx million@latest`
+2. vite.config.js 수정
+```javascript
+import million from "million/compiler";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+ 
+export default defineConfig({
+  plugins: [million.vite({ auto: true }), react()],
+});
+```
+
+- MillionJS는 리액트의 가상 DOM 매커니즘을 대체하여 더 효율적인 매커니즘으로 DOM 업데이트도 더 빠르게 수행. 기존 알고리즘보다 효율적이다.
