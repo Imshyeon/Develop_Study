@@ -107,7 +107,7 @@ export default Users;
 
 #### 💎 Users.js
 
-```jsx
+```javascript
 render() {
     const usersList = (
       <ul>
@@ -130,3 +130,67 @@ render() {
 ```
 
 - render() 함수에서 유저 정보를 하드코딩으로 받아오는 대신 this.props.users를 통해 받아오도록 함. 왜냐하면 UserFinder.js에서 users라는 속성을 통해 유저 정보를 전달하기 때문이다.
+
+<br>
+
+#### 💎 UserFinder.js
+
+```javascript
+import { Fragment, Component } from "react";
+
+import Users from "./Users";
+import classes from "./UserFinder.module.css";
+
+const DUMMY_USERS = [
+  { id: "u1", name: "Max" },
+  { id: "u2", name: "Manuel" },
+  { id: "u3", name: "Julie" },
+];
+
+class UserFinder extends Component {
+  constructor() {
+    super();
+    this.state = {
+      filteredUsers: DUMMY_USERS,
+      searchTerm: "",
+    };
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // 상태 변화로 인해 컴포넌트가 재평가되면 자동적으로 호출.
+    //-> 의존성을 추가하여 의존성 배열에 있는 조건이 변화되면 그때 이 메서드 실행하도록 함.
+    if (prevState.searchTerm !== this.state.searchTerm) {
+      this.setState({
+        filteredUsers: DUMMY_USERS.filter((user) =>
+          user.name.includes(this.state.searchTerm)
+        ),
+      });
+    }
+  } // effect 함수는 의존성 배열이 변경된 경우에만 리액트에 의해 실행. -> 훨씬 간단하고 가독성이 좋다.
+
+  #searchChangeHandler(event) {
+    this.setState({
+      searchTerm: event.target.value,
+    });
+  }
+
+  render() {
+    return (
+      <Fragment>
+        <div className={classes.finder}>
+          <input
+            type="search"
+            onChange={this.#searchChangeHandler.bind(this)}
+          />
+        </div>
+        <Users users={this.state.filteredUsers} />
+      </Fragment>
+    );
+  }
+}
+
+export default UserFinder;
+```
+
+![결과1](./src/ClassComponent1.gif)
+
