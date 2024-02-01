@@ -943,3 +943,5 @@ export default App;
 #### 💎 결과
 
 ![user place fetch](./src/assets/userPlacesFetching.gif)
+
+🔗 [이전 코드와 비교하기](https://github.com/Imshyeon/Develop_Study/commit/4b218144cfea4784c47a69a4499271ec92cf2241)
