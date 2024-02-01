@@ -379,3 +379,96 @@ export default function Places({
 ![로딩](./src/assets/loading.gif)
 
 - 로딩되는 동안 로딩 텍스트가 나온 것을 확인할 수 있다.
+
+<br>
+
+### 📖 HTTP 에러 다루기
+
+- HTTP 요청을 보낼 때 실패하는 요인에는 여러가지가 있다. 네트워크 연결이 원활하지 않거나 백엔드랑 잘 연결되어있지 않거나 서버가 일시적으로 오프라인이거나 코드에 버그가 있거나.. 다양한 요소가 있다.
+- 이러한 에러를 처리하기 위한 코드가 필요하다.
+
+#### 💎 fetch가 실패하는 경우
+
+1. 네트워크 연결이 충돌하는 경우
+2. 요청을 보낼 때 백엔드에는 성공적으로 전달했지만 백엔드 자체에서 에러가 발생하는 경우
+
+```jsx
+// src/components/AvailablePlaces.jsx
+import { useState, useEffect } from "react";
+import Places from "./Places.jsx";
+import Error from "./Error.jsx";
+
+export default function AvailablePlaces({ onSelectPlace }) {
+  const [availablePlaces, setAvailablePlaces] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState();
+
+  useEffect(() => {
+    setIsFetching(true); // fetchPlaces안에 작성해도 됨
+    async function fetchPlaces() {
+      try {
+        const response = await fetch("http://localhost:3000/places");
+        const resData = await response.json();
+
+        if (!response.ok) {
+          // 성공적인 응답(200,300 응답코드)
+          // 실패 = 400, 500
+          throw new Error("Failded to fetch places"); // 이렇게 하면 앱 충돌
+        }
+
+        setAvailablePlaces(resData.places);
+      } catch (error) {
+        // 에러가 발생할 경우 실행해야할 코드 -> 앱 충돌을 막고 대신에 실행할 코드
+        // react에서 catch는 에러에 대한 UI 업데이트
+        setError({
+          message:
+            error.message || "Could not fetch places, plz try again later.",
+        });
+      }
+
+      setIsFetching(false); // 데이터를 다 받아온 경우 => 에러가 나든 안나든 로딩은 끝낼 거임<div className=""></div>
+    }
+
+    fetchPlaces();
+  }, []);
+
+  if (error) {
+    return <Error title="An error occurred!" message={error.message} />;
+  }
+
+  return (
+    <Places
+      title="Available Places"
+      places={availablePlaces}
+      isLoading={isFetching}
+      loadingText="Fetching place data..."
+      fallbackText="No places available."
+      onSelectPlace={onSelectPlace}
+    />
+  );
+}
+
+
+// src/components/Error.jsx
+export default function Error({ title, message, onConfirm }) {
+  return (
+    <div className="error">
+      <h2>{title}</h2>
+      <p>{message}</p>
+      {onConfirm && (
+        <div id="confirmation-actions">
+          <button onClick={onConfirm} className="button">
+            Okay
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+- `try~catch`문과 에러를 다루는 상태를 이용하여 에러가 발생했을 때의 UI를 리턴하도록 한다.
+
+#### 💎 결과
+
+![error](./src/assets/error.png)
