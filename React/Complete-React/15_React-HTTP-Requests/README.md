@@ -627,3 +627,80 @@ export default function AvailablePlaces({ onSelectPlace }) {
   );
 }
 ```
+
+<br>
+
+### 📖 POST 요청으로 데이터 전송하기 - PUT
+
+#### 💎 backend/app.js
+
+```js
+app.get("/user-places", async (req, res) => {
+  const fileContent = await fs.readFile("./data/user-places.json");
+
+  const places = JSON.parse(fileContent);
+
+  res.status(200).json({ places });
+});
+
+app.put("/user-places", async (req, res) => {
+  const places = req.body.places;
+
+  await fs.writeFile("./data/user-places.json", JSON.stringify(places));
+
+  res.status(200).json({ message: "User places updated!" });
+});
+```
+
+- PUT을 이용해서 `/user-places` endpoint에서 선택한 장소를 저장.
+- GET을 이용해서 그 장소를 받아오도록 함.
+
+#### 💎 http.js
+
+```js
+export async function updateUserPlaces(places) {
+  const response = await fetch("http://localhost:3000/user-places", {
+    method: "PUT",
+    body: JSON.stringify({ places }),
+    headers: {
+      "Content-Type": "application/json", // 이 요청에 첨부될 데이터가 JSON 형식이다. -> 이렇게해야 성공적으로 백엔드에 추출
+    },
+  });
+  const resData = await response.json();
+
+  if (!response.of) {
+    throw new Error("Failed to update user data.");
+  }
+
+  return resData.message; // 백엔드에서 put메서드에 res.status(200).json({message:'User places updated!'})라고 했기 때문
+}
+```
+
+- `body: JSON.stringify({ places })`
+  - 어떤 데이터가 요청 body에 첨부되어야 하는지 정의.
+  - places->json으로 변경 후 전달.
+  - body에 전달되는 것은 places키를 가진 객체이다(백엔드에서 그렇게 설정했음.) &rarr; `{places : places}`로 해야되지만 단축키로 `{places}`로만 전달해도 됨
+
+#### 💎 App.jsx
+
+```jsx
+async function handleSelectPlace(selectedPlace) {
+  setUserPlaces((prevPickedPlaces) => {
+    if (!prevPickedPlaces) {
+      prevPickedPlaces = [];
+    }
+    if (prevPickedPlaces.some((place) => place.id === selectedPlace.id)) {
+      return prevPickedPlaces;
+    }
+    return [selectedPlace, ...prevPickedPlaces];
+  });
+
+  try {
+    await updateUserPlaces([selectedPlace, ...userPlaces]); // 아직 상태 업데이트가 반영이 안될테니 선택한 장소와 이전 상태의 장소들을 전달.
+  } catch (err) {}
+}
+```
+
+#### 💎 결과
+
+![put](./src/assets/Put.gif)

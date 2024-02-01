@@ -1,10 +1,11 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback } from "react";
 
-import Places from './components/Places.jsx';
-import Modal from './components/Modal.jsx';
-import DeleteConfirmation from './components/DeleteConfirmation.jsx';
-import logoImg from './assets/logo.png';
-import AvailablePlaces from './components/AvailablePlaces.jsx';
+import Places from "./components/Places.jsx";
+import Modal from "./components/Modal.jsx";
+import DeleteConfirmation from "./components/DeleteConfirmation.jsx";
+import logoImg from "./assets/logo.png";
+import AvailablePlaces from "./components/AvailablePlaces.jsx";
+import { updateUserPlaces } from "./http.js";
 
 function App() {
   const selectedPlace = useRef();
@@ -22,7 +23,7 @@ function App() {
     setModalIsOpen(false);
   }
 
-  function handleSelectPlace(selectedPlace) {
+  async function handleSelectPlace(selectedPlace) {
     setUserPlaces((prevPickedPlaces) => {
       if (!prevPickedPlaces) {
         prevPickedPlaces = [];
@@ -32,6 +33,10 @@ function App() {
       }
       return [selectedPlace, ...prevPickedPlaces];
     });
+
+    try {
+      await updateUserPlaces([selectedPlace, ...userPlaces]); // 아직 상태 업데이트가 반영이 안될테니 선택한 장소와 이전 상태의 장소들을 전달.
+    } catch (err) {}
   }
 
   const handleRemovePlace = useCallback(async function handleRemovePlace() {
