@@ -697,10 +697,75 @@ async function handleSelectPlace(selectedPlace) {
 
   try {
     await updateUserPlaces([selectedPlace, ...userPlaces]); // 아직 상태 업데이트가 반영이 안될테니 선택한 장소와 이전 상태의 장소들을 전달.
-  } catch (err) {}
+  } catch (err) {
+    setUserPlaces(userPlaces); // 만약 POST 요청으로 PUT에 실패했다면 단순히 이전 상태로 돌아감.
+  }
 }
 ```
+
+- `updateUserPlaces` 요청을 보내기 전에 local 상태를 업데이트 했다. (`setUserPlaces` -> `updateUserPlaces`) &rarr; 낙관적 업데이트(optimistic updating)
 
 #### 💎 결과
 
 ![put](./src/assets/Put.gif)
+
+<br>
+
+### 📖 선택한 장소 업데이트하기
+
+#### 💎 App.jsx
+
+```jsx
+import { useRef, useState, useCallback } from "react";
+import Error from "./components/Error.jsx";
+
+function App() {
+  const [errorUpdatingPlaces, setErrorUpdatingPlaces] = useState();
+
+  async function handleSelectPlace(selectedPlace) {
+    setUserPlaces((prevPickedPlaces) => {
+      if (!prevPickedPlaces) {
+        prevPickedPlaces = [];
+      }
+      if (prevPickedPlaces.some((place) => place.id === selectedPlace.id)) {
+        return prevPickedPlaces;
+      }
+      return [selectedPlace, ...prevPickedPlaces];
+    });
+
+    try {
+      await updateUserPlaces([selectedPlace, ...userPlaces]); // 아직 상태 업데이트가 반영이 안될테니 선택한 장소와 이전 상태의 장소들을 전달.
+    } catch (err) {
+      setUserPlaces(userPlaces); // 만약 POST 요청으로 PUT에 실패했다면 단순히 이전 상태로 돌아감.
+      setErrorUpdatingPlaces({
+        message: err.message || "Failed to update places.",
+      });
+    }
+  }
+
+  function handleError() {
+    setErrorUpdatingPlaces(null);
+  }
+
+  return (
+    <>
+      <Modal open={errorUpdatingPlaces} onClose={handleError}>
+        {errorUpdatingPlaces && (
+          <Error
+            title="An error occurred!"
+            message={errorUpdatingPlaces.message}
+            onConfirm={handleError}
+          />
+        )}
+      </Modal>
+      ...
+    </>
+  );
+}
+
+export default App;
+```
+
+#### 💎 결과
+
+![선택했는데 실패한 경우](./src/assets/errorPut.gif)
