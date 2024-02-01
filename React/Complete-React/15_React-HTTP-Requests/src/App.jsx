@@ -39,6 +39,7 @@ function App() {
     try {
       await updateUserPlaces([selectedPlace, ...userPlaces]); // 아직 상태 업데이트가 반영이 안될테니 선택한 장소와 이전 상태의 장소들을 전달.
     } catch (err) {
+      console.log(err);
       setUserPlaces(userPlaces); // 만약 POST 요청으로 PUT에 실패했다면 단순히 이전 상태로 돌아감.
       setErrorUpdatingPlaces({
         message: err.message || "Failed to update places.",
@@ -46,13 +47,28 @@ function App() {
     }
   }
 
-  const handleRemovePlace = useCallback(async function handleRemovePlace() {
-    setUserPlaces((prevPickedPlaces) =>
-      prevPickedPlaces.filter((place) => place.id !== selectedPlace.current.id)
-    );
+  const handleRemovePlace = useCallback(
+    async function handleRemovePlace() {
+      setUserPlaces((prevPickedPlaces) =>
+        prevPickedPlaces.filter(
+          (place) => place.id !== selectedPlace.current.id
+        )
+      );
 
-    setModalIsOpen(false);
-  }, []);
+      try {
+        await updateUserPlaces(
+          userPlaces.filter((place) => place.id !== selectedPlace.current.id)
+        );
+      } catch (err) {
+        setUserPlaces(userPlaces); // 이전 상태로 되돌아감
+        setErrorUpdatingPlaces({
+          message: err.message || "Faild to delete place.",
+        });
+      }
+      setModalIsOpen(false);
+    },
+    [userPlaces]
+  );
 
   function handleError() {
     setErrorUpdatingPlaces(null);
