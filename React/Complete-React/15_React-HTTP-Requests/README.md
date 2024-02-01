@@ -472,3 +472,82 @@ export default function Error({ title, message, onConfirm }) {
 #### 💎 결과
 
 ![error](./src/assets/error.png)
+
+<br>
+
+### 📖 Fetch된 데이터 변환
+
+```jsx
+import { useState, useEffect } from "react";
+import Places from "./Places.jsx";
+import Error from "./Error.jsx";
+import { sortPlacesByDistance } from "../loc.js";
+
+export default function AvailablePlaces({ onSelectPlace }) {
+  const [availablePlaces, setAvailablePlaces] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState();
+
+  useEffect(() => {
+    setIsFetching(true);
+    async function fetchPlaces() {
+      try {
+        const response = await fetch("http://localhost:3000/places");
+        const resData = await response.json();
+
+        if (!response.ok) {
+          throw new Error("Failded to fetch places");
+        }
+
+        // 여기선 async, await을 사용하지 않고 콜백함수를 사용.
+        // setIsFetching 상태 업데이트 함수 위치를 변경해야한다. => 시간차로 인해서 이 상태 업데이트 함수가 더 일찍 실행될 수 있다.
+        navigator.geolocation.getCurrentPosition((position) => {
+          const sortedPlaces = sortPlacesByDistance(
+            resData.places,
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          setAvailablePlaces(sortedPlaces);
+          setIsFetching(false); // 분류 후 표시가 끝난 뒤에 로딩 종료
+        });
+      } catch (error) {
+        setError({
+          message:
+            error.message || "Could not fetch places, plz try again later.",
+        });
+
+        setIsFetching(false); // 오류가 발생했다면 오류 상태 업데이트 후 로딩 종료
+      }
+    }
+
+    fetchPlaces(); /
+  }, []);
+
+  if (error) {
+    return <Error title="An error occurred!" message={error.message} />;
+  }
+
+  return (
+    <Places
+      title="Available Places"
+      places={availablePlaces}
+      isLoading={isFetching}
+      loadingText="Fetching place data..."
+      fallbackText="No places available."
+      onSelectPlace={onSelectPlace}
+    />
+  );
+}
+```
+
+- 사용자의 위치 정보를 받아온 뒤, 위치 정보와 가까운 것 부터 정렬하여 보여줄 것이다.
+- HTTP 요청으로 받아온 데이터를 변환 후, `setAvailablePlaces` 상태 업데이트 함수 실행.
+- 이떄 `navigator~`는 콜백함수를 사용하기 때문에 `setIsFetching(false)`를 이전에 작성한 것처럼 두면 안된다.
+
+🔗 [이전 코드와 비교해보기]()
+
+<br>
+
+#### 💎 결과
+
+![데이터변환](./src/assets/fecthDataTrans.gif)
