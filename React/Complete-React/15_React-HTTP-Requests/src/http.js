@@ -27,3 +27,14 @@ export async function updateUserPlaces(places) {
 
   return resData.message; // 백엔드에서 put메서드에 res.status(200).json({message:'User places updated!'})라고 했기 때문
 }
+
+export async function fetchUserPlaces() {
+  const response = await fetch("http://localhost:3000/user-places");
+  const resData = await response.json();
+
+  if (!response.ok) {
+    throw new Error("Failded to fetch user places"); // 이렇게 하면 앱 충돌
+  }
+
+  return resData.places;
+}

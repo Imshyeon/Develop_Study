@@ -866,3 +866,80 @@ export default App;
 #### 💎 결과
 
 ![delete](./src/assets/delete.gif)
+
+<br>
+
+### 📖 User Place Fetching
+
+#### 💎 http.js
+
+```js
+export async function fetchUserPlaces() {
+  const response = await fetch("http://localhost:3000/user-places");
+  const resData = await response.json();
+
+  if (!response.ok) {
+    throw new Error("Failded to fetch user places");
+  }
+
+  return resData.places;
+}
+```
+
+#### 💎 App.jsx
+
+```jsx
+import { useRef, useState, useCallback, useEffect } from "react";
+import { updateUserPlaces, fetchUserPlaces } from "./http.js";
+
+function App() {
+  const selectedPlace = useRef();
+
+  const [userPlaces, setUserPlaces] = useState([]);
+
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState();
+  const [errorUpdatingPlaces, setErrorUpdatingPlaces] = useState();
+
+  useEffect(() => {
+    async function fetchPlaces() {
+      setIsFetching(true);
+      try {
+        const places = await fetchUserPlaces();
+        setUserPlaces(places);
+      } catch (err) {
+        setError({ message: err.message || "Failed to fetch user places." });
+      }
+
+      setIsFetching(false);
+    }
+
+    fetchPlaces();
+  }, []);
+
+  return (
+    <>
+      ...
+      <main>
+        {error && <Error title="An error occurred" message={error.message} />}
+        {!error && (
+          <Places
+            title="I'd like to visit ..."
+            fallbackText="Select the places you would like to visit below."
+            isLoading={isFetching}
+            loadingText="Fetching your places..."
+            places={userPlaces}
+            onSelectPlace={handleStartRemovePlace}
+          />
+        )}
+      </main>
+    </>
+  );
+}
+
+export default App;
+```
+
+#### 💎 결과
+
+![user place fetch](./src/assets/userPlacesFetching.gif)
