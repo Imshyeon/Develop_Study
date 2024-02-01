@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Places from "./Places.jsx";
 import Error from "./Error.jsx";
 import { sortPlacesByDistance } from "../loc.js";
+import { fetchAvailablePlaces } from "../http.js";
 
 export default function AvailablePlaces({ onSelectPlace }) {
   const [availablePlaces, setAvailablePlaces] = useState([]);
@@ -12,20 +13,13 @@ export default function AvailablePlaces({ onSelectPlace }) {
     setIsFetching(true); // fetchPlaces안에 작성해도 됨
     async function fetchPlaces() {
       try {
-        const response = await fetch("http://localhost:3000/places");
-        const resData = await response.json();
-
-        if (!response.ok) {
-          // 성공적인 응답(200,300 응답코드)
-          // 실패 = 400, 500
-          throw new Error("Failded to fetch places"); // 이렇게 하면 앱 충돌
-        }
+        const places = await fetchAvailablePlaces();
 
         // 여기선 async, await을 사용하지 않고 콜백함수를 사용.
         // setIsFetching 상태 업데이트 함수 위치를 변경해야한다. => 시간차로 인해서 이 상태 업데이트 함수가 더 일찍 실행될 수 있다.
         navigator.geolocation.getCurrentPosition((position) => {
           const sortedPlaces = sortPlacesByDistance(
-            resData.places,
+            places,
             position.coords.latitude,
             position.coords.longitude
           );

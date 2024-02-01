@@ -544,10 +544,86 @@ export default function AvailablePlaces({ onSelectPlace }) {
 - HTTP 요청으로 받아온 데이터를 변환 후, `setAvailablePlaces` 상태 업데이트 함수 실행.
 - 이떄 `navigator~`는 콜백함수를 사용하기 때문에 `setIsFetching(false)`를 이전에 작성한 것처럼 두면 안된다.
 
-🔗 [이전 코드와 비교해보기]()
-
-<br>
+🔗 [이전 코드와 비교해보기](https://github.com/Imshyeon/Develop_Study/commit/5d9ef8ee4c5c42c3860f8c971b0259d4f88ffa57#diff-8a71e36b0da7f68dfd55b9b1257ce6de22510dda7a1a28a05aa2dacf44281520)
 
 #### 💎 결과
 
 ![데이터변환](./src/assets/fecthDataTrans.gif)
+
+<br>
+
+### 📖 코드 추출 및 코드 구조 개선
+
+#### 💎 src/http.js | helper 작성
+
+```js
+export async function fetchAvailablePlaces() {
+  const response = await fetch("http://localhost:3000/places");
+  const resData = await response.json();
+
+  if (!response.ok) {
+    throw new Error("Failded to fetch places");
+  }
+
+  return resData.places;
+}
+```
+
+#### 💎 AvailablePlaces.jsx
+
+```jsx
+import { useState, useEffect } from "react";
+import Places from "./Places.jsx";
+import Error from "./Error.jsx";
+import { sortPlacesByDistance } from "../loc.js";
+import { fetchAvailablePlaces } from "../http.js";
+
+export default function AvailablePlaces({ onSelectPlace }) {
+  const [availablePlaces, setAvailablePlaces] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState();
+
+  useEffect(() => {
+    setIsFetching(true); // fetchPlaces안에 작성해도 됨
+    async function fetchPlaces() {
+      try {
+        const places = await fetchAvailablePlaces();
+
+        navigator.geolocation.getCurrentPosition((position) => {
+          const sortedPlaces = sortPlacesByDistance(
+            places,
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          setAvailablePlaces(sortedPlaces);
+          setIsFetching(false);
+        });
+      } catch (error) {
+        setError({
+          message:
+            error.message || "Could not fetch places, plz try again later.",
+        });
+
+        setIsFetching(false);
+      }
+    }
+
+    fetchPlaces();
+  }, []);
+
+  if (error) {
+    return <Error title="An error occurred!" message={error.message} />;
+  }
+
+  return (
+    <Places
+      title="Available Places"
+      places={availablePlaces}
+      isLoading={isFetching}
+      loadingText="Fetching place data..."
+      fallbackText="No places available."
+      onSelectPlace={onSelectPlace}
+    />
+  );
+}
+```
