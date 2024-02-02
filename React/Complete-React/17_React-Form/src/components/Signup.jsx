@@ -11,6 +11,9 @@ export default function Signup() {
     // 그리고 그 배열에 있는 엔트리로부터 Object를 불러내면 모든 입력창과 핵심 값들을 가지고 있는 객체를 가질 수 있다.
     data.acquisition = acquisitionChannel;
     console.log(data);
+
+    // 버튼의 타입을 reset으로 설정하는 것과 같다. => 참조를 이용할 때 email.current.value='' 라기 보다는 이렇게 사용하는게 낫다.
+    event.target.reset();
   }
 
   return (
