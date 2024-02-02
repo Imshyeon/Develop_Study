@@ -675,3 +675,102 @@ export default function Signup() {
 #### 💎 결과
 
 ![결과](./src/assets/inputValidCustomAndBuiltIn.png)
+
+<br>
+
+### 📖 재사용 가능한 입력 컴포넌트 구축 및 활용 - State 사용
+
+#### 💎 Input.jsx
+
+```jsx
+export default function Input({ label, id, error, ...props }) {
+  return (
+    <div className="control no-margin">
+      <label htmlFor={id}>{label}</label>
+      <input id={id} {...props} />
+      <div className="control-error">{error && <p>{error}</p>}</div>
+    </div>
+  );
+}
+```
+
+#### 💎 Login.jsx
+
+```jsx
+import { useState } from "react";
+import Input from "./Input";
+
+export default function Login() {
+  const [enteredValue, setEnteredValue] = useState({
+    email: "",
+    pw: "",
+  });
+  const [didEdit, setDidEdit] = useState({
+    email: false,
+    pw: false,
+  });
+
+  const emailIsInvalid = didEdit.email && !enteredValue.email.includes("@");
+  const pwIsInvalid = didEdit.pw && enteredValue.pw.trim().length < 6;
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    console.log("User Email: ", enteredValue.email);
+    console.log("User PW: ", enteredValue.pw);
+  }
+
+  function handleInputChange(identifier, value) {
+    setEnteredValue((prevValues) => ({
+      ...prevValues,
+      [identifier]: value,
+    }));
+
+    setDidEdit((prevEdit) => ({
+      ...prevEdit,
+      [identifier]: false,
+    }));
+  }
+
+  function handleInputBlur(identifier) {
+    setDidEdit((prevEdit) => ({ ...prevEdit, [identifier]: true }));
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <Input
+          label="Email"
+          id="email"
+          type="email"
+          name="email"
+          onBlur={() => handleInputBlur("email")}
+          onChange={(event) => handleInputChange("email", event.target.value)}
+          value={enteredValue.email}
+          error={emailIsInvalid && "이메일 유형이 잘못되었습니다."}
+        />
+        <Input
+          label="Password"
+          id="password"
+          type="password"
+          name="password"
+          onBlur={() => handleInputBlur("pw")}
+          onChange={(event) => handleInputChange("pw", event.target.value)}
+          value={enteredValue.pw}
+          error={pwIsInvalid && "비밀번호는 6글자 이상이어야 합니다."}
+        />
+      </div>
+
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button">Login</button>
+      </p>
+    </form>
+  );
+}
+```
+
+#### 💎 결과
+
+![결과](./src/assets/inputValidReuseable.gif)

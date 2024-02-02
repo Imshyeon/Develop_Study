@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Input from "./Input";
 
 export default function Login() {
   // const [enteredEmail, setEnteredEmail] = useState("");
@@ -13,6 +14,7 @@ export default function Login() {
   });
 
   const emailIsInvalid = didEdit.email && !enteredValue.email.includes("@");
+  const pwIsInvalid = didEdit.pw && enteredValue.pw.trim().length < 6;
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -47,31 +49,26 @@ export default function Login() {
       <h2>Login</h2>
 
       <div className="control-row">
-        <div className="control no-margin">
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            name="email"
-            onBlur={() => handleInputBlur("email")}
-            onChange={(event) => handleInputChange("email", event.target.value)}
-            value={enteredValue.email}
-          />
-          <div className="control-error">
-            {emailIsInvalid && <p>유효한 이메일 주소를 입력해주세요.</p>}
-          </div>
-        </div>
-
-        <div className="control no-margin">
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            name="password"
-            onChange={(event) => handleInputChange("pw", event.target.value)}
-            value={enteredValue.pw}
-          />
-        </div>
+        <Input
+          label="Email"
+          id="email"
+          type="email"
+          name="email"
+          onBlur={() => handleInputBlur("email")}
+          onChange={(event) => handleInputChange("email", event.target.value)}
+          value={enteredValue.email}
+          error={emailIsInvalid && "이메일 유형이 잘못되었습니다."}
+        />
+        <Input
+          label="Password"
+          id="password"
+          type="password"
+          name="password"
+          onBlur={() => handleInputBlur("pw")}
+          onChange={(event) => handleInputChange("pw", event.target.value)}
+          value={enteredValue.pw}
+          error={pwIsInvalid && "비밀번호는 6글자 이상이어야 합니다."}
+        />
       </div>
 
       <p className="form-actions">
