@@ -517,3 +517,161 @@ export default function Login() {
 #### 💎 결과
 
 ![결과](./src/assets/inputValidRef.gif)
+
+<br>
+
+### 📖 내장된 검증 Props(속성)으로 입력 유효성 검사 - Signup 사용
+
+- `required` : 브라우저가 사용자 입력을 검증할 수 있도록 입력 요소에 설정해 둘 수 있는 빌트인 속성.
+- `type` : email 타입에 맞는 입력을 요구함.
+- `minLength` : 입력창에 최소한으로 입력되야할 글자 수<br>
+  🔗 [MDN | Form Validation](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#using_built-in_form_validation)
+
+<br>
+
+### 📖 커스텀과 내장 검증 로직 혼합 - Signup 사용
+
+#### 💎 Signup.jsx
+
+```jsx
+import { useState } from "react";
+
+export default function Signup() {
+  const [pwsAreNotEqual, setPwsAreNotEqual] = useState(false);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    const fd = new FormData(event.target);
+    const acquisitionChannel = fd.getAll("acquisition");
+    const data = Object.fromEntries(fd.entries());
+    data.acquisition = acquisitionChannel;
+
+    // validation
+    if (data.password !== data["confirm-password"]) {
+      setPwsAreNotEqual(true);
+      return;
+    }
+    console.log(data);
+
+    event.target.reset();
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Welcome on board!</h2>
+      <p>We just need a little bit of data from you to get you started 🚀</p>
+
+      <div className="control">
+        <label htmlFor="email">Email</label>
+        <input id="email" type="email" name="email" required />
+      </div>
+
+      <div className="control-row">
+        <div className="control">
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            required
+            minLength={6}
+          />
+        </div>
+
+        <div className="control">
+          <label htmlFor="confirm-password">Confirm Password</label>
+          <input
+            id="confirm-password"
+            type="password"
+            name="confirm-password"
+            required
+          />
+          {/* validation */}
+          <div className="control-error">
+            {pwsAreNotEqual && <p>비밀번호가 일치하지 않습니다.</p>}
+          </div>
+        </div>
+      </div>
+
+      <hr />
+
+      <div className="control-row">
+        <div className="control">
+          <label htmlFor="first-name">First Name</label>
+          <input type="text" id="first-name" name="first-name" required />
+        </div>
+
+        <div className="control">
+          <label htmlFor="last-name">Last Name</label>
+          <input type="text" id="last-name" name="last-name" required />
+        </div>
+      </div>
+
+      <div className="control">
+        <label htmlFor="phone">What best describes your role?</label>
+        <select id="role" name="role" required>
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+          <option value="employee">Employee</option>
+          <option value="founder">Founder</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <fieldset>
+        <legend>How did you find us?</legend>
+        <div className="control">
+          <input
+            type="checkbox"
+            id="google"
+            name="acquisition"
+            value="google"
+          />
+          <label htmlFor="google">Google</label>
+        </div>
+
+        <div className="control">
+          <input
+            type="checkbox"
+            id="friend"
+            name="acquisition"
+            value="friend"
+          />
+          <label htmlFor="friend">Referred by friend</label>
+        </div>
+
+        <div className="control">
+          <input type="checkbox" id="other" name="acquisition" value="other" />
+          <label htmlFor="other">Other</label>
+        </div>
+      </fieldset>
+
+      <div className="control">
+        <label htmlFor="terms-and-conditions">
+          <input
+            type="checkbox"
+            id="terms-and-conditions"
+            name="terms"
+            required
+          />
+          I agree to the terms and conditions
+        </label>
+      </div>
+
+      <p className="form-actions">
+        <button type="reset" className="button button-flat">
+          Reset
+        </button>
+        <button type="submit" className="button">
+          Sign up
+        </button>
+      </p>
+    </form>
+  );
+}
+```
+
+#### 💎 결과
+
+![결과](./src/assets/inputValidCustomAndBuiltIn.png)
