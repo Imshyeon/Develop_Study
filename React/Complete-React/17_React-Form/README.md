@@ -774,3 +774,45 @@ export default function Login() {
 #### 💎 결과
 
 ![결과](./src/assets/inputValidReuseable.gif)
+
+<br>
+
+### 📖 유효성 검사(검증) 로직 아웃소싱
+
+#### 💎 util/validation.js
+
+```js
+export function isEmail(value) {
+  return value.includes("@");
+}
+
+export function isNotEmpty(value) {
+  return value.trim() !== "";
+}
+
+export function hasMinLength(value, minLength) {
+  return value.length >= minLength;
+}
+
+export function isEqualsToOtherValue(value, otherValue) {
+  return value === otherValue;
+}
+```
+
+#### 💎 Login.jsx
+
+```jsx
+import { isEmail, isNotEmpty, hasMinLength } from "../util/validation.js";
+
+export default function Login() {
+  const emailIsInvalid =
+    didEdit.email &&
+    !isEmail(enteredValue.email) &&
+    !isNotEmpty(enteredValue.email);
+
+  const pwIsInvalid =
+    didEdit.pw &&
+    !hasMinLength(enteredValue.pw, 6) &&
+    !isNotEmpty(enteredValue.pw);
+}
+```
