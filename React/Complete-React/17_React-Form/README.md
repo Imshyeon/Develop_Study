@@ -118,3 +118,55 @@ export default function Login() {
 <br>
 
 ### 📖 Refs(참조)로 사용자 입력 수집하는 방법
+
+#### 💎 Login.jsx
+
+```jsx
+import { useRef } from "react";
+
+export default function Login() {
+  const enteredEmail = useRef();
+  const enteredPw = useRef();
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    const email = enteredEmail.current.value;
+    const pw = enteredPw.current.value;
+    console.log("User Email: ", email);
+    console.log("User PW: ", pw);
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" ref={enteredEmail} />
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            ref={enteredPw}
+          />
+        </div>
+      </div>
+
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button">Login</button>
+      </p>
+    </form>
+  );
+}
+```
+
+<br>
+
+### 📖
