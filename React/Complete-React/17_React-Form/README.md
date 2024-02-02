@@ -338,7 +338,7 @@ function handleSubmit(event) {
 
 ## 📌 유효성 검사하기
 
-### 📖 State로 매 키보드 입력마다 유효성 검사하기
+### 📖 State로 매 키보드 입력마다 유효성 검사하기 - State 사용
 
 #### 💎 Login.jsx
 
@@ -363,7 +363,7 @@ export default function Login() {
 
 <br>
 
-### 📖 Blur 상태 시 입력 유효성 검사
+### 📖 Blur 상태 시 입력 유효성 검사 - State 사용
 
 - focus를 변경했을 때 유효성 검사하도록 함.
 - blur 이벤트는 빌트인 기본 브라우저 이벤트로 해당 입력이 포커스를 잃게 될 때마다 발현이 됨.
@@ -452,3 +452,68 @@ export default function Login() {
 #### 💎 결과
 
 ![결과](./src/assets/inputValidBlur.gif)
+
+<br>
+
+### 📖 Form 제출 시 입력 유효성 검사 - Ref 사용
+
+#### 💎 Login.jsx
+
+```jsx
+import { useState, useRef } from "react";
+
+export default function Login() {
+  const [emailIsInvalid, setEmailIsInvalid] = useState(false);
+  const enteredEmail = useRef();
+  const enteredPw = useRef();
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    const email = enteredEmail.current.value;
+    const pw = enteredPw.current.value;
+
+    const emailIsValid = email.includes("@");
+    if (!emailIsValid) {
+      setEmailIsInvalid(true);
+      return;
+    }
+    setEmailIsInvalid(false);
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" name="email" ref={enteredEmail} />
+          <div className="control-error">
+            {emailIsInvalid && <p>유효한 이메일을 입력해주세요.</p>}
+          </div>
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            ref={enteredPw}
+          />
+        </div>
+      </div>
+
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button">Login</button>
+      </p>
+    </form>
+  );
+}
+```
+
+#### 💎 결과
+
+![결과](./src/assets/inputValidRef.gif)

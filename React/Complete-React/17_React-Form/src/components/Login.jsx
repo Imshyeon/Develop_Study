@@ -1,6 +1,7 @@
-import { useRef } from "react";
+import { useState, useRef } from "react";
 
 export default function Login() {
+  const [emailIsInvalid, setEmailIsInvalid] = useState(false);
   const enteredEmail = useRef();
   const enteredPw = useRef();
 
@@ -9,8 +10,13 @@ export default function Login() {
 
     const email = enteredEmail.current.value;
     const pw = enteredPw.current.value;
-    console.log("User Email: ", email);
-    console.log("User PW: ", pw);
+
+    const emailIsValid = email.includes("@");
+    if (!emailIsValid) {
+      setEmailIsInvalid(true);
+      return;
+    }
+    setEmailIsInvalid(false);
   }
 
   return (
@@ -21,6 +27,9 @@ export default function Login() {
         <div className="control no-margin">
           <label htmlFor="email">Email</label>
           <input id="email" type="email" name="email" ref={enteredEmail} />
+          <div className="control-error">
+            {emailIsInvalid && <p>유효한 이메일을 입력해주세요.</p>}
+          </div>
         </div>
 
         <div className="control no-margin">
