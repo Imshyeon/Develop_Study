@@ -1,56 +1,30 @@
 import { useState } from "react";
 import Input from "./Input";
 import { isEmail, isNotEmpty, hasMinLength } from "../util/validation.js";
+import useInput from "../hooks/useInput.js";
 
 export default function Login() {
-  // const [enteredEmail, setEnteredEmail] = useState("");
-  // const [enteredPW, setEnteredPW] = useState("");
-  const [enteredValue, setEnteredValue] = useState({
-    email: "",
-    pw: "",
-  });
-  const [didEdit, setDidEdit] = useState({
-    email: false,
-    pw: false,
-  });
-
-  const emailIsInvalid =
-    didEdit.email &&
-    !isEmail(enteredValue.email) &&
-    !isNotEmpty(enteredValue.email);
-
-  const pwIsInvalid =
-    didEdit.pw &&
-    !hasMinLength(enteredValue.pw, 6) &&
-    !isNotEmpty(enteredValue.pw);
+  const {
+    value: emailValue,
+    handleInputChange: handleEmailChange,
+    handleInputBlur: handleEmailBlur,
+    hasError: emailHasError,
+  } = useInput("", (value) => isEmail(value) && isNotEmpty(value));
+  const {
+    value: pwValue,
+    handleInputChange: handlePwChange,
+    handleInputBlur: handlePwBlur,
+    hasError: pwHasError,
+  } = useInput("", (value) => hasMinLength(value, 6) && isNotEmpty(value));
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log("User Email: ", enteredValue.email);
-    console.log("User PW: ", enteredValue.pw);
+    if (emailHasError || pwHasError) {
+      return;
+    }
+    console.log("User Email: ", emailValue);
+    console.log("User PW: ", pwValue);
   }
-
-  function handleInputChange(identifier, value) {
-    setEnteredValue((prevValues) => ({
-      ...prevValues,
-      [identifier]: value,
-    }));
-
-    setDidEdit((prevEdit) => ({
-      ...prevEdit,
-      [identifier]: false,
-    }));
-  }
-
-  function handleInputBlur(identifier) {
-    setDidEdit((prevEdit) => ({ ...prevEdit, [identifier]: true }));
-  }
-  // function handlerEmailChange(event) {
-  //   setEnteredEmail(event.target.value);
-  // }
-  // function handlerPWChange(event) {
-  //   setEnteredPW(event.target.value);
-  // }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -62,20 +36,20 @@ export default function Login() {
           id="email"
           type="email"
           name="email"
-          onBlur={() => handleInputBlur("email")}
-          onChange={(event) => handleInputChange("email", event.target.value)}
-          value={enteredValue.email}
-          error={emailIsInvalid && "이메일 유형이 잘못되었습니다."}
+          onBlur={handleEmailBlur}
+          onChange={handleEmailChange}
+          value={emailValue}
+          error={emailHasError && "이메일 유형이 잘못되었습니다."}
         />
         <Input
           label="Password"
           id="password"
           type="password"
           name="password"
-          onBlur={() => handleInputBlur("pw")}
-          onChange={(event) => handleInputChange("pw", event.target.value)}
-          value={enteredValue.pw}
-          error={pwIsInvalid && "비밀번호는 6글자 이상이어야 합니다."}
+          onBlur={handlePwBlur}
+          onChange={handlePwChange}
+          value={pwValue}
+          error={pwHasError && "비밀번호는 6글자 이상이어야 합니다."}
         />
       </div>
 
