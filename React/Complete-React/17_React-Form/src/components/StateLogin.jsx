@@ -8,6 +8,9 @@ export default function Login() {
     pw: "",
   });
 
+  const emailIsInvalid =
+    enteredValue.email !== "" && !enteredValue.email.includes("@");
+
   function handleSubmit(event) {
     event.preventDefault();
     console.log("User Email: ", enteredValue.email);
@@ -41,6 +44,9 @@ export default function Login() {
             onChange={(event) => handleInputChange("email", event.target.value)}
             value={enteredValue.email}
           />
+          <div className="control-error">
+            {emailIsInvalid && <p>유효한 이메일 주소를 입력해주세요.</p>}
+          </div>
         </div>
 
         <div className="control no-margin">

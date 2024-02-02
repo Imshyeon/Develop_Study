@@ -337,3 +337,26 @@ function handleSubmit(event) {
 <br>
 
 ## 📌 유효성 검사하기
+
+### 📖 State로 매 키보드 입력마다 유효성 검사하기
+
+#### 💎 Login.jsx
+
+```jsx
+export default function Login() {
+  const emailIsInvalid =
+    enteredValue.email !== "" && !enteredValue.email.includes("@");
+
+  return (
+    {/*...*/}
+    <div className="control-error">
+      {emailIsInvalid && <p>유효한 이메일 주소를 입력해주세요.</p>}
+    </div>
+    {/*...*/}
+  );
+}
+```
+
+#### 💎 결과
+
+![결과](./src/assets/inputValidState.gif)
