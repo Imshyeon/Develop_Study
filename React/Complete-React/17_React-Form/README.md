@@ -360,3 +360,95 @@ export default function Login() {
 #### 💎 결과
 
 ![결과](./src/assets/inputValidState.gif)
+
+<br>
+
+### 📖 Blur 상태 시 입력 유효성 검사
+
+- focus를 변경했을 때 유효성 검사하도록 함.
+- blur 이벤트는 빌트인 기본 브라우저 이벤트로 해당 입력이 포커스를 잃게 될 때마다 발현이 됨.
+
+#### 💎 Login.jsx
+
+```jsx
+import { useState } from "react";
+
+export default function Login() {
+  const [enteredValue, setEnteredValue] = useState({
+    email: "",
+    pw: "",
+  });
+  const [didEdit, setDidEdit] = useState({
+    email: false,
+    pw: false,
+  }); // 상태 추가
+
+  // didEdit 상태가 true이고 이메일 입력창에 @가 포함되지 않을때
+  const emailIsInvalid = didEdit.email && !enteredValue.email.includes("@");
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    console.log("User Email: ", enteredValue.email);
+    console.log("User PW: ", enteredValue.pw);
+  }
+
+  function handleInputChange(identifier, value) {
+    setEnteredValue((prevValues) => ({
+      ...prevValues,
+      [identifier]: value,
+    }));
+
+    setDidEdit((prevEdit) => ({
+      ...prevEdit,
+      [identifier]: false,
+    })); // 사용자가 입력창에 입력할 때 다시 해당 요소의 didEdit을 false로 업데이트
+  }
+
+  function handleInputBlur(identifier) {
+    setDidEdit((prevEdit) => ({ ...prevEdit, [identifier]: true })); // 포커스를 이동할 때 didEdit을 true로 설정
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Login</h2>
+
+      <div className="control-row">
+        <div className="control no-margin">
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            onBlur={() => handleInputBlur("email")} // blur 이벤트 동작
+            onChange={(event) => handleInputChange("email", event.target.value)}
+            value={enteredValue.email}
+          />
+          <div className="control-error">
+            {emailIsInvalid && <p>유효한 이메일 주소를 입력해주세요.</p>}
+          </div>
+        </div>
+
+        <div className="control no-margin">
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            onChange={(event) => handleInputChange("pw", event.target.value)}
+            value={enteredValue.pw}
+          />
+        </div>
+      </div>
+
+      <p className="form-actions">
+        <button className="button button-flat">Reset</button>
+        <button className="button">Login</button>
+      </p>
+    </form>
+  );
+}
+```
+
+#### 💎 결과
+
+![결과](./src/assets/inputValidBlur.gif)
