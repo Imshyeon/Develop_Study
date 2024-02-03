@@ -87,3 +87,59 @@ export default function MealItem() {
 <br>
 
 - meal에 대한 데이터를 백엔드로부터 받아와야 한다. &rarr; Meal에서 Fetch해서 받아온 뒤, 데이터 하나하나를 MealItem에 보내서 출력하는 방식을 사용하면 될 듯 하다.
+
+```jsx
+// Meal.jsx
+import { useEffect, useState } from "react";
+import MealItem from "./MealItem";
+
+export default function Meals() {
+  const [mealDatas, setMealDatas] = useState([]);
+
+  useEffect(() => {
+    async function fetchMeals() {
+      const response = await fetch("http://localhost:3000/meals");
+      const resData = await response.json();
+      setMealDatas(resData);
+    }
+
+    fetchMeals();
+  }, []);
+
+  return (
+    <div id="meals">
+      {mealDatas.map((mealItem) => {
+        // console.log(mealItem);
+        return (
+          <MealItem
+            key={mealItem.id}
+            image={mealItem.image}
+            name={mealItem.name}
+            price={mealItem.price}
+            description={mealItem.description}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+// MealItem.jsx
+export default function MealItem({ image, name, price, description }) {
+  return (
+    <div className="meal-item">
+      <article>
+        <img src={`http://localhost:3000/${image}`} alt="meal item image" />
+        <h3>{name}</h3>
+        <div>
+          <p className="meal-item-price">{price}</p>
+          <p className="meal-item-description">{description}</p>
+          <button className="meal-item-actions button">+ Add to Cart</button>
+        </div>
+      </article>
+    </div>
+  );
+}
+```
+
+![fetch meal data](./src/assets/projectImg/mealFetch.png)
