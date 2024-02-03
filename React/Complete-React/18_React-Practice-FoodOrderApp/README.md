@@ -609,3 +609,151 @@ export default App;
 <br>
 
 #### 💎 Checkout.jsx
+
+```jsx
+// Checkout.jsx
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import { createPortal } from "react-dom";
+
+const Checkout = forwardRef(function Checkout({ total, onClose }, ref) {
+  const dialog = useRef();
+
+  useImperativeHandle(ref, () => {
+    return {
+      open() {
+        dialog.current.showModal();
+      },
+      close() {
+        dialog.current.close();
+      },
+    };
+  });
+
+  function handleSumbmit(event, totalAmount) {
+    event.preventDefault();
+    const fd = new FormData(event.target);
+    const data = Object.fromEntries(fd.entries());
+    data.totalAmount = totalAmount;
+    console.log(data);
+  }
+
+  return createPortal(
+    <dialog ref={dialog} className="modal">
+      <h2>주문서</h2>
+      <p>Total Amount: ${total} </p>
+      <form onSubmit={(event) => handleSumbmit(event, total)}>
+        <div className="control">
+          <label htmlFor="name">Full Name</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div className="control">
+          <label htmlFor="email">Email</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div className="control">
+          <label htmlFor="street">Street</label>
+          <input type="text" id="street" name="street" required />
+        </div>
+        <div className="control-row">
+          <div className="control">
+            <label htmlFor="porstal">Porstal</label>
+            <input type="text" id="porstal" name="porstal" required />
+          </div>
+          <div className="control">
+            <label htmlFor="city">City</label>
+            <input type="text" id="city" name="city" required />
+          </div>
+        </div>
+        <div className="modal-actions">
+          <button type="button" className="text-button" onClick={onClose}>
+            Close
+          </button>
+          <button className="button" type="submit">
+            Submit Order
+          </button>
+        </div>
+      </form>
+    </dialog>,
+    document.getElementById("modal")
+  );
+});
+export default Checkout;
+
+
+// CartModal.jsx
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import { createPortal } from "react-dom";
+import Checkout from "./Checkout";
+
+const CartModal = forwardRef(function CartModal(
+  { items, onAddCart, onDeleteCart },
+  ref
+) {
+  const dialog = useRef();
+  const dialogCheckout = useRef();
+
+  useImperativeHandle(ref, () => {
+    return {
+      open() {
+        dialog.current.showModal();
+      },
+    };
+  });
+
+  function handleCalculateTotal() {
+    let total = 0;
+    items.map((item) => {
+      total += +item.price * +item.count;
+    });
+    return total;
+  }
+
+  function handleOpenCheckout() {
+    dialogCheckout.current.open();
+  }
+  function handleCloseCheckout() {
+    dialogCheckout.current.close();
+  }
+
+  return createPortal(
+    <>
+      <dialog ref={dialog} className="modal cart">
+        <h2>장바구니</h2>
+        <ul>
+          {items.map((item, index) => {
+            let count = item.count;
+
+            return (
+              <li className="cart-item" key={index}>
+                <p>
+                  {item.name} - {count} x ${item.price}
+                </p>
+                <div className="cart-item-actions">
+                  <button onClick={() => onDeleteCart(item, +count)}>-</button>
+                  <p>{count}</p>
+                  <button onClick={() => onAddCart(item, +count)}>+</button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        <h3 className="cart-total">${handleCalculateTotal()}</h3>
+        <form method="dialog" className="modal-actions">
+          <button className="text-button">Close</button>
+          <button className="button" onClick={handleOpenCheckout}>
+            Go to Checkout
+          </button>
+        </form>
+      </dialog>
+      <Checkout
+        ref={dialogCheckout}
+        total={handleCalculateTotal()}
+        onClose={handleCloseCheckout}
+      />
+    </>,
+    document.getElementById("modal")
+  );
+});
+
+export default CartModal;
+```
