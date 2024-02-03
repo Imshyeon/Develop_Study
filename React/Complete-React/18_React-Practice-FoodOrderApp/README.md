@@ -548,6 +548,8 @@ const CartModal = forwardRef(function CartModal({ items }, ref) {
 export default CartModal;
 ```
 
+<br>
+
 #### 💎 장바구니에 이미 포함한 제품 반영하기
 
 - 이미 장바구니에 포함되면 중복해서 포함되지 않도록 함 &rarr; 해당 제품의 숫자만 업데이트될 뿐, 제품의 모든 정보(id, name 등)가 추가되지 않도록 한다.
@@ -601,3 +603,9 @@ export default App;
 - 이미 존재하고 있는 제품(혹은 처음 추가하는 제품)은 count라는 속성을 추가하여 연산.
 
 ![결과](./src/assets/projectImg/count.png)
+
+🔗 [해당 코드 레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/ed9f93f5f377034d4aa8700a19b2779512b27029#diff-6afaf61965778644e8f0362cd20b30d0b00ac1d3226da0183494f652e7556f04)
+
+<br>
+
+#### 💎 Checkout.jsx
