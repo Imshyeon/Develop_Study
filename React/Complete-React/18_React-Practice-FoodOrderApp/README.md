@@ -84,8 +84,6 @@ export default function MealItem() {
 
 ![초기](./src/assets/projectImg/meal-1.png)
 
-<br>
-
 - meal에 대한 데이터를 백엔드로부터 받아와야 한다. &rarr; Meal에서 Fetch해서 받아온 뒤, 데이터 하나하나를 MealItem에 보내서 출력하는 방식을 사용하면 될 듯 하다.
 
 ```jsx
@@ -331,6 +329,8 @@ export const CartContext = createContext({
 ```
 
 ![결과1](./src/assets/projectImg/상태끌어올리기.gif)
+
+<br>
 
 #### 💎 useFetch - 커스텀 훅 사용하기
 
