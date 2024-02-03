@@ -5,10 +5,18 @@ import { CartContext } from "../assets/context/cart-context";
 
 export default function Header() {
   const dialog = useRef();
-  const { cartItems } = useContext(CartContext);
+  const { cartItems, onAddCart, onDeleteCart } = useContext(CartContext);
 
   function handleOpenCart() {
     dialog.current.open();
+  }
+
+  function handleCountTotalItem() {
+    let totCount = 0;
+    cartItems.map((item) => {
+      totCount += item.count;
+    });
+    return totCount;
   }
   return (
     <>
@@ -18,10 +26,15 @@ export default function Header() {
           ZOE'S BURGER
         </h1>
         <button className="text-button" onClick={handleOpenCart}>
-          Cart({cartItems.length})
+          Cart({handleCountTotalItem()})
         </button>
       </header>
-      <CartModal ref={dialog} items={cartItems} />
+      <CartModal
+        ref={dialog}
+        items={cartItems}
+        onAddCart={onAddCart}
+        onDeleteCart={onDeleteCart}
+      />
     </>
   );
 }

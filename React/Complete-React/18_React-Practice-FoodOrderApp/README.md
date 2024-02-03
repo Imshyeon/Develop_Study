@@ -547,3 +547,57 @@ const CartModal = forwardRef(function CartModal({ items }, ref) {
 
 export default CartModal;
 ```
+
+#### 💎 장바구니에 이미 포함한 제품 반영하기
+
+- 이미 장바구니에 포함되면 중복해서 포함되지 않도록 함 &rarr; 해당 제품의 숫자만 업데이트될 뿐, 제품의 모든 정보(id, name 등)가 추가되지 않도록 한다.
+- App.jsx에서 `cartDatas` 상태 업데이트를 수정 &rarr; count라는 속성을 추가하여 연산하도록 했다.
+- count 속성을 통해서 총 얼만큼 계산해야할 지도 반영할 것.
+
+```jsx
+// App.jsx
+import Error from "./components/Error";
+import Header from "./components/Header";
+import Meals from "./components/Meals";
+import { CartContext } from "./assets/context/cart-context";
+import { useState } from "react";
+import useFetch from "./store/useFetch";
+
+function App() {
+  const { mealDatas, error, isFetching } = useFetch();
+  const [cartDatas, setCartDatas] = useState([]);
+
+  const CartCtx = {
+    items: mealDatas,
+    onAddCart: handleAddCart,
+    onDeleteCart: handleDeleteCart,
+    cartItems: cartDatas,
+  };
+
+  function handleAddCart(item, cnt = 0) {
+    setCartDatas(() => {
+      return [
+        ...cartDatas.filter((data) => data.id !== item.id),
+        ((item["count"] = cnt + 1), item),
+      ];
+    });
+  }
+
+  function handleDeleteCart(item, cnt) {
+    setCartDatas(() => {
+      return [
+        ...cartDatas.filter((data) => data.id !== item.id),
+        ((item["count"] = cnt - 1), item),
+      ];
+    });
+  }
+  console.log(cartDatas);
+}
+
+export default App;
+```
+
+- 이미 존재하고 있는 `cartDatas` 상태에서 `filter` 함수를 이용해 추가한 제품이 아닌 제품들을 넣는다(`...prevDatas`와 비슷한 원리).
+- 이미 존재하고 있는 제품(혹은 처음 추가하는 제품)은 count라는 속성을 추가하여 연산.
+
+![결과](./src/assets/projectImg/count.png)

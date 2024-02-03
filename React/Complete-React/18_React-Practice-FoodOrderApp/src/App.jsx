@@ -12,6 +12,7 @@ function App() {
   const CartCtx = {
     items: mealDatas,
     onAddCart: handleAddCart,
+    onDeleteCart: handleDeleteCart,
     cartItems: cartDatas,
   };
 
@@ -21,11 +22,24 @@ function App() {
     );
   }
 
-  function handleAddCart(item) {
-    setCartDatas((prevCart) => {
-      return [...prevCart, item];
+  function handleAddCart(item, cnt = 0) {
+    setCartDatas(() => {
+      return [
+        ...cartDatas.filter((data) => data.id !== item.id),
+        ((item["count"] = cnt + 1), item),
+      ];
     });
   }
+
+  function handleDeleteCart(item, cnt) {
+    setCartDatas(() => {
+      return [
+        ...cartDatas.filter((data) => data.id !== item.id),
+        ((item["count"] = cnt - 1), item),
+      ];
+    });
+  }
+  console.log(cartDatas);
 
   return (
     <CartContext.Provider value={CartCtx}>
