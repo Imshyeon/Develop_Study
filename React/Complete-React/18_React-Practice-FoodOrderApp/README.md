@@ -757,3 +757,9 @@ const CartModal = forwardRef(function CartModal(
 
 export default CartModal;
 ```
+
+🔗 [해당 코드 레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/9b4114fcfdcddba2580b010fb6644dc9bdc8ce1b)
+
+<br>
+
+#### 💎 Form 데이터 백엔드로 보내기
