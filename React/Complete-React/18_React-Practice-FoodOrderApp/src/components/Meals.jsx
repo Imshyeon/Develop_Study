@@ -15,11 +15,7 @@ export default function Meals({ isFetching, error }) {
           return (
             <MealItem
               key={mealItem.id}
-              id={mealItem.id}
-              image={mealItem.image}
-              name={mealItem.name}
-              price={mealItem.price}
-              description={mealItem.description}
+              item={mealItem}
               onAddCart={handleAddCart}
             />
           );

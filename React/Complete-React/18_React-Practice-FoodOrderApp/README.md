@@ -413,3 +413,137 @@ export default App;
 ```
 
 - App.jsx의 코드를 간략하게 만들기 위해서 커스텀 훅을 작성했다. 장바구니에 넣을 아이템을 관리할 상태를 추가해야하는데, fetch와 가져온 데이터를 관리하는 상태를 App 컴포넌트 안에서 모두 작성하기에는 가독성 측면과 프로젝트 관리에도 어려움이 있을 듯 했다.
+
+<br>
+
+#### 💎 장바구니에 제품 등록하고 Header, CartModal에 표현하기
+
+```jsx
+// App.jsx
+import Error from "./components/Error";
+import Header from "./components/Header";
+import Meals from "./components/Meals";
+import { CartContext } from "./assets/context/cart-context";
+import { useState } from "react";
+import useFetch from "./store/useFetch";
+
+function App() {
+  const { mealDatas, error, isFetching } = useFetch();
+  const [cartDatas, setCartDatas] = useState([]);
+
+  const CartCtx = {
+    items: mealDatas,
+    onAddCart: handleAddCart,
+    cartItems: cartDatas,
+  };
+
+  if (error) {
+    return (
+      <Error title="상품을 불러오는데 실패했습니다." message={error.message} />
+    );
+  }
+
+  function handleAddCart(item) {
+    setCartDatas((prevCart) => {
+      return [...prevCart, item];
+    });
+  }
+
+  return (
+    <CartContext.Provider value={CartCtx}>
+      <Header />
+      <Meals isFetching={isFetching} error={error} />
+    </CartContext.Provider>
+  );
+}
+
+export default App;
+
+
+// Header.jsx
+import { useContext, useRef } from "react";
+import titleImg from "../assets/logo.jpg";
+import CartModal from "./CartModal";
+import { CartContext } from "../assets/context/cart-context";
+
+export default function Header() {
+  const dialog = useRef();
+  const { cartItems } = useContext(CartContext);
+
+  function handleOpenCart() {
+    dialog.current.open();
+  }
+  return (
+    <>
+      <header id="main-header">
+        <h1 id="title">
+          <img src={titleImg} alt="Burger image" />
+          ZOE'S BURGER
+        </h1>
+        <button className="text-button" onClick={handleOpenCart}>
+          Cart({cartItems.length})
+        </button>
+      </header>
+      <CartModal ref={dialog} items={cartItems} />
+    </>
+  );
+}
+
+
+// CartModal.jsx
+import { forwardRef, useContext, useImperativeHandle, useRef } from "react";
+import { createPortal } from "react-dom";
+import { CartContext } from "../assets/context/cart-context";
+
+const CartModal = forwardRef(function CartModal({ items }, ref) {
+  const dialog = useRef();
+
+  useImperativeHandle(ref, () => {
+    return {
+      open() {
+        dialog.current.showModal();
+      },
+    };
+  });
+
+  function handleCalculateTotal() {
+    let total = 0;
+    items.map((item) => {
+      total += +item.price;
+    });
+    return total;
+  }
+
+  return createPortal(
+    <dialog ref={dialog} className="modal cart">
+      <h2>장바구니</h2>
+      <ul>
+        {items.map((item, index) => {
+          let count = 1;
+
+          return (
+            <li className="cart-item" key={index}>
+              <p>
+                {item.name} - {count} x ${item.price}
+              </p>
+              <div className="cart-item-actions">
+                <button>-</button>
+                <p>{count}</p>
+                <button>+</button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <h3 className="cart-total">${handleCalculateTotal()}</h3>
+      <form method="dialog" className="modal-actions">
+        <button className="text-button">Close</button>
+        <button className="button">Go to Checkout</button>
+      </form>
+    </dialog>,
+    document.getElementById("modal")
+  );
+});
+
+export default CartModal;
+```

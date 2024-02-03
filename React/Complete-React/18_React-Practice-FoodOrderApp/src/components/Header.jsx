@@ -5,10 +5,9 @@ import { CartContext } from "../assets/context/cart-context";
 
 export default function Header() {
   const dialog = useRef();
-  const { items } = useContext(CartContext);
+  const { cartItems } = useContext(CartContext);
 
   function handleOpenCart() {
-    console.log("cart");
     dialog.current.open();
   }
   return (
@@ -19,10 +18,10 @@ export default function Header() {
           ZOE'S BURGER
         </h1>
         <button className="text-button" onClick={handleOpenCart}>
-          Cart(num)
+          Cart({cartItems.length})
         </button>
       </header>
-      <CartModal ref={dialog} items={items} />
+      <CartModal ref={dialog} items={cartItems} />
     </>
   );
 }

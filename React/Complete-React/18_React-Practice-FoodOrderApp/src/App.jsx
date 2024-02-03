@@ -7,10 +7,12 @@ import useFetch from "./store/useFetch";
 
 function App() {
   const { mealDatas, error, isFetching } = useFetch();
+  const [cartDatas, setCartDatas] = useState([]);
 
   const CartCtx = {
     items: mealDatas,
     onAddCart: handleAddCart,
+    cartItems: cartDatas,
   };
 
   if (error) {
@@ -19,8 +21,10 @@ function App() {
     );
   }
 
-  function handleAddCart(itemId, itemInfo) {
-    console.log(`Add to Cart button : ${itemId} - ${itemInfo}`);
+  function handleAddCart(item) {
+    setCartDatas((prevCart) => {
+      return [...prevCart, item];
+    });
   }
 
   return (

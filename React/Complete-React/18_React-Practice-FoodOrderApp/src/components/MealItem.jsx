@@ -1,22 +1,18 @@
-export default function MealItem({
-  id,
-  image,
-  name,
-  price,
-  description,
-  onAddCart,
-}) {
+export default function MealItem({ item, onAddCart }) {
   return (
     <div className="meal-item">
       <article>
-        <img src={`http://localhost:3000/${image}`} alt="meal item image" />
-        <h3>{name}</h3>
+        <img
+          src={`http://localhost:3000/${item.image}`}
+          alt="meal item image"
+        />
+        <h3>{item.name}</h3>
         <div>
-          <p className="meal-item-price">{price}</p>
-          <p className="meal-item-description">{description}</p>
+          <p className="meal-item-price">{item.price}</p>
+          <p className="meal-item-description">{item.description}</p>
           <button
             className="meal-item-actions button"
-            onClick={() => onAddCart(id, name)}
+            onClick={() => onAddCart(item)}
           >
             + Add to Cart
           </button>
