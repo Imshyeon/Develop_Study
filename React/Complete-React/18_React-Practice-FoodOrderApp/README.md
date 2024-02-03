@@ -331,3 +331,85 @@ export const CartContext = createContext({
 ```
 
 ![결과1](./src/assets/projectImg/상태끌어올리기.gif)
+
+#### 💎 useFetch - 커스텀 훅 사용하기
+
+```js
+// useFetch
+import { useEffect, useState } from "react";
+
+export default function useFetch() {
+  const [mealDatas, setMealDatas] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState();
+
+  useEffect(() => {
+    setIsFetching(true);
+    async function fetchMeals() {
+      try {
+        const response = await fetch("http://localhost:3000/meals");
+        const resData = await response.json();
+
+        if (!response.ok) {
+          throw new Error("상품을 불러오는데 실패했습니다.");
+        }
+        setMealDatas(resData);
+      } catch (error) {
+        setError({
+          message: error.message || "상품을 불러오는데 실패했습니다.",
+        });
+      }
+
+      setIsFetching(false);
+    }
+
+    fetchMeals();
+  }, []);
+
+  return {
+    isFetching,
+    mealDatas,
+    error,
+  };
+}
+```
+
+```jsx
+// App.jsx
+import Error from "./components/Error";
+import Header from "./components/Header";
+import Meals from "./components/Meals";
+import { CartContext } from "./assets/context/cart-context";
+import { useState } from "react";
+import useFetch from "./store/useFetch";
+
+function App() {
+  const { mealDatas, error, isFetching } = useFetch();
+
+  const CartCtx = {
+    items: mealDatas,
+    onAddCart: handleAddCart,
+  };
+
+  if (error) {
+    return (
+      <Error title="상품을 불러오는데 실패했습니다." message={error.message} />
+    );
+  }
+
+  function handleAddCart(itemId, itemInfo) {
+    console.log(`Add to Cart button : ${itemId} - ${itemInfo}`);
+  }
+
+  return (
+    <CartContext.Provider value={CartCtx}>
+      <Header />
+      <Meals isFetching={isFetching} error={error} />
+    </CartContext.Provider>
+  );
+}
+
+export default App;
+```
+
+- App.jsx의 코드를 간략하게 만들기 위해서 커스텀 훅을 작성했다. 장바구니에 넣을 아이템을 관리할 상태를 추가해야하는데, fetch와 가져온 데이터를 관리하는 상태를 App 컴포넌트 안에서 모두 작성하기에는 가독성 측면과 프로젝트 관리에도 어려움이 있을 듯 했다.
