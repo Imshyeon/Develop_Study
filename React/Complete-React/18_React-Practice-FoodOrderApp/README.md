@@ -143,3 +143,191 @@ export default function MealItem({ image, name, price, description }) {
 ```
 
 ![fetch meal data](./src/assets/projectImg/mealFetch.png)
+
+<br>
+
+#### 💎 CartModal 및 상태 끌어올리기
+
+```jsx
+// Header.jsx
+import { useContext, useRef } from "react";
+import titleImg from "../assets/logo.jpg";
+import CartModal from "./CartModal";
+import { CartContext } from "../assets/context/cart-context";
+
+export default function Header() {
+  const dialog = useRef();
+  const { items } = useContext(CartContext);
+
+  function handleOpenCart() {
+    console.log("cart");
+    dialog.current.open();
+  }
+  return (
+    <>
+      <header id="main-header">
+        <h1 id="title">
+          <img src={titleImg} alt="Burger image" />
+          ZOE'S BURGER
+        </h1>
+        <button className="text-button" onClick={handleOpenCart}>
+          Cart(num)
+        </button>
+      </header>
+      <CartModal ref={dialog} items={items} />
+    </>
+  );
+}
+
+
+// CartModal.jsx
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import { createPortal } from "react-dom";
+
+const CartModal = forwardRef(function CartModal({ items }, ref) {
+  const dialog = useRef();
+
+  useImperativeHandle(ref, () => {
+    return {
+      open() {
+        dialog.current.showModal();
+      },
+    };
+  });
+
+  return createPortal(
+    <dialog ref={dialog} className="modal cart">
+      <h2>장바구니</h2>
+      <ul>
+        <li className="cart-item">
+          <p>item name</p>
+          <div className="cart-item-actions">
+            <button>-</button>
+            <p>1</p>
+            <button>+</button>
+          </div>
+        </li>
+      </ul>
+      <h3 className="cart-total">$ Total</h3>
+      <form method="dialog" className="modal-actions">
+        <button className="text-button">Close</button>
+        <button className="button">Go to Checkout</button>
+      </form>
+    </dialog>,
+    document.getElementById("modal")
+  );
+});
+
+export default CartModal;
+```
+
+<br>
+
+```jsx
+// App.jsx
+import Error from "./components/Error";
+import Header from "./components/Header";
+import Meals from "./components/Meals";
+import { CartContext } from "./assets/context/cart-context";
+import { useState, useEffect, useContext } from "react";
+
+function App() {
+  const [mealDatas, setMealDatas] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState();
+
+  const CartCtx = {
+    items: mealDatas,
+    onAddCart: handleAddCart,
+  };
+
+  useEffect(() => {
+    setIsFetching(true);
+    async function fetchMeals() {
+      try {
+        const response = await fetch("http://localhost:3000/meals");
+        const resData = await response.json();
+
+        if (!response.ok) {
+          throw new Error("상품을 불러오는데 실패했습니다.");
+        }
+        setMealDatas(resData);
+      } catch (error) {
+        setError({
+          message: error.message || "상품을 불러오는데 실패했습니다.",
+        });
+      }
+
+      setIsFetching(false);
+    }
+
+    fetchMeals();
+  }, []);
+
+  if (error) {
+    return (
+      <Error title="상품을 불러오는데 실패했습니다." message={error.message} />
+    );
+  }
+
+  function handleAddCart(itemId, itemInfo) {
+    console.log(`Add to Cart button : ${itemId} - ${itemInfo}`);
+  }
+
+  return (
+    <CartContext.Provider value={CartCtx}>
+      <Header />
+      <Meals isFetching={isFetching} error={error} />
+    </CartContext.Provider>
+  );
+}
+
+export default App;
+
+
+// Meals.jsx
+import { useContext } from "react";
+import MealItem from "./MealItem";
+import { CartContext } from "../assets/context/cart-context";
+
+export default function Meals({ isFetching, error }) {
+  const { items: mealDatas, onAddCart: handleAddCart } =
+    useContext(CartContext);
+
+  return (
+    <div id="meals">
+      {isFetching && <p>상품을 불러오는 중입니다.</p>}
+      {!isFetching &&
+        !error &&
+        mealDatas.map((mealItem) => {
+          return (
+            <MealItem
+              key={mealItem.id}
+              id={mealItem.id}
+              image={mealItem.image}
+              name={mealItem.name}
+              price={mealItem.price}
+              description={mealItem.description}
+              onAddCart={handleAddCart}
+            />
+          );
+        })}
+      ;
+    </div>
+  );
+}
+```
+
+- Meals에서 데이터를 fetch했던 것을 App에서 진행하고, 해당 데이터를 Context API를 이용하기 위해 상태를 끌어올렸다.
+
+```jsx
+// context/cart-context.jsx
+import { createContext } from "react";
+
+export const CartContext = createContext({
+  items: [],
+  onAddCart: () => {},
+});
+```
+
+![결과1](./src/assets/projectImg/상태끌어올리기.gif)
