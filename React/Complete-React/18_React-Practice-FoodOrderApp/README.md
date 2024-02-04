@@ -763,3 +763,125 @@ export default CartModal;
 <br>
 
 #### 💎 Form 데이터 백엔드로 보내기
+
+```jsx
+// Checkout.jsx
+import {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
+import { CartContext } from "../assets/context/cart-context";
+import { updateUserCheckout } from "../http.js";
+
+const Checkout = forwardRef(function Checkout({ total, onClose }, ref) {
+  const dialog = useRef();
+  const { cartItems } = useContext(CartContext);
+  const [checkoutData, setCheckoutData] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState();
+
+  useImperativeHandle(ref, () => {
+    return {
+      open() {
+        dialog.current.showModal();
+      },
+      close() {
+        dialog.current.close();
+      },
+    };
+  });
+
+  async function handleSumbmit(event) {
+    event.preventDefault();
+    const fd = new FormData(event.target);
+    const data = Object.fromEntries(fd.entries());
+    const newCheckoutData = {
+      items: cartItems,
+      customer: { ...data },
+    };
+    setCheckoutData(() => newCheckoutData);
+
+    try {
+      console.log("try", newCheckoutData);
+      await updateUserCheckout(newCheckoutData);
+    } catch (error) {
+      setCheckoutData([]);
+    }
+  }
+  console.log(checkoutData);
+
+  return createPortal(
+    <dialog ref={dialog} className="modal">
+      <h2>주문서</h2>
+      <p>Total Amount: ${total} </p>
+      <form onSubmit={(event) => handleSumbmit(event, total)}>
+        <div className="control">
+          <label htmlFor="name">Full Name</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div className="control">
+          <label htmlFor="email">Email</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div className="control">
+          <label htmlFor="street">Street</label>
+          <input type="text" id="street" name="street" required />
+        </div>
+        <div className="control-row">
+          <div className="control">
+            <label htmlFor="porstal">Porstal</label>
+            <input type="text" id="porstal" name="postal-code" required />
+          </div>
+          <div className="control">
+            <label htmlFor="city">City</label>
+            <input type="text" id="city" name="city" required />
+          </div>
+        </div>
+        <div className="modal-actions">
+          <button type="button" className="text-button" onClick={onClose}>
+            Close
+          </button>
+          <button className="button" type="submit">
+            Submit Order
+          </button>
+        </div>
+      </form>
+    </dialog>,
+    document.getElementById("modal")
+  );
+});
+export default Checkout;
+
+// http.js
+export async function updateUserCheckout(order) {
+  const response = await fetch("http://localhost:3000/orders", {
+    method: "POST",
+    body: JSON.stringify({ order }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const resData = await response.json();
+  if (!response.ok) {
+    throw new Error("데이터를 저장하는데 실패했습니다.");
+  }
+
+  //   return resData.message;
+  return response.body;
+}
+```
+
+- 처음에 백엔드로 들어오는 데이터를 출력해보았는데 계속해서 []로 빈 배열이 나왔다.
+- 그 이유는 http.js에서 `const resData = response.json()`으로만 설정했기 때문이다! &rarr; `response.json()`앞에 `await`을 추가하여 비동기적으로 동작하도록 설정
+- 그럼에도 계속해서 [] 로 나왔다. &rarr; Checkout.jsx에서 주문서를 제출하고 해당 데이터를 백엔드에 전달하는 `updateUserCheckout`함수를 사용할 때 전달하는 매개변수로 `checkoutData`로 설정했다. 이는 아직 상태 업데이트가 적용되지 않았기 때문에 빈 배열인 것이다. &rarr; 따라서 `newCheckoutData`로 매개변수를 변경했더니 성공적으로 데이터가 전달되었다.
+- (+ 추가) : `order.customer.postal-code` 의 속성 이름 오류도 있어서 `.trim()`함수 실행의 오류가 있었다. 해당 속성 이름이 잘못되어 `undefined`인 경우에 `trim()` 함수의 실행에 오류가 발생한다.
+
+#### 💎 결과
+
+![POST 결과](./src/assets/projectImg/post.png)

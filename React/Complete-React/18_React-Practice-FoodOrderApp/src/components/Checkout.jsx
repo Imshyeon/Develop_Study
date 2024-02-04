@@ -1,8 +1,19 @@
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
+import { CartContext } from "../assets/context/cart-context";
+import { updateUserCheckout } from "../http.js";
 
 const Checkout = forwardRef(function Checkout({ total, onClose }, ref) {
   const dialog = useRef();
+  const { cartItems } = useContext(CartContext);
+  const [checkoutData, setCheckoutData] = useState([]);
 
   useImperativeHandle(ref, () => {
     return {
@@ -15,13 +26,24 @@ const Checkout = forwardRef(function Checkout({ total, onClose }, ref) {
     };
   });
 
-  function handleSumbmit(event, totalAmount) {
+  async function handleSumbmit(event) {
     event.preventDefault();
     const fd = new FormData(event.target);
     const data = Object.fromEntries(fd.entries());
-    data.totalAmount = totalAmount;
-    console.log(data);
+    const newCheckoutData = {
+      items: cartItems,
+      customer: { ...data },
+    };
+    setCheckoutData(() => newCheckoutData);
+
+    try {
+      console.log("try", newCheckoutData);
+      await updateUserCheckout(newCheckoutData);
+    } catch (error) {
+      setCheckoutData([]);
+    }
   }
+  console.log(checkoutData);
 
   return createPortal(
     <dialog ref={dialog} className="modal">
@@ -43,7 +65,7 @@ const Checkout = forwardRef(function Checkout({ total, onClose }, ref) {
         <div className="control-row">
           <div className="control">
             <label htmlFor="porstal">Porstal</label>
-            <input type="text" id="porstal" name="porstal" required />
+            <input type="text" id="porstal" name="postal-code" required />
           </div>
           <div className="control">
             <label htmlFor="city">City</label>
