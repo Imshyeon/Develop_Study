@@ -1530,3 +1530,7 @@ export default function useHttp(url, config, initialData) {
 ```
 
 - 데이터 전송 후 기존에 존재하는 데이터를 초기화하기 위한 코드 추가
+
+![checkoutSending](./src/assets/checkoutSending.gif)
+
+![checkoutError](./src/assets/checkoutError.png)
