@@ -1072,3 +1072,109 @@ export default function Checkout({}) {
 ## 📌 HTTP 에러와 로딩 다루기
 
 ### 📖 커스텀 HTTP Hook 추가 & 일반적인 에러 방지
+
+#### 💎 src/hooks/useHttp.js
+
+```js
+import { useState, useEffect, useCallback } from "react";
+
+async function sendHttpRequest(url, config) {
+  // 요청을 보내는 업무 전반을 담당
+  const response = await fetch(url, config);
+
+  const resData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(resData.message || "Http 요청을 보내지 못했습니다."); // backend/app.js에서 responseData의 json에 에러메시지가 있다.
+  }
+
+  return resData;
+}
+
+// http 요청을 할 커스텀 훅 작성
+export default function useHttp(url, config, initialData) {
+  const [data, setData] = useState(initialData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
+
+  const sendRequest = useCallback(
+    async function sendRequest() {
+      // 요청 상태에 따라 상태를 업데이트
+      setIsLoading(true);
+      try {
+        const resData = await sendHttpRequest(url, config);
+        setData(resData);
+      } catch (error) {
+        setError(error.message || "문제가 발생했습니다.");
+      }
+      setIsLoading(false);
+    },
+    [url, config] // 이 둘 중 하나라도 변하면 다시 진행해야한다.
+  );
+
+  useEffect(() => {
+    // GET 요청이 보내져야 하는 시점은 이 훅을 포함한 컴포넌트가 렌더링될 때이다.
+    // 만약 GET이 아닌 다른 요청 메서드를 사용한다면 항상 sendRequest()를 보낼 필요가 없다.
+    // (+) GET의 경우 따로 method를 설정하지 않아도 default가 GET이므로 fetch 요청을 보낼 때. 따로 config를 작성하지 않을 수 있다.
+    // 따라서 !config.method, !config 를 조건문에 채워넣음으로써 config를 설정하지 않는 GET 요청도 해당 조건문에 들어갈 수 있도록 설정
+    if ((config && (config.method === "GET" || !config.method)) || !config) {
+      sendRequest();
+    }
+  }, [sendRequest, config]); // 무한 루프를 방지하기 위해 sendRequest를 useCallback으로 감싼다.
+
+  return {
+    data,
+    isLoading,
+    error,
+    sendRequest, // GET이 아닌 다른 메서드(POST)일 때 언제든 직접 sendRequest를 보낼 수 있도록 함.
+  };
+}
+```
+
+- `useHttp` 커스텀 훅을 작성하고 해당 훅 안에 `sendRequest` 함수를 작성한다.
+- `sendRequest`
+  - `sendRequest` 함수는 상태(로딩, 에러, 데이터)를 업데이트하면서 `sendHttpRequest` 함수를 동작시킨다. 이때, `sendHttpRequest` 함수는 백엔드에 요청을 보내는 역할만을 수행한다. &rarr; 가독성 측면에서 좋음
+  - `sendRequest` 함수는 비동기식이므로 `sendHttpRequest` 앞에 await 키워드를 추가할 필요가 있다.
+- `useEffect`
+  - `sendRequest` 함수는 http 요청의 `config`가 바뀌는 경우에 다시 실행할 필요가 있으므로 useEffect를 이용하였다.
+  - 또한 effect 함수 외부의 함수(`sendRequest`)를 사용하기 때문에 의존성에 `sendRequest`를 추가하고, 함수를 의존성에 추가하는 것이므로 useCallback으로 `sendRequest` 함수를 감싸 무한 루프에 빠지지 않도록 한다.
+  - 해당 effect 함수는 GET 메서드에서만 동작하게 하고 싶으므로 `config`에 대한 조건문을 달아야한다.
+  - GET 메서드는 fetch의 디폴트 값이므로 config를 직접 설정하지 않아도 되고, config를 설정하더라도 메서드를 입력하거나 하지 않아도 된다. 이를 고려하여 조건문 작성.
+- 해당 커스텀 훅은 데이터와 로딩, 에러 상태를 리턴하고 GET 이외의 다른 메서드(ex. POST)에서는 직접 `sendRequest` 메서드를 출력하여 fetch할 것이므로 `sendRequest` 함수도 리턴한다.
+
+#### 💎 Meals.jsx
+
+```jsx
+import useHttp from "../hooks/useHttp";
+import MealItem from "./MealItem";
+
+const requestConfig = {};
+
+export default function Meals() {
+  const {
+    data: loadedMeals,
+    isLoading,
+    error,
+  } = useHttp("http://localhost:3000/meals", requestConfig, []);
+  // 그냥 {}으로 config를 설정하지만 해당 객체는 계속해서 재생성되는 객체이다.
+  // 따라서 해당 컴포넌트 밖에서 requestConfig를 설정하여 빈 객체를 전달
+
+  console.log(loadedMeals);
+
+  if (isLoading) {
+    return <p>Fetching Meals...</p>;
+  }
+
+  return (
+    <ul id="meals">
+      {loadedMeals.map((meal) => (
+        <MealItem key={meal.id} meal={meal} />
+      ))}
+    </ul>
+  );
+}
+```
+
+- 기존의 effect 함수와 state 를 삭제하고 `useHttp`를 추가했다. GET 메서드를 사용하므로 별도의 config를 제출하진 않았으며 initialData로 빈 배열을 전달하여 커스텀 훅의 데이터 상태에 초기값을 전달한다.
+- 이때, 그냥 `useHttp('url', {}, [])`로만 fetch한다면 {}는 빈 객체이고 커스텀 훅의 effect 함수의 의존성에 따라 계속해서 재생성될 것이다 &rarr; 무한 루프 진행
+- 따라서 바로 {}를 전달하지 않고 해당 컴포넌트 밖에서 `requestConfig` 를 설정하여 전달한다.

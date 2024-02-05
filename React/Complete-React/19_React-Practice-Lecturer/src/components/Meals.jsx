@@ -1,24 +1,22 @@
-import { useState, useEffect } from "react";
+import useHttp from "../hooks/useHttp";
 import MealItem from "./MealItem";
 
+const requestConfig = {};
+
 export default function Meals() {
-  const [loadedMeals, setLoadedMeals] = useState([]);
+  const {
+    data: loadedMeals,
+    isLoading,
+    error,
+  } = useHttp("http://localhost:3000/meals", requestConfig, []);
+  // 그냥 {}으로 config를 설정하지만 해당 객체는 계속해서 재생성되는 객체이다.
+  // 따라서 해당 컴포넌트 밖에서 requestConfig를 설정하여 빈 객체를 전달
 
-  useEffect(() => {
-    async function fetchMeals() {
-      const response = await fetch("http://localhost:3000/meals");
+  console.log(loadedMeals);
 
-      if (!response.ok) {
-        //...
-      }
-
-      const meals = await response.json();
-      setLoadedMeals(meals);
-    }
-
-    fetchMeals();
-  }, []); // 외부 속성이나 상태 혹은 렌더링 도중 변화를 가져올 만한 값을 사용하지 않았기 때문에 의존성이 없다.
-  // 외부 상태를 사용한 것은 setLoadedMeals인데 이는 리액트에서 자동으로 설정해준다.
+  if (isLoading) {
+    return <p>Fetching Meals...</p>;
+  }
 
   return (
     <ul id="meals">
