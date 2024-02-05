@@ -19,12 +19,16 @@ export default function useHttp(url, config, initialData) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
 
+  function clearData() {
+    setData(initialData);
+  }
+
   const sendRequest = useCallback(
-    async function sendRequest() {
+    async function sendRequest(data) {
       // 요청 상태에 따라 상태를 업데이트
       setIsLoading(true);
       try {
-        const resData = await sendHttpRequest(url, config);
+        const resData = await sendHttpRequest(url, { ...config, body: data });
         setData(resData);
       } catch (error) {
         setError(error.message || "문제가 발생했습니다.");
@@ -49,5 +53,6 @@ export default function useHttp(url, config, initialData) {
     isLoading,
     error,
     sendRequest, // GET이 아닌 다른 메서드(POST)일 때 언제든 직접 sendRequest를 보낼 수 있도록 함.
+    clearData,
   };
 }

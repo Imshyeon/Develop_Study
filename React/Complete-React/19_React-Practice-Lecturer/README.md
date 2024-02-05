@@ -1233,3 +1233,300 @@ export default function Error({ title, message }) {
 ```
 
 ![errorMessage](./src/assets/errorMessage.png)
+
+<br>
+
+### 📖 Checkout.jsx에 로딩과 에러 설정하기
+
+#### 💎 Checkout.jsx
+
+```jsx
+import { useContext } from "react";
+import { currencyFormatter } from "../util/formatting";
+import Modal from "./UI/Modal";
+import Input from "./UI/Input";
+import Button from "./UI/Button";
+import CartContext from "../store/CartContext";
+import UserProgressContext from "../store/UserProgressContext";
+import useHttp from "../hooks/useHttp";
+import Error from "./Error";
+
+const requestConfig = {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
+
+export default function Checkout({}) {
+  const cartCtx = useContext(CartContext);
+  const userProgressCtx = useContext(UserProgressContext);
+
+  const {
+    data,
+    isLoading: isSending,
+    error,
+    sendRequest,
+    clearData,
+  } = useHttp("http://localhost:3000/orders", requestConfig);
+
+  const cartTotal = cartCtx.items.reduce((totalPrice, item) => {
+    return totalPrice + item.quantity * item.price;
+  }, 0);
+
+  function handleCloseCheckout() {
+    userProgressCtx.hideCheckout();
+  }
+
+  function handleFinish() {
+    userProgressCtx.hideCheckout();
+    cartCtx.clearCart();
+    clearData();
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    const fd = new FormData(event.target); // 입력에 name이라는 속성이 있는데 다양한 Input 필드에서 이름에 따라 구분하고 값을 추출할 수있다.
+    const customerData = Object.fromEntries(fd.entries()); // 객체를 받는다. { email : test@example.com }
+
+    sendRequest(
+      JSON.stringify({
+        order: {
+          items: cartCtx.items,
+          customer: customerData,
+        },
+      })
+    );
+  }
+
+  let actions = (
+    <>
+      <Button type="button" onClick={handleCloseCheckout} textOnly>
+        Close
+      </Button>
+      <Button>Submit Order</Button>
+    </>
+  );
+
+  if (isSending) {
+    actions = <span>데이터를 보내는 중입니다...</span>;
+  }
+
+  if (data && !error) {
+    return (
+      <Modal
+        open={userProgressCtx.progress === "checkout"}
+        onClose={handleCloseCheckout}
+      >
+        <h2>주문 성공!</h2>
+        <p>주문이 정상적으로 처리되었습니다.</p>
+        <p>주문에 대한 상세 내용을 이메일로 보내드리겠습니다.</p>
+        <p className="modal-actions">
+          <Button onClick={handleFinish}>Okay</Button>
+        </p>
+      </Modal>
+    );
+  }
+
+  return (
+    <Modal
+      open={userProgressCtx.progress === "checkout"}
+      onClose={handleCloseCheckout}
+    >
+      <form onSubmit={handleSubmit}>
+        <h2>Checkout</h2>
+        <p>Total Amount: {currencyFormatter.format(cartTotal)}</p>
+        <Input label="Full Name" id="name" type="text" />
+        <Input label="E-mail Address" id="email" type="email" />
+        <Input label="Street" id="street" type="text" />
+        <div className="control-row">
+          <Input label="Postal Code" id="postal-code" type="text" />
+          <Input label="City" id="city" type="text" />
+        </div>
+        {error && (
+          <Error title="주문을 전송하는데 실패했습니다." message={error} />
+        )}
+        <p className="modal-actions">{actions}</p>
+      </form>
+    </Modal>
+  );
+}
+```
+
+- 로딩, 에러 메시지 출력 코드 작성
+- 모든 주문이 끝났을 때 장바구니와 데이터를 초기화하는 코드 작성
+
+#### 💎 CartContext.jsx
+
+```jsx
+import { createContext, useReducer } from "react";
+
+const CartContext = createContext({
+  items: [],
+  addItem: (item) => {},
+  removeItem: (id) => {},
+  clearCart: () => {},
+});
+
+function cartReducer(state, action) {
+  // 업데이트된 상태를 반환.
+  if (action.type === "ADD_ITEM") {
+    // 상태를 업데이트해서 음식 메뉴 항목을 더함.
+    const existingCartItemIndex = state.items.findIndex(
+      (item) => item.id === action.item.id
+    ); // 이미 상태 항목에 같은 아이디를 갖는 음식이 있다면 해당 음식의 인덱스를 저장. -> 차후에 해당 음식을 오버라이딩하는데 이용.
+
+    const updatedItems = [...state.items]; // 이전 배열의 복사본
+
+    if (existingCartItemIndex > -1) {
+      // 없는 경우에는 -1을 리턴하기 때문에 해당 조건문은 해당 항목이 이미 배열에 있다는 의미이다.
+      const existingItem = state.items[existingCartItemIndex];
+      const updatedItem = {
+        ...existingItem,
+        quantity: existingItem.quantity + 1,
+      };
+      updatedItems[existingCartItemIndex] = updatedItem; // 기존의 상품을 오버라이딩.
+    } else {
+      updatedItems.push({ ...action.item, quantity: 1 });
+    }
+
+    return { ...state, items: updatedItems };
+  }
+
+  if (action.type === "REMOVE_ITEM") {
+    // 상태에서 음식 메뉴 항목을 지움
+    const existingCartItemIndex = state.items.findIndex(
+      (item) => item.id === action.id
+    ); // 이미 상태 항목에 같은 아이디를 갖는 음식이 있다면 해당 음식의 인덱스를 저장. -> 차후에 해당 음식을 지우는데 이용
+
+    const existingCartItem = state.items[existingCartItemIndex];
+
+    const updatedItems = [...state.items];
+
+    if (existingCartItem.quantity === 1) {
+      // 하나가 있다면 지웠을 때 장바구니에서 해당 음식이 지워져야함
+      updatedItems.splice(existingCartItemIndex, 1);
+    } else {
+      const updatedItem = {
+        ...existingCartItem,
+        quantity: existingCartItem.quantity - 1,
+      };
+      updatedItems[existingCartItemIndex] = updatedItem; // 오버라이딩
+    }
+    return { ...state, items: updatedItems };
+  }
+
+  if (action.type === "CLEAR_CART") {
+    return { ...state, items: [] };
+  }
+
+  return state;
+}
+
+export function CartContextProvider({ children }) {
+  // 더 복잡한 상태를 간단하게 다룰 수 있도록 함. 상태 관리 로직을 이 컴포넌트 함수 밖으로 내보내는 것이 쉬워짐.
+  const [cart, dispatchCartAction] = useReducer(cartReducer, { items: [] }); // 리듀서 함수, 초기 상태값
+
+  const cartContext = {
+    items: cart.items,
+    addItem: addItem,
+    removeItem,
+    clearCart,
+  };
+
+  function addItem(item) {
+    dispatchCartAction({
+      type: "ADD_ITEM",
+      item: item, // item으로해도 된다.
+    });
+  }
+
+  function removeItem(id) {
+    dispatchCartAction({
+      type: "REMOVE_ITEM",
+      id,
+    });
+  }
+
+  function clearCart() {
+    dispatchCartAction({
+      type: "CLEAR_CART",
+    });
+  }
+
+  console.log(cartContext);
+
+  return (
+    <CartContext.Provider value={cartContext}>{children}</CartContext.Provider>
+  );
+}
+
+export default CartContext;
+```
+
+- CLEAR_CART 에 대한 액션 추가
+
+#### 💎 useHttp.js
+
+```js
+import { useState, useEffect, useCallback } from "react";
+
+async function sendHttpRequest(url, config) {
+  // 요청을 보내는 업무 전반을 담당
+  const response = await fetch(url, config);
+
+  const resData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(resData.message || "Http 요청을 보내지 못했습니다."); // backend/app.js에서 responseData의 json에 에러메시지가 있다.
+  }
+
+  return resData;
+}
+
+// http 요청을 할 커스텀 훅 작성
+export default function useHttp(url, config, initialData) {
+  const [data, setData] = useState(initialData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
+
+  function clearData() {
+    setData(initialData);
+  }
+
+  const sendRequest = useCallback(
+    async function sendRequest(data) {
+      // 요청 상태에 따라 상태를 업데이트
+      setIsLoading(true);
+      try {
+        const resData = await sendHttpRequest(url, { ...config, body: data });
+        setData(resData);
+      } catch (error) {
+        setError(error.message || "문제가 발생했습니다.");
+      }
+      setIsLoading(false);
+    },
+    [url, config] // 이 둘 중 하나라도 변하면 다시 진행해야한다.
+  );
+
+  useEffect(() => {
+    // GET 요청이 보내져야 하는 시점은 이 훅을 포함한 컴포넌트가 렌더링될 때이다.
+    // 만약 GET이 아닌 다른 요청 메서드를 사용한다면 항상 sendRequest()를 보낼 필요가 없다.
+    // (+) GET의 경우 따로 method를 설정하지 않아도 default가 GET이므로 fetch 요청을 보낼 때. 따로 config를 작성하지 않을 수 있다.
+    // 따라서 !config.method, !config 를 조건문에 채워넣음으로써 config를 설정하지 않는 GET 요청도 해당 조건문에 들어갈 수 있도록 설정
+    if ((config && (config.method === "GET" || !config.method)) || !config) {
+      sendRequest();
+    }
+  }, [sendRequest, config]); // 무한 루프를 방지하기 위해 sendRequest를 useCallback으로 감싼다.
+
+  return {
+    data,
+    isLoading,
+    error,
+    sendRequest, // GET이 아닌 다른 메서드(POST)일 때 언제든 직접 sendRequest를 보낼 수 있도록 함.
+    clearData,
+  };
+}
+```
+
+- 데이터 전송 후 기존에 존재하는 데이터를 초기화하기 위한 코드 추가
