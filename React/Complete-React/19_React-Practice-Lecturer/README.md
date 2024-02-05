@@ -436,3 +436,197 @@ export default function Header() {
 ```
 
 ![totalNumberOfItems](./src/assets/totalNumberOfItems.gif)
+
+<br>
+
+## 📌 Modal 이용하기
+
+### 📖 useEffect로 재사용 가능한 모달 컴포넌트 추가하기
+
+#### 💎 components/UI/Modal.jsx
+
+```jsx
+import { createPortal } from "react-dom";
+import { useEffect, useRef } from "react";
+
+export default function Modal({ children, open, className = "" }) {
+  const dialog = useRef();
+
+  useEffect(() => {
+    if (open) {
+      dialog.current.showModal();
+    }
+  }, [open]);
+
+  return createPortal(
+    <dialog ref={dialog} className={`modal ${className}`}>
+      {children}
+    </dialog>,
+    document.getElementById("modal")
+  );
+}
+```
+
+<br>
+
+### 📖 새 컨텍스트로 모달에서 Cart 열기
+
+#### 💎 store/UserProgressContext.jsx
+
+```jsx
+// 모달과 관련된 컨텍스트
+import { createContext, useState } from "react";
+
+const UserProgressContext = createContext({
+  progress: "", // cart, checkout
+  showCart: () => {},
+  hideCart: () => {},
+  showCheckout: () => {},
+  hideCheckout: () => {},
+});
+
+export function UserProgressContextProvider({ children }) {
+  const [userProgress, setUserProgress] = useState("");
+
+  function showCart() {
+    setUserProgress("cart");
+  }
+
+  function hideCart() {
+    setUserProgress("");
+  }
+
+  function showCheckout() {
+    setUserProgress("checkout");
+  }
+
+  function hideCheckout() {
+    setUserProgress("");
+  }
+
+  const userProgressCtx = {
+    progress: userProgress,
+    showCart,
+    hideCart,
+    showCheckout,
+    hideCheckout,
+  };
+
+  return (
+    <UserProgressContext.Provider value={userProgressCtx}>
+      {children}
+    </UserProgressContext.Provider>
+  );
+}
+
+export default UserProgressContext;
+```
+
+- 모달과 관련된 컨텍스트로 Cart, Checkout 모달을 표현하는데 사용할 것이다.
+
+#### 💎 Cart.jsx
+
+```jsx
+import { useContext } from "react";
+import Modal from "./UI/Modal";
+import Button from "./UI/Button";
+import CartContext from "../store/CartContext";
+import { currencyFormatter } from "../util/formatting";
+import UserProgressContext from "../store/UserProgressContext";
+
+export default function Cart() {
+  const cartCtx = useContext(CartContext);
+  const userProgressCtx = useContext(UserProgressContext);
+
+  const cartTotal = cartCtx.items.reduce((totalPrice, item) => {
+    return totalPrice + item.quantity * item.price;
+  }, 0);
+
+  return (
+    // open={open}으로만 하지 않고 컨텍스트를 이용해서 해당 콘텍스트가 cart 이면 Cart 모달을 open할 것임을 전달
+    <Modal className="cart" open={userProgressCtx.progress === "cart"}>
+      <h2>Your Cart</h2>
+      <ul>
+        {cartCtx.items.map((item) => (
+          <li key={item.id}>
+            {item.name} - {item.quantity} x{" "}
+            {currencyFormatter.format(item.price)}
+          </li>
+        ))}
+      </ul>
+      <p className="cart-total">{currencyFormatter.format(cartTotal)}</p>
+      <p className="modal-actions">
+        <Button textOnly>Close</Button>
+        <Button>Go to Checkout</Button>
+      </p>
+    </Modal>
+  );
+}
+```
+
+#### 💎 App.jsx
+
+```jsx
+import Header from "./components/Header";
+import Meals from "./components/Meals";
+import Cart from "./components/Cart";
+import { CartContextProvider } from "./store/CartContext";
+import { UserProgressContextProvider } from "./store/UserProgressContext";
+
+function App() {
+  return (
+    <UserProgressContextProvider>
+      <CartContextProvider>
+        <Header />
+        <Meals />
+        <Cart />
+      </CartContextProvider>
+    </UserProgressContextProvider>
+  );
+}
+
+export default App;
+```
+
+#### 💎 Header.jsx
+
+```jsx
+import { useContext } from "react";
+import logoImg from "../assets/logo.jpg";
+import Button from "./UI/Button";
+import CartContext from "../store/CartContext";
+import UserProgressContext from "../store/UserProgressContext";
+
+export default function Header() {
+  const cartCtx = useContext(CartContext);
+  const userProgressCtx = useContext(UserProgressContext);
+
+  // reduce는 배열을 하나의 값으로 줄여준다. 즉. 숫자 하나로 줄임.
+  // reduce(( 파생시키려는 새로운 값, 배열 )=>{}, 초기값)
+  const totalCartItems = cartCtx.items.reduce((totalNumberOfItems, item) => {
+    return totalNumberOfItems + item.quantity;
+  }, 0);
+
+  function handleShowCart() {
+    userProgressCtx.showCart();
+  }
+
+  return (
+    <header id="main-header">
+      <div id="title">
+        <img src={logoImg} alt="logo image" />
+        <h1>ReactFood</h1>
+      </div>
+      <nav>
+        <Button textOnly onClick={handleShowCart}>
+          Cart ({totalCartItems})
+        </Button>
+      </nav>
+    </header>
+  );
+}
+```
+
+- Cart 버튼을 눌렀을 때 콘텍스트의 `showCart()` 가 동작하도록 함
+
+![userProgressContext](./src/assets/userProgressContext-1.gif)
