@@ -800,3 +800,189 @@ export default function Cart() {
 <br>
 
 ## 📌 Modal 이용하기 - Checkout
+
+### 📖 커스텀 입력 컴포넌트 추가 & 모달 보임 여부 관리
+
+#### 💎 Checkout.jsx
+
+```jsx
+import { useContext } from "react";
+import { currencyFormatter } from "../util/formatting";
+import Modal from "./UI/Modal";
+import Input from "./UI/Input";
+import Button from "./UI/Button";
+import CartContext from "../store/CartContext";
+import UserProgressContext from "../store/UserProgressContext";
+
+export default function Checkout({}) {
+  const cartCtx = useContext(CartContext);
+  const userProgressCtx = useContext(UserProgressContext);
+
+  const cartTotal = cartCtx.items.reduce((totalPrice, item) => {
+    totalPrice + item.quantity * item.price;
+  }, 0);
+
+  function handleCloseCheckout() {
+    userProgressCtx.hideCheckout();
+  }
+
+  return (
+    <Modal
+      open={userProgressCtx.progress === "checkout"}
+      onClose={handleCloseCheckout}
+    >
+      <form>
+        <h2>Checkout</h2>
+        <p>Total Amount: {currencyFormatter.format(cartTotal)}</p>
+        <Input label="Full Name" id="full-name" type="text" />
+        <Input label="E-mail Address" id="email" type="email" />
+        <Input label="Street" id="street" type="text" />
+        <div className="control-row">
+          <Input label="Postal Code" id="postal-code" type="text" />
+          <Input label="City" id="city" type="text" />
+        </div>
+        <p className="modal-actions">
+          <Button type="button" onClick={handleCloseCheckout} textOnly>
+            Close
+          </Button>
+          <Button>Submit Order</Button>
+        </p>
+      </form>
+    </Modal>
+  );
+}
+```
+
+#### 💎 components/UI/Input.jsx
+
+```jsx
+export default function Input({ label, id, ...props }) {
+  return (
+    <p className="control">
+      <label htmlFor={id}>{label}</label>
+      <input id={id} name={id} {...props} required />
+    </p>
+  );
+}
+```
+
+- 커스텀 Input을 설정.
+
+#### 💎 App.jsx
+
+```jsx
+import Header from "./components/Header";
+import Meals from "./components/Meals";
+import Cart from "./components/Cart";
+import Checkout from "./components/Checkout";
+import { CartContextProvider } from "./store/CartContext";
+import { UserProgressContextProvider } from "./store/UserProgressContext";
+
+function App() {
+  return (
+    <UserProgressContextProvider>
+      <CartContextProvider>
+        <Header />
+        <Meals />
+        <Cart />
+        <Checkout />
+      </CartContextProvider>
+    </UserProgressContextProvider>
+  );
+}
+
+export default App;
+```
+
+- App에 Checkout 추가
+
+#### 💎 (+) ESC 버튼을 통해서 모달 닫기
+
+```jsx
+// components/UI/Modal.jsx
+
+import { createPortal } from "react-dom";
+import { useEffect, useRef } from "react";
+
+export default function Modal({ children, open, onClose, className = "" }) {
+  const dialog = useRef();
+
+  useEffect(() => {
+    const modal = dialog.current;
+    if (open) {
+      modal.showModal();
+    }
+
+    return () => modal.close();
+  }, [open]);
+
+  return createPortal(
+    <dialog ref={dialog} className={`modal ${className}`} onClose={onClose}>
+      {children}
+    </dialog>,
+    document.getElementById("modal")
+  );
+}
+```
+
+- 우선 Modal에 onClose 속성을 이용하여 ESC 버튼에서 모달을 닫을 수 있게 설정.
+
+```jsx
+// Cart.jsx
+
+import { useContext } from "react";
+import Modal from "./UI/Modal";
+import Button from "./UI/Button";
+import CartContext from "../store/CartContext";
+import { currencyFormatter } from "../util/formatting";
+import UserProgressContext from "../store/UserProgressContext";
+import CartItem from "./CartItem";
+
+export default function Cart() {
+  const cartCtx = useContext(CartContext);
+  const userProgressCtx = useContext(UserProgressContext);
+
+  const cartTotal = cartCtx.items.reduce((totalPrice, item) => {
+    return totalPrice + item.quantity * item.price;
+  }, 0);
+
+  function handleCloseCart() {
+    userProgressCtx.hideCart();
+  }
+
+  function handleGoToCheckout() {
+    userProgressCtx.showCheckout();
+  }
+
+  return (
+    // Modal에 onClose 속성을 전달하여 만약 컨텍스트의 progress 속성이 cart이면, handleCloseCart 함수를 실행하고
+    // progress 속성이 cart가 아니면 해당 속성을 null로 설정. -> 무조건 모달이 닫힘을 방지하여 Checkout으로 넘어갈 수 있도록 함.
+    <Modal
+      className="cart"
+      open={userProgressCtx.progress === "cart"}
+      onClose={userProgressCtx.progress === "cart" ? handleCloseCart : null}
+    >
+      <h2>Your Cart</h2>
+      <ul>
+        {cartCtx.items.map((item) => (
+          <CartItem
+            key={item.id}
+            {...item}
+            onIncrease={() => cartCtx.addItem(item)}
+            onDecrease={() => cartCtx.removeItem(item.id)}
+          />
+        ))}
+      </ul>
+      <p className="cart-total">{currencyFormatter.format(cartTotal)}</p>
+      <p className="modal-actions">
+        <Button textOnly onClick={handleCloseCart}>
+          Close
+        </Button>
+        {cartCtx.items.length > 0 && (
+          <Button onClick={handleGoToCheckout}>Go to Checkout</Button>
+        )}
+      </p>
+    </Modal>
+  );
+}
+```
