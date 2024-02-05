@@ -1,5 +1,6 @@
 import useHttp from "../hooks/useHttp";
 import MealItem from "./MealItem";
+import Error from "./Error";
 
 const requestConfig = {};
 
@@ -15,7 +16,11 @@ export default function Meals() {
   console.log(loadedMeals);
 
   if (isLoading) {
-    return <p>Fetching Meals...</p>;
+    return <p className="center">Fetching Meals...</p>;
+  }
+
+  if (error) {
+    return <Error title="메뉴를 불러오는데 실패했습니다." message={error} />;
   }
 
   return (

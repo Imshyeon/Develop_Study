@@ -1178,3 +1178,58 @@ export default function Meals() {
 - 기존의 effect 함수와 state 를 삭제하고 `useHttp`를 추가했다. GET 메서드를 사용하므로 별도의 config를 제출하진 않았으며 initialData로 빈 배열을 전달하여 커스텀 훅의 데이터 상태에 초기값을 전달한다.
 - 이때, 그냥 `useHttp('url', {}, [])`로만 fetch한다면 {}는 빈 객체이고 커스텀 훅의 effect 함수의 의존성에 따라 계속해서 재생성될 것이다 &rarr; 무한 루프 진행
 - 따라서 바로 {}를 전달하지 않고 해당 컴포넌트 밖에서 `requestConfig` 를 설정하여 전달한다.
+
+<br>
+
+### 📖 Http 로딩과 에러 상태 다루기
+
+#### 💎 Meals.jsx
+
+```jsx
+import useHttp from "../hooks/useHttp";
+import MealItem from "./MealItem";
+import Error from "./Error";
+
+const requestConfig = {};
+
+export default function Meals() {
+  const {
+    data: loadedMeals,
+    isLoading,
+    error,
+  } = useHttp("http://localhost:3000/meals", requestConfig, []);
+
+  if (isLoading) {
+    return <p className="center">Fetching Meals...</p>;
+  }
+
+  if (error) {
+    return <Error title="메뉴를 불러오는데 실패했습니다." message={error} />;
+  }
+
+  return (
+    <ul id="meals">
+      {loadedMeals.map((meal) => (
+        <MealItem key={meal.id} meal={meal} />
+      ))}
+    </ul>
+  );
+}
+```
+
+![loadingMessage](./src/assets/loadingMessage.gif)
+
+#### 💎 Error.jsx
+
+```jsx
+export default function Error({ title, message }) {
+  return (
+    <div className="error">
+      <h2>{title}</h2>
+      <p>{message}</p>
+    </div>
+  );
+}
+```
+
+![errorMessage](./src/assets/errorMessage.png)
