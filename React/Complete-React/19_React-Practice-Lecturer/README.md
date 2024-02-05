@@ -4,6 +4,7 @@
 [📌 Meals](#-meals)<br>
 [📌 커스텀 버튼 컴포넌트 생성하기](#-커스텀-버튼-컴포넌트-생성하기)<br>
 [📌 Cart](#-cart)<br>
+[📌 Modal 이용하기](#-modal-이용하기)<br>
 <br>
 
 ## 📌 Header
@@ -713,3 +714,84 @@ export default function Modal({ children, open, className = "" }) {
 ```
 
 ![modalClose](./src/assets/modalClose.gif)
+
+<br>
+
+### 📖 CartItem 작성하기
+
+#### 💎 CartItem.jsx
+
+```jsx
+import { currencyFormatter } from "../util/formatting";
+
+export default function CartItem({
+  name,
+  quantity,
+  price,
+  onIncrease,
+  onDecrease,
+}) {
+  return (
+    <li className="cart-item" key={name}>
+      <p>
+        {name} - {quantity} X {currencyFormatter.format(price)}
+      </p>
+      <p className="cart-item-actions">
+        <button onClick={onDecrease}>-</button>
+        <span>{quantity}</span>
+        <button onClick={onIncrease}>+</button>
+      </p>
+    </li>
+  );
+}
+```
+
+#### 💎 Cart.jsx
+
+```jsx
+import { useContext } from "react";
+import Modal from "./UI/Modal";
+import Button from "./UI/Button";
+import CartContext from "../store/CartContext";
+import { currencyFormatter } from "../util/formatting";
+import UserProgressContext from "../store/UserProgressContext";
+import CartItem from "./CartItem";
+
+export default function Cart() {
+  const cartCtx = useContext(CartContext);
+  const userProgressCtx = useContext(UserProgressContext);
+
+  const cartTotal = cartCtx.items.reduce((totalPrice, item) => {
+    return totalPrice + item.quantity * item.price;
+  }, 0);
+
+  function handleCloseCart() {
+    userProgressCtx.hideCart();
+  }
+
+  return (
+    <Modal className="cart" open={userProgressCtx.progress === "cart"}>
+      <h2>Your Cart</h2>
+      <ul>
+        {cartCtx.items.map((item) => (
+          <CartItem
+            key={item.id}
+            {...item}
+            onIncrease={() => cartCtx.addItem(item)}
+            onDecrease={() => cartCtx.removeItem(item.id)}
+          />
+        ))}
+      </ul>
+      <p className="cart-total">{currencyFormatter.format(cartTotal)}</p>
+      <p className="modal-actions">
+        <Button textOnly onClick={handleCloseCart}>
+          Close
+        </Button>
+        <Button>Go to Checkout</Button>
+      </p>
+    </Modal>
+  );
+}
+```
+
+![CartItem](./src/assets/CartItem.gif)
