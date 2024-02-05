@@ -4,7 +4,8 @@
 [📌 Meals](#-meals)<br>
 [📌 커스텀 버튼 컴포넌트 생성하기](#-커스텀-버튼-컴포넌트-생성하기)<br>
 [📌 Cart](#-cart)<br>
-[📌 Modal 이용하기](#-modal-이용하기)<br>
+[📌 Modal 이용하기 - Cart](#-modal-이용하기---cart)<br>
+[📌 Modal 이용하기 - Checkout](#-modal-이용하기---checkout)<br>
 <br>
 
 ## 📌 Header
@@ -440,7 +441,7 @@ export default function Header() {
 
 <br>
 
-## 📌 Modal 이용하기
+## 📌 Modal 이용하기 - Cart
 
 ### 📖 useEffect로 재사용 가능한 모달 컴포넌트 추가하기
 
@@ -795,3 +796,7 @@ export default function Cart() {
 ```
 
 ![CartItem](./src/assets/CartItem.gif)
+
+<br>
+
+## 📌 Modal 이용하기 - Checkout
