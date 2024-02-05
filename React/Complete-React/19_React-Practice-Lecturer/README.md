@@ -630,3 +630,86 @@ export default function Header() {
 - Cart 버튼을 눌렀을 때 콘텍스트의 `showCart()` 가 동작하도록 함
 
 ![userProgressContext](./src/assets/userProgressContext-1.gif)
+
+<br>
+
+### 📖 모달에서 Cart 닫기
+
+#### 💎 Cart.jsx
+
+```jsx
+import { useContext } from "react";
+import Modal from "./UI/Modal";
+import Button from "./UI/Button";
+import CartContext from "../store/CartContext";
+import { currencyFormatter } from "../util/formatting";
+import UserProgressContext from "../store/UserProgressContext";
+
+export default function Cart() {
+  const cartCtx = useContext(CartContext);
+  const userProgressCtx = useContext(UserProgressContext);
+
+  const cartTotal = cartCtx.items.reduce((totalPrice, item) => {
+    return totalPrice + item.quantity * item.price;
+  }, 0);
+
+  // close 함수 추가
+  function handleCloseCart() {
+    userProgressCtx.hideCart();
+  }
+
+  return (
+    <Modal className="cart" open={userProgressCtx.progress === "cart"}>
+      <h2>Your Cart</h2>
+      <ul>
+        {cartCtx.items.map((item) => (
+          <li key={item.id}>
+            {item.name} - {item.quantity} x{" "}
+            {currencyFormatter.format(item.price)}
+          </li>
+        ))}
+      </ul>
+      <p className="cart-total">{currencyFormatter.format(cartTotal)}</p>
+      <p className="modal-actions">
+        <Button textOnly onClick={handleCloseCart}>
+          Close
+        </Button>
+        <Button>Go to Checkout</Button>
+      </p>
+    </Modal>
+  );
+}
+```
+
+이렇게 해도 모달 닫기가 되지 않는 것을 알 수 있다. 이는 Modal.jsx에서 해당 모달을 닫기 위한 close함수가 적용되지 않았기 때문이다.
+
+#### 💎 Modal.jsx
+
+```jsx
+import { createPortal } from "react-dom";
+import { useEffect, useRef } from "react";
+
+export default function Modal({ children, open, className = "" }) {
+  const dialog = useRef();
+
+  useEffect(() => {
+    const modal = dialog.current; // 혹시나 다른 dialog를 참조할 수 있으므로 현재 dialog를 별도의 상수에 저장하여 컨트롤
+    if (open) {
+      modal.showModal();
+    }
+
+    // 모달 close에 관한 코드 작성 필요.
+    return () => modal.close(); // cleanup은 시점상으로는 effect 함수보다 더 나중에 실행된다.
+    // cleanup함수는 open값이 미래에 변하는 때에만 실행되기 때문이다.
+  }, [open]);
+
+  return createPortal(
+    <dialog ref={dialog} className={`modal ${className}`}>
+      {children}
+    </dialog>,
+    document.getElementById("modal")
+  );
+}
+```
+
+![modalClose](./src/assets/modalClose.gif)
