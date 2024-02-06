@@ -14,4 +14,10 @@
 
 ## 📌 복습
 
-🔗 [스스로 작성한 코드 보러가기]()
+🔗 [스스로 작성한 코드 보러가기](https://github.com/Imshyeon/Develop_Study/tree/6d697c4ae3d28b38f42c7e21c2aa10726901d926/React/Complete-React/21_React-Redux-Deep-Dive/src)
+
+![스스로 작성한 코드](./readme/myown.gif)
+
+### 📖 강사 코드
+
+🔗 []()

@@ -4,14 +4,10 @@ import Products from "./components/Shop/Products";
 import { useSelector } from "react-redux";
 
 function App() {
-  const isCartBtnClicked = useSelector((state) => state.layout.isClicked);
-  const quantity = useSelector((state) => state.product.quantity);
-
-  const isQtyZero = quantity === 0 ? true : false;
-
+  const showCart = useSelector((state) => state.ui.cartIsVisible);
   return (
     <Layout>
-      {isCartBtnClicked && !isQtyZero && <Cart />}
+      {showCart && <Cart />}
       <Products />
     </Layout>
   );
