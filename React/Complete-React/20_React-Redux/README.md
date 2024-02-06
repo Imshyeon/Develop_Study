@@ -583,3 +583,40 @@ export default Counter;
 ![toggle](./readme/toggle.gif)
 
 🔗[레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/f00308bb43e99af8891438803239ecf131b7b309#diff-8e801077a9efeacfe8d8c9705373827406d4e4b04bec6acd4102443527c59728)
+
+<br>
+
+### 📖 리덕스 State를 올바르게 사용하는 방법
+
+```jsx
+// index.jsx
+const counterReducer = (state = initailState, action) => {
+  if (action.type === "increment") {
+    return {
+      counter: state.counter + 1,
+      showCounter: state.showCounter, // 꼭 이런식으로 계속해서 오버라이딩을 해줘야 한다.
+    };
+  }
+  return state;
+};
+```
+
+- 리덕스가 기존의 상태를 업데이트하려면 완전히 새로운 객체인 새 Snapshot을 항상 반환해야한다.
+- 기존의 상태와 병합하지 않고 기존의 상태를 **'오버라이딩'**한다.
+
+```jsx
+// index.jsx
+// 🚨 잘못된 방법 🚨
+const counterReducer = (state = initailState, action) => {
+  if (action.type === "increment") {
+    state.counter++;
+    return state;
+  }
+  return state;
+};
+```
+
+- 위처럼 `state.counter++`처럼 **절대 기존의 state를 변형해서는 안된다!!**
+- 리덕스로 작업할 때는 원본의 state를 절대 변경해서는 안된다.
+
+> 항상 새로운 state 객체를 반환해서 재정의해야한다.
