@@ -20,4 +20,8 @@
 
 ### 📖 강사 코드
 
-🔗 []()
+🔗 [레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/2be18c9a50e77a686b274c9e3c11d2d7a8916d96)
+
+<br>
+
+## 📌
