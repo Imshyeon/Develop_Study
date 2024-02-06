@@ -1,6 +1,7 @@
 # Redux 알아보기
 
 [📌 리덕스(Redux)](#-리덕스redux)<br>
+[📌 프로젝트에 적용해보기](#-프로젝트에-적용해보기)<br>
 <br>
 
 ## 📌 리덕스(Redux)
@@ -196,3 +197,103 @@ store.dispatch({ type: "decrement" });
 
 - 첫번째 결과 : 증가 액션 다음에 `store.subscribe()`에서 왔다.
 - 두번째 결과 : 상태를 변경 &rarr; subscription을 트리거하여 결과가 나옴.
+
+<br>
+
+## 📌 프로젝트에 적용해보기
+
+1. `npm install redux react-redux` : react-redux는 리액트 앱과 리덕스 저장소와 리듀서에 간단히 접속하게 함.
+2. `npm start`
+   ![start](./readme/start.png)
+
+<br>
+
+### 📖 리액트 용 리액스 store 만들기
+
+#### 💎 src/store/index.jsx
+
+```jsx
+import { createStore } from "redux";
+
+const counterReducer = (state = { counter: 0 }, action) => {
+  if (action.type === "increment") {
+    return {
+      counter: state.counter + 1,
+    };
+  }
+
+  if (action.type === "decrement") {
+    return {
+      counter: state.counter - 1,
+    };
+  }
+
+  return state;
+};
+
+const store = createStore(counterReducer);
+
+export default store;
+```
+
+<br>
+
+### 📖 스토어 제공하기
+
+- 앱 전체를 렌더링한 index.js에서 `react-redux`에서 `Provider` 컴포넌트를 import 할 수 있다.
+- Provider를 import한다고 해서 현재 react-redux가 index.jsx에서 우리가 만든 store에 대해서 알지 못한다. 따라서 다음과 같이 작성하여 Provider의 store 속성에 우리가 만든 store를 전달한다.
+
+```js
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+
+import "./index.css";
+import App from "./App";
+import store from "./store/index.jsx";
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+```
+
+- 이제, App 컴포넌트와 하위 컴포넌트들은 해당 저장소에 접근할 수 있다.
+
+<br>
+
+### 📖 리액트 컴포넌트에서 리덕스 데이터 사용하기
+
+#### 💎 Counter.js
+
+```js
+import classes from "./Counter.module.css";
+import { useSelector } from "react-redux";
+
+const Counter = () => {
+  // 해당 함수를 react-redux가 수행. 이 컴포넌트에 필요로 하는 상태 부분을 받아온다.
+  // useSelector를 사용할 때 react-redux는 이 컴포넌트를 위해 리덕스 저장소에 자동으로 구독을 설정함.
+  // 이제 이 컴포넌트는 리덕스 저장소에서 데이터가 변경될 때마다 자동으로 업데이트되고 최신 카운터를 받는다.
+  const counter = useSelector((state) => state.counter);
+
+  const toggleCounterHandler = () => {};
+
+  return (
+    <main className={classes.counter}>
+      <h1>Redux Counter</h1>
+      <div className={classes.value}>{counter}</div>
+      <button onClick={toggleCounterHandler}>Toggle Counter</button>
+    </main>
+  );
+};
+
+export default Counter;
+```
+
+- useSelector : react-redux 팀이 만든 커스텀 훅으로 저장소가 관리하는 상태 부분을 우리가 자동으로 선택할 수 있다.
+  - useStore도 있으나 useSelector가 사용하기 더 편하다.
+  - 만약 함수형 컴포넌트가 아닌 클래스 기반 컴포넌트를 사용한다면 useSelector 대신 connect를 사용할 수 있다.
+
+![counter](./readme/react-redux-counter.png)
