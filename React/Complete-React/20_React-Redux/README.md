@@ -970,3 +970,83 @@ const Auth = () => {
 
 export default Auth;
 ```
+
+<br>
+
+### 📖 코드 분할하기
+
+#### 💎 store/counter.js
+
+```js
+import { createSlice } from "@reduxjs/toolkit";
+
+const initailCounterState = { counter: 0, showCounter: true };
+
+// 전역 상태의 slice 미리 만들기
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: initailCounterState,
+  reducers: {
+    increment(state) {
+      state.counter++;
+    },
+    decrement(state) {
+      state.counter--;
+    },
+    increase(state, action) {
+      state.counter = state.counter + action.payload;
+    },
+    toggleCounter(state) {
+      state.showCounter = !state.showCounter;
+    },
+  },
+});
+
+export const counterActions = counterSlice.actions;
+export default counterSlice.reducer;
+```
+
+#### 💎 store/auth.js
+
+```js
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialAuthState = {
+  isAuthenticated: false,
+};
+
+const authSlice = createSlice({
+  name: "auth",
+  initialState: initialAuthState,
+  reducers: {
+    login(state) {
+      state.isAuthenticated = true;
+    },
+    logout(state) {
+      state.isAuthenticated = false;
+    },
+  },
+});
+
+export const authActions = authSlice.actions;
+export default authSlice.reducer;
+```
+
+#### 💎 store/index.js
+
+```js
+import { configureStore } from "@reduxjs/toolkit";
+import counterReducer from "./counter.js";
+import authReducer from "./auth.js";
+
+const store = configureStore({
+  reducer: {
+    counter: counterReducer,
+    auth: authReducer,
+  },
+});
+
+export default store;
+```
+
+🔗 []()
