@@ -1,11 +1,11 @@
 import { createSlice, configureStore } from "@reduxjs/toolkit";
 
-const initailState = { counter: 0, showCounter: true };
+const initailCounterState = { counter: 0, showCounter: true };
 
 // 전역 상태의 slice 미리 만들기
 const counterSlice = createSlice({
   name: "counter",
-  initialState: initailState,
+  initialState: initailCounterState,
   reducers: {
     increment(state) {
       // 바로 상태를 변경할 수 있다. => 그러나 상태를 직접 변경하는 것처럼 보일 뿐이다.
@@ -25,13 +25,34 @@ const counterSlice = createSlice({
   },
 });
 
+const initialAuthState = {
+  isAuthenticated: false,
+};
+
+const authSlice = createSlice({
+  name: "auth",
+  initialState: initialAuthState,
+  reducers: {
+    login(state) {
+      state.isAuthenticated = true;
+    },
+    logout(state) {
+      state.isAuthenticated = false;
+    },
+  },
+});
+
 const store = configureStore({
-  reducer: counterSlice.reducer,
+  reducer: {
+    counter: counterSlice.reducer,
+    auth: authSlice.reducer,
+  },
 });
 // configureStore : createStore처럼 store를 만든다.
 // 여러 개의 리듀서를 하나의 리듀서로 쉽게 합칠 수 있다.
 // configureStore가 모든 리듀서를 하나의 큰 리듀서로 병합할 것이다.
 
 export const counterActions = counterSlice.actions; // 액션 생성자 메서드를 사용하여 리듀서 매서드와 이름이 같으면 액션을 전달한다.
+export const authActions = authSlice.actions;
 
 export default store;

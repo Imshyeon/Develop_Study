@@ -808,3 +808,165 @@ const Counter = () => {
 
 export default Counter;
 ```
+
+<br>
+
+### 📖 다중 슬라이스 작업하기
+
+#### 💎 index.jsx
+
+```jsx
+import { createSlice, configureStore } from "@reduxjs/toolkit";
+
+const initailCounterState = { counter: 0, showCounter: true };
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: initailCounterState,
+  reducers: {
+    increment(state) {
+      state.counter++;
+    },
+    decrement(state) {
+      state.counter--;
+    },
+    increase(state, action) {
+      state.counter = state.counter + action.payload; // 툴킷에서 디폴트로 설정된 프로퍼티 네임
+    },
+    toggleCounter(state) {
+      state.showCounter = !state.showCounter;
+    },
+  },
+});
+
+const initialAuthState = {
+  isAuthenticated: false,
+};
+
+const authSlice = createSlice({
+  name: "auth",
+  initialState: initialAuthState,
+  reducers: {
+    login(state) {
+      state.isAuthenticated = true;
+    },
+    logout(state) {
+      state.isAuthenticated = false;
+    },
+  },
+});
+
+const store = configureStore({
+  reducer: {
+    counter: counterSlice.reducer,
+    auth: authSlice.reducer,
+  },
+});
+
+export const counterActions = counterSlice.actions;
+export const authActions = authSlice.actions;
+
+export default store;
+```
+
+#### 💎 App.js
+
+```js
+import Counter from "./components/Counter";
+import Header from "./components/Header";
+import Auth from "./components/Auth";
+import UserProfile from "./components/UserProfile";
+
+import { useSelector } from "react-redux";
+
+function App() {
+  const isAuth = useSelector((state) => state.auth.isAuthenticated);
+
+  return (
+    <>
+      <Header />
+      {!isAuth && <Auth />}
+      {isAuth && <UserProfile />}
+      <Counter />
+    </>
+  );
+}
+
+export default App;
+```
+
+#### 💎 Header.js
+
+```js
+import { useDispatch, useSelector } from "react-redux";
+import { authActions } from "../store/index";
+
+import classes from "./Header.module.css";
+
+const Header = () => {
+  const isAuth = useSelector((state) => state.auth.isAuthenticated);
+  const dispatch = useDispatch();
+  const onLogout = () => {
+    dispatch(authActions.logout());
+  };
+  return (
+    <header className={classes.header}>
+      <h1>Redux Auth</h1>
+      {isAuth && (
+        <nav>
+          <ul>
+            <li>
+              <a href="/">My Products</a>
+            </li>
+            <li>
+              <a href="/">My Sales</a>
+            </li>
+            <li>
+              <button onClick={onLogout}>Logout</button>
+            </li>
+          </ul>
+        </nav>
+      )}
+    </header>
+  );
+};
+
+export default Header;
+```
+
+#### 💎 Auth.js
+
+```js
+import { useDispatch } from "react-redux";
+import { authActions } from "../store/index";
+
+import classes from "./Auth.module.css";
+
+const Auth = () => {
+  const dispatch = useDispatch();
+  const onLogin = (event) => {
+    event.preventDefault();
+    dispatch(authActions.login());
+  };
+
+  return (
+    <main className={classes.auth}>
+      <section>
+        <form onSubmit={onLogin}>
+          <div className={classes.control}>
+            <label htmlFor="email">Email</label>
+            <input type="email" id="email" />
+          </div>
+          <div className={classes.control}>
+            <label htmlFor="password">Password</label>
+            <input type="password" id="password" />
+          </div>
+          <button>Login</button>
+        </form>
+      </section>
+    </main>
+  );
+};
+
+export default Auth;
+```
