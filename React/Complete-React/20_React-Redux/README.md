@@ -401,3 +401,86 @@ export default connect(mapStateToProps, mapDispatchToProps)(Counter);
 - connect는 기본적으로 useSelector와 비슷하다.
 - connect는 두 개의 함수를 파라미터로 받는다. 하나는 `mapStateToProps`이고 다른 하나는 `mapDispatchToProps`이다.
 - props를 이용해서 해당 컴포넌트에 state, dispatch를 전달할 것이다.
+
+<br>
+
+### 📖 작업에 페이로드 연결하기
+
+#### 💎 index.jsx
+
+```jsx
+import { createStore } from "redux";
+
+const counterReducer = (state = { counter: 0 }, action) => {
+  if (action.type === "increment") {
+    return {
+      counter: state.counter + 1,
+    };
+  }
+
+  // 5씩 증가하기 위한 리듀서 함수 작성
+  if (action.type === "increase") {
+    return {
+      counter: state.counter + action.amount,
+    };
+  }
+
+  if (action.type === "decrement") {
+    return {
+      counter: state.counter - 1,
+    };
+  }
+
+  return state;
+};
+
+const store = createStore(counterReducer);
+
+export default store;
+```
+
+#### 💎 Counter.js
+
+```js
+import classes from "./Counter.module.css";
+import { useSelector, useDispatch, connect } from "react-redux";
+
+const Counter = () => {
+  const counter = useSelector((state) => state.counter);
+
+  const dispatch = useDispatch();
+
+  const incrementHandler = () => {
+    dispatch({ type: "increment" });
+  };
+
+  // 5씩 증가하기 위한 함수 작성 -> index.jsx에서 작성된 리듀서 함수와 같은 action 프로퍼티(amount)를 사용해야한다.
+  const increseHandler = () => {
+    dispatch({ type: "increase", amount: 5 });
+  };
+
+  const decrementHandler = () => {
+    dispatch({ type: "decrement" });
+  };
+
+  const toggleCounterHandler = () => {};
+
+  return (
+    <main className={classes.counter}>
+      <h1>Redux Counter</h1>
+      <div className={classes.value}>{counter}</div>
+      <div className="counter">
+        <button onClick={incrementHandler}>Increment</button>
+        {/* increaseHandler 연결 */}
+        <button onClick={increseHandler}>Increse by 5</button>
+        <button onClick={decrementHandler}>Decrement</button>
+      </div>
+      <button onClick={toggleCounterHandler}>Toggle Counter</button>
+    </main>
+  );
+};
+
+export default Counter;
+```
+
+![payload](./readme/payload.gif)
