@@ -2,6 +2,7 @@
 
 [📌 리덕스(Redux)](#-리덕스redux)<br>
 [📌 프로젝트에 적용해보기](#-프로젝트에-적용해보기)<br>
+[📌 리덕스 툴킷(Toolkit)](#-리덕스-툴킷toolkit)<br>
 <br>
 
 ## 📌 리덕스(Redux)
@@ -620,3 +621,60 @@ const counterReducer = (state = initailState, action) => {
 - 리덕스로 작업할 때는 원본의 state를 절대 변경해서는 안된다.
 
 > 항상 새로운 state 객체를 반환해서 재정의해야한다.
+
+<br>
+
+## 📌 리덕스 툴킷(Toolkit)
+
+리덕스에서 관리해야 할 상태가 더 많아질 경우
+
+1. 액션 타입에서 문제가 발생할 수 있다. &rarr; 어떠한 오타가 나면 리듀서가 처리하지 못한다.
+2. 관리하는 데이터와 상태가 많을 수록 상태 객체도 점점 커진다. 즉, 많은 상태를 복사해서 계속해서 새로운 객체를 리턴해야하므로 리듀서의 함수 길이가 길어지고 관리하기가 힘들어 진다.
+3. 위와 비슷하게 새로운 상태를 리턴하는 과정에서 실수를 할 가능성이 높아진다.
+
+<br>
+
+위와 같은 문제점을 해결하기 위해서 Redux toolkit을 사용한다.
+
+🔗 [Redux Toolkit](https://redux-toolkit.js.org)
+
+<br>
+
+### 📖 State 슬라이스 추가하기
+
+1. 설치하기 : `npm install @reduxjs/toolkit`
+2. package.json에서 redux를 삭제해야한다. 왜냐하면 이미 redux toolkit에 포함되어있기 때문.
+3. `npm start`
+
+#### 💎 Counter.js
+
+```js
+import { createSlice } from "@reduxjs/toolkit";
+
+const initailState = { counter: 0, showCounter: true };
+
+// 전역 상태의 slice 미리 만들기
+createSlice({
+  name: "counter",
+  initialState: initailState,
+  reducers: {
+    increment(state) {
+      // 바로 상태를 변경할 수 있다. => 그러나 상태를 직접 변경하는 것처럼 보일 뿐이다.
+      state.counter++;
+    },
+    decrement(state) {
+      state.counter--;
+    },
+    increase(state, action) {
+      state.counter = state.counter + action.amount;
+    },
+    toggleCounter(state) {
+      state.showCounter = !state.showCounter;
+    },
+  },
+});
+```
+
+- `createSlice`
+  - immer라는 내부 패키지를 이용해서 자동으로 원래있던 상태를 복제. &rarr; 새로운 상태 객체를 생성하고 오버라이딩해준다.
+  - 즉 보이기는 상태를 직접 변경하는 것처럼 보일 뿐 실제로 직접 변경하는 것은 아니다.
