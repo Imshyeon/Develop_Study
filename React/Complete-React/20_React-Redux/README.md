@@ -343,3 +343,61 @@ export default Counter;
   - 반환된 `dispatch` 함수는 redux store에 대한 action을 보낸다.
 
 ![dispatch](./readme/dispatch.gif)
+
+<br>
+
+### 📖 클래스 기반 컴포넌트가 있는 리덕스
+
+```js
+import { Component } from "react";
+import classes from "./Counter.module.css";
+import { connect } from "react-redux";
+
+class Counter extends Component {
+  incrementHandler() {
+    this.props.increment();
+  }
+
+  decrementHandler() {
+    this.props.decrement();
+  }
+
+  toggleCounterHandler() {}
+  render() {
+    return (
+      <main className={classes.counter}>
+        <h1>Redux Counter</h1>
+        <div className={classes.value}>{this.props.counter}</div>
+        <div className="counter">
+          <button onClick={this.incrementHandler.bind(this)}>Increment</button>
+          <button onClick={this.decrementHandler.bind(this)}>Decrement</button>
+        </div>
+        <button onClick={this.toggleCounterHandler.bind(this)}>
+          Toggle Counter
+        </button>
+      </main>
+    );
+  }
+}
+
+// 리덕스 상태를 받는 함수 => useSelector와 비슷
+const mapStateToProps = (state) => {
+  return {
+    counter: state.counter,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    increment: () => dispatch({ type: "increment" }),
+    decrement: () => dispatch({ type: "decrement" }),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Counter);
+// 커넥트가 실행되면 새로운 함수를 그 값으로 리턴한다.
+```
+
+- connect는 기본적으로 useSelector와 비슷하다.
+- connect는 두 개의 함수를 파라미터로 받는다. 하나는 `mapStateToProps`이고 다른 하나는 `mapDispatchToProps`이다.
+- props를 이용해서 해당 컴포넌트에 state, dispatch를 전달할 것이다.
