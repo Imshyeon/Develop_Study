@@ -10,6 +10,7 @@ const Counter = () => {
   // useSelector를 사용할 때 react-redux는 이 컴포넌트를 위해 리덕스 저장소에 자동으로 구독을 설정함.
   // 이제 이 컴포넌트는 리덕스 저장소에서 데이터가 변경될 때마다 자동으로 업데이트되고 최신 카운터를 받는다.
   const counter = useSelector((state) => state.counter);
+  const show = useSelector((state) => state.showCounter);
 
   const dispatch = useDispatch(); // 실행할 수 있는 dispatch function을 반환한다.
   // -> 반환된 dispatch 함수는 redux store에 대한 action을 보낸다.
@@ -26,12 +27,14 @@ const Counter = () => {
     dispatch({ type: "decrement" });
   };
 
-  const toggleCounterHandler = () => {};
+  const toggleCounterHandler = () => {
+    dispatch({ type: "toggle" });
+  };
 
   return (
     <main className={classes.counter}>
       <h1>Redux Counter</h1>
-      <div className={classes.value}>{counter}</div>
+      {show && <div className={classes.value}>{counter}</div>}
       <div className="counter">
         <button onClick={incrementHandler}>Increment</button>
         <button onClick={increseHandler}>Increse by 5</button>
