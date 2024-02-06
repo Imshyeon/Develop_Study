@@ -107,3 +107,92 @@ store.dispatch({ type: "increment" });
   - 액션을 발송하는 메서드. 액션은 자바스크립트 Object로 식별자 역할을 하는 type 프로퍼티를 가진다.
 
 - `node redux-demo.js`를 터미널에 입력하여 실행 &rarr; { counter: 2 } (초기 값은 counter:1 )
+
+<br>
+
+### 📖 더 많은 리덕스 기본 사항
+
+#### 💎 redux-demo.js - 1
+
+```js
+// 리듀서 함수
+const redux = require("redux");
+
+const counterReducer = (state = { counter: 0 }, action) => {
+  if (action.type === "increment") {
+    return {
+      counter: state.counter + 1,
+    };
+  }
+
+  return state;
+};
+
+const store = redux.createStore(counterReducer);
+
+// 구독자
+const counterSubscriber = () => {
+  const latestState = store.getState();
+  console.log(latestState);
+};
+
+store.subscribe(counterSubscriber);
+
+// 액션
+store.dispatch({ type: "increment" });
+```
+
+#### 💎 `node redux-demo.js`
+
+- 결과 : { counter: 1 }
+
+---
+
+#### 💎 redux-demo.js - 2
+
+```js
+// 리듀서 함수
+const redux = require("redux");
+
+const counterReducer = (state = { counter: 0 }, action) => {
+  if (action.type === "increment") {
+    return {
+      counter: state.counter + 1,
+    };
+  }
+
+  if (action.type === "decrement") {
+    return {
+      counter: state.counter - 1,
+    };
+  }
+
+  return state;
+};
+
+const store = redux.createStore(counterReducer);
+
+// 구독자
+const counterSubscriber = () => {
+  const latestState = store.getState();
+  console.log(latestState);
+};
+
+store.subscribe(counterSubscriber);
+
+// 액션
+store.dispatch({ type: "increment" });
+store.dispatch({ type: "decrement" });
+```
+
+#### 💎 `node redux-demo.js`
+
+- 결과
+
+```bash
+{ counter: 1 }
+{ counter: 0 }
+```
+
+- 첫번째 결과 : 증가 액션 다음에 `store.subscribe()`에서 왔다.
+- 두번째 결과 : 상태를 변경 &rarr; subscription을 트리거하여 결과가 나옴.

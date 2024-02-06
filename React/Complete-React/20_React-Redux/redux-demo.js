@@ -2,9 +2,19 @@ const redux = require("redux");
 
 // 초기에 실행될 때 초기 상태값을 지정
 const counterReducer = (state = { counter: 0 }, action) => {
-  return {
-    counter: state.counter + 1,
-  };
+  if (action.type === "increment") {
+    return {
+      counter: state.counter + 1,
+    };
+  }
+
+  if (action.type === "decrement") {
+    return {
+      counter: state.counter - 1,
+    };
+  }
+
+  return state;
 };
 // 리듀서 함수
 // 표준 자바스크립트 함수이지만 리덕스 라이브러리에 의해 호출될 것
@@ -25,3 +35,5 @@ store.subscribe(counterSubscriber);
 // 액션
 store.dispatch({ type: "increment" }); // 액션(js Object로 식별자 역할을 하는 type 프로퍼티를 가진다.)을 발송하는 메서드
 // node redux-demo.js => { counter: 2 } (초기 값은 counter:1 )
+
+store.dispatch({ type: "decrement" });
