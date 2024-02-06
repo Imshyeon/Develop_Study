@@ -712,6 +712,7 @@ const counterSlice = createSlice({
 
 const store = configureStore({
   reducer: {
+    // 여러개의 리듀서를 가질때
     counter: counterSlice.reducer,
   },
 });
@@ -722,3 +723,88 @@ export default store;
 - `configureStore` : `createStore`처럼 store를 만든다.
   - 여러 개의 리듀서를 하나의 리듀서로 쉽게 합칠 수 있다.
   - configureStore가 모든 리듀서를 하나의 큰 리듀서로 병합할 것이다.
+
+<br>
+
+### 📖 리덕스 Toolkit으로 모든 것을 마이그레이션하기
+
+#### 💎 index.jsx
+
+```jsx
+import { createSlice, configureStore } from "@reduxjs/toolkit";
+
+const initailState = { counter: 0, showCounter: true };
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: initailState,
+  reducers: {
+    increment(state) {
+      state.counter++;
+    },
+    decrement(state) {
+      state.counter--;
+    },
+    increase(state, action) {
+      state.counter = state.counter + action.payload; // 툴킷에서 디폴트로 설정된 프로퍼티 네임
+    },
+    toggleCounter(state) {
+      state.showCounter = !state.showCounter;
+    },
+  },
+});
+
+const store = configureStore({
+  reducer: counterSlice.reducer,
+});
+
+// 액션 생성자 메서드를 사용하여 리듀서 매서드와 이름이 같으면 액션을 전달한다.
+export const counterActions = counterSlice.actions;
+
+export default store;
+```
+
+#### 💎 Counter.js
+
+```js
+import classes from "./Counter.module.css";
+import { useSelector, useDispatch } from "react-redux";
+import { counterActions } from "../store/index"; // action들 가져옴
+
+const Counter = () => {
+  const counter = useSelector((state) => state.counter);
+  const show = useSelector((state) => state.showCounter);
+  const dispatch = useDispatch();
+
+  const incrementHandler = () => {
+    dispatch(counterActions.increment());
+  };
+
+  const increseHandler = () => {
+    dispatch(counterActions.increase(5)); // {type: SOME_UNIQUE_IDENTIFIER, payload: 5}
+  };
+
+  const decrementHandler = () => {
+    dispatch(counterActions.decrement());
+  };
+
+  const toggleCounterHandler = () => {
+    dispatch(counterActions.toggleCounter());
+  };
+
+  return (
+    <main className={classes.counter}>
+      <h1>Redux Counter</h1>
+      {show && <div className={classes.value}>{counter}</div>}
+      <div className="counter">
+        <button onClick={incrementHandler}>Increment</button>
+        <button onClick={increseHandler}>Increse by 5</button>
+        <button onClick={decrementHandler}>Decrement</button>
+      </div>
+      <button onClick={toggleCounterHandler}>Toggle Counter</button>
+    </main>
+  );
+};
+
+export default Counter;
+```

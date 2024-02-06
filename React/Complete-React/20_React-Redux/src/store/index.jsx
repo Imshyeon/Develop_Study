@@ -17,7 +17,7 @@ const counterSlice = createSlice({
       state.counter--;
     },
     increase(state, action) {
-      state.counter = state.counter + action.amount;
+      state.counter = state.counter + action.payload; // 툴킷에서 디폴트로 설정된 프로퍼티 네임
     },
     toggleCounter(state) {
       state.showCounter = !state.showCounter;
@@ -26,12 +26,12 @@ const counterSlice = createSlice({
 });
 
 const store = configureStore({
-  reducer: {
-    counter: counterSlice.reducer,
-  },
+  reducer: counterSlice.reducer,
 });
 // configureStore : createStore처럼 store를 만든다.
 // 여러 개의 리듀서를 하나의 리듀서로 쉽게 합칠 수 있다.
 // configureStore가 모든 리듀서를 하나의 큰 리듀서로 병합할 것이다.
+
+export const counterActions = counterSlice.actions; // 액션 생성자 메서드를 사용하여 리듀서 매서드와 이름이 같으면 액션을 전달한다.
 
 export default store;

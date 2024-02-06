@@ -1,6 +1,7 @@
 // import { Component } from "react";
 import classes from "./Counter.module.css";
 import { useSelector, useDispatch, connect } from "react-redux";
+import { counterActions } from "../store/index";
 // useSelector : react-redux 팀이 만든 커스텀 훅으로 저장소가 관리하는 상태 부분을 우리가 자동으로 선택할 수 있다.
 // useStore도 있으나 useSelector가 사용하기 더 편하다.
 // 만약 함수형 컴포넌트가 아닌 클래스 기반 컴포넌트를 사용한다면 useSelector 대신 connect를 사용할 수 있다.
@@ -16,19 +17,19 @@ const Counter = () => {
   // -> 반환된 dispatch 함수는 redux store에 대한 action을 보낸다.
 
   const incrementHandler = () => {
-    dispatch({ type: "increment" });
+    dispatch(counterActions.increment());
   };
 
   const increseHandler = () => {
-    dispatch({ type: "increase", amount: 5 });
+    dispatch(counterActions.increase(5)); // {type: SOME_UNIQUE_IDENTIFIER, payload: 5}
   };
 
   const decrementHandler = () => {
-    dispatch({ type: "decrement" });
+    dispatch(counterActions.decrement());
   };
 
   const toggleCounterHandler = () => {
-    dispatch({ type: "toggle" });
+    dispatch(counterActions.toggleCounter());
   };
 
   return (
