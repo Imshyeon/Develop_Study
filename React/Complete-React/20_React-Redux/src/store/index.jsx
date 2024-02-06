@@ -1,10 +1,9 @@
-import { createStore } from "redux";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, configureStore } from "@reduxjs/toolkit";
 
 const initailState = { counter: 0, showCounter: true };
 
 // 전역 상태의 slice 미리 만들기
-createSlice({
+const counterSlice = createSlice({
   name: "counter",
   initialState: initailState,
   reducers: {
@@ -26,38 +25,13 @@ createSlice({
   },
 });
 
-const counterReducer = (state = initailState, action) => {
-  if (action.type === "increment") {
-    return {
-      counter: state.counter + 1,
-      showCounter: state.showCounter,
-    };
-  }
-
-  if (action.type === "increase") {
-    return {
-      counter: state.counter + action.amount,
-      showCounter: state.showCounter,
-    };
-  }
-
-  if (action.type === "decrement") {
-    return {
-      counter: state.counter - 1,
-      showCounter: state.showCounter,
-    };
-  }
-
-  if (action.type === "toggle") {
-    return {
-      showCounter: !state.showCounter,
-      counter: state.counter,
-    };
-  }
-
-  return state;
-};
-
-const store = createStore(counterReducer);
+const store = configureStore({
+  reducer: {
+    counter: counterSlice.reducer,
+  },
+});
+// configureStore : createStore처럼 store를 만든다.
+// 여러 개의 리듀서를 하나의 리듀서로 쉽게 합칠 수 있다.
+// configureStore가 모든 리듀서를 하나의 큰 리듀서로 병합할 것이다.
 
 export default store;
