@@ -530,3 +530,33 @@ export default App;
 - 어떤 페이지에 대한 loader는 해당 페이지로 이동하기 시작할 때 호출된다.
 - 이런 방식은 해당 컴포넌트가 렌더링되고 있을 때 그와 관련된 데이터가 있다는 것을 확실히 할 수 있어서 좋다! 또한 로딩 중 상태를 관리할 필요가 없어서 좋다!
 - 단점으로는 지연이 있을 수 있고 사용자는 아무것도 일어나지 않는 것처럼 보일 수 있다는 점이다.
+
+<br>
+
+### 📖 현재 네비게이션 상태를 UI에 반영하기
+
+#### 💎 RootPage.js
+
+```js
+import MainNavigation from "../components/MainNavigation";
+import { Outlet, useNavigation } from "react-router-dom";
+
+function RootPage() {
+  // useNavigation : 리액트 라우터가 제공해주는 훅.
+  // 현재 전환이 진행 중인지, 데이터를 전달하는 중인지 또는 전환이 진행되고 있지 않는지를 알 수 있다.
+  const navigation = useNavigation();
+
+  return (
+    <>
+      <MainNavigation />
+      <main>
+        {navigation.state === "loading" && <p>Loading...</p>}
+        <Outlet />
+      </main>
+    </>
+  );
+}
+export default RootPage;
+```
+
+- loading indicator 는 우리가 전환할 목적지인 페이지에 추가되는 것이 아니고 전환이 시작되었을 때 이미 화면에 표시되어 있는 페이지, 컴포넌트에 추가된다.
