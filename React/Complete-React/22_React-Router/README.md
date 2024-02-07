@@ -576,3 +576,40 @@ export default ProductDetailPage;
 - `relative="path"`를 함으로써 Back 버튼을 눌렀을 때 `/root/products/p1`&rarr;`/root/products`로 갈 수 있게 된다.
 
 ![relativePath](./readme/relativePath.gif)
+
+<br>
+
+### 📖 인덱스 라우터 사용하기
+
+- HomePage는 부모 라우터와 동일한 경로이다.
+- `index` 특수 프로퍼티를 추가하면, 해당 라우트가 소위 인덱스 라우트로 변하게 된다. &rarr; **부모 라우트가 현재 활성화되면 표시되어야 하는 기본 라우트라는 의미이다.**
+
+#### 💎 App.js
+
+```js
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import HomePage from "./pages/Home";
+import ProductsPage from "./pages/Products";
+import RootLayout from "./pages/Root";
+import ErrorPage from "./pages/Error";
+import ProductDetailPage from "./pages/ProductDetail";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "products", element: <ProductsPage /> },
+      { path: "products/:productId", element: <ProductDetailPage /> },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
