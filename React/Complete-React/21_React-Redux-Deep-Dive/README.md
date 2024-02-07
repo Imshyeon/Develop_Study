@@ -136,3 +136,153 @@ function App() {
 
 export default App;
 ```
+
+<br>
+
+### 📖 액션 생성자(Action creator) 사용하기
+
+- Thunk란 무엇인가?
+  - Thunk는 다른 작업이 완료될 때까지 작업을 지연시키는 단순한 함수
+
+#### 💎 src/store/cart-slice.js
+
+```js
+import { createSlice } from "@reduxjs/toolkit";
+import { uiActions } from "./ui-slice";
+
+const cartSlice = createSlice({
+  name: "cart",
+  initialState: {
+    items: [],
+    totalQuantity: 0,
+  },
+  reducers: {
+    addItemToCart(state, action) {
+      const newItem = action.payload;
+      const existingItem = state.items.find((item) => item.id === newItem.id);
+      state.totalQuantity++;
+      if (!existingItem) {
+        state.items.push({
+          id: newItem.id,
+          price: newItem.price,
+          quantity: 1,
+          totalPrice: newItem.price,
+          title: newItem.title,
+        });
+      } else {
+        existingItem.quantity++;
+        existingItem.totalPrice = existingItem.totalPrice + newItem.price;
+      }
+    },
+    removeItemFromCart(state, action) {
+      const id = action.payload;
+      const existingItem = state.items.find((item) => item.id === id);
+      state.totalQuantity--;
+      if (existingItem.quantity === 1) {
+        state.items = state.items.filter((item) => item.id !== id);
+      } else {
+        existingItem.quantity--;
+        existingItem.totalPrice = existingItem.totalPrice - existingItem.price;
+      }
+    },
+  },
+});
+
+// ==== fetch ====
+export const sendCartData = (cart) => {
+  return async (dispatch) => {
+    dispatch(
+      uiActions.showNotification({
+        status: "pending",
+        title: "Sending...",
+        message: "Sending cart data!",
+      })
+    );
+
+    const sendRequest = async () => {
+      const response = await fetch(
+        "https://react-http-480df-default-rtdb.firebaseio.com/cart.json",
+        {
+          method: "PUT",
+          body: JSON.stringify(cart),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Sending cart data failed.");
+      }
+    };
+
+    try {
+      await sendRequest();
+
+      dispatch(
+        uiActions.showNotification({
+          status: "success",
+          title: "Success!",
+          message: "Sending cart data successfully",
+        })
+      );
+    } catch (error) {
+      dispatch(
+        uiActions.showNotification({
+          status: "error",
+          title: "Error!",
+          message: "Sending cart data failed.",
+        })
+      );
+    }
+  };
+};
+
+export const cartActions = cartSlice.actions;
+export default cartSlice.reducer;
+```
+
+#### 💎 App.js
+
+```js
+import Cart from "./components/Cart/Cart";
+import Layout from "./components/Layout/Layout";
+import Products from "./components/Shop/Products";
+import Notification from "./components/UI/Notification";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+
+import { sendCartData } from "./store/cart-slice";
+
+let isInitial = true;
+
+function App() {
+  const showCart = useSelector((state) => state.ui.cartIsVisible);
+  const cart = useSelector((state) => state.cart);
+  const notification = useSelector((state) => state.ui.notification);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isInitial) {
+      isInitial = false;
+      return;
+    }
+
+    dispatch(sendCartData(cart));
+  }, [cart, dispatch]);
+
+  return (
+    <>
+      {notification && (
+        <Notification
+          state={notification.status}
+          title={notification.title}
+          message={notification.message}
+        />
+      )}
+      <Layout>
+        {showCart && <Cart />}
+        <Products />
+      </Layout>
+    </>
+  );
+}
+
+export default App;
+```
