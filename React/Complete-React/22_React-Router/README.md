@@ -356,3 +356,59 @@ export default HomePage;
 <br>
 
 ### 📖 동적 라우트 정의하고 사용하기
+
+- `:productId`와 같은 동적 세그먼트 추가
+- :을 이용해 react-router-dom에게 해당 부분이 동적임을 알린다.
+
+#### 💎 App.js
+
+```js
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import HomePage from "./pages/Home";
+import ProductsPage from "./pages/Products";
+import RootLayout from "./pages/Root";
+import ErrorPage from "./pages/Error";
+import ProductDetailPage from "./pages/ProductDetail";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      { path: "/", element: <HomePage /> },
+      { path: "/products", element: <ProductsPage /> },
+      { path: "/products/:productId", element: <ProductDetailPage /> },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+#### 💎 ProductDetail.js
+
+```js
+import { useParams } from "react-router-dom";
+
+function ProductDetailPage() {
+  const params = useParams();
+  // params 객체는 우리가 라우트 정의에서 프로퍼티로 정의한 모든 역동적인 경로 세그먼트가 담긴 간단한 자바스크립트 객체이다.
+
+  return (
+    <>
+      <h1> ProductDetailPage </h1>
+      <p>{params.productId}</p>
+      {/* '/products/:productId' */}
+    </>
+  );
+}
+
+export default ProductDetailPage;
+```
+
+![productid](./readme/paramsProductId.png)
