@@ -603,3 +603,147 @@ export async function loader() {
 - loader 안에 정의된 코드는 서버가 아닌 브라우저에서 실행된다. (클라이언트 쪽 코드이다.)
 - loader 함수에서 어떤 브라우저 API든 사용할 수 있다. ex. `localStorage, Cookie, ...`
 - loader 함수에서 useState같은 리액트 훅은 사용할 수 없다. 그 훅들은 오직 리액트 컴포넌트에서만 사용할 수 있기 때문이다. &rarr; loader 함수는 리액트 컴포넌트가 아니다.
+
+---
+
+### 📖 커스텀 오류를 이용한 오류 처리
+
+#### 💎 Events.js | 1. 객체 리턴하기
+
+```js
+import { useLoaderData } from "react-router-dom";
+import EventsList from "../components/EventsList";
+
+function EventsPage() {
+  const data = useLoaderData();
+  if (data.isError) {
+    return <p>{data.message}</p>;
+  }
+  const events = data.events;
+
+  return <EventsList events={events} />;
+}
+
+export default EventsPage;
+
+export async function loader() {
+  const response = await fetch("http://localhost:8080/eventsss");
+  if (!response.ok) {
+    return { isError: true, message: "이벤트를 가져올 수 없습니다." };
+  } else {
+    return response;
+  }
+}
+```
+
+![error1](./README/error1.png)
+
+#### 💎 Events.js | 2. `errorElement` 이용하기
+
+- errorElement : loader 뿐만 아니라 어떤 라우트 관련 코드에 오류가 발생할 때마다 화면에 표시된다.
+- 오류가 발생하면 errorElement에 도달할 때까지 해당 오류는 bubble up 될 것이다.
+
+```js
+// Events.js
+import { useLoaderData } from "react-router-dom";
+import EventsList from "../components/EventsList";
+
+function EventsPage() {
+  const data = useLoaderData();
+  if (data.isError) {
+    return <p>{data.message}</p>;
+  }
+  const events = data.events;
+
+  return <EventsList events={events} />;
+}
+
+export default EventsPage;
+
+export async function loader() {
+  const response = await fetch("http://localhost:8080/eventsss");
+  if (!response.ok) {
+    throw new Error({ message: "이벤트를 가져올 수 없습니다." });
+  } else {
+    return response;
+  }
+}
+
+
+
+// Error.js
+function ErrorPage() {
+  return <h1>오류가 발생했습니다.</h1>;
+}
+
+export default ErrorPage;
+```
+
+<br>
+
+- PageContent 추가
+
+```js
+// Events.js
+import { useLoaderData } from "react-router-dom";
+import EventsList from "../components/EventsList";
+
+function EventsPage() {
+  const data = useLoaderData();
+  if (data.isError) {
+    return <p>{data.message}</p>;
+  }
+  const events = data.events;
+
+  return <EventsList events={events} />;
+}
+
+export default EventsPage;
+
+export async function loader() {
+  const response = await fetch("http://localhost:8080/eventsss");
+  if (!response.ok) {
+    throw new Response(
+      JSON.stringify({ message: "이벤트를 가져올 수 없습니다." }),
+      { status: 500 }
+    );
+  } else {
+    return response;
+  }
+}
+
+
+// Error.js
+import MainNavigation from "../components/MainNavigation";
+import PageContent from "../components/PageContent";
+import { useRouteError } from "react-router-dom";
+
+function ErrorPage() {
+  const error = useRouteError();
+  // error 객체는 Response를 throw하거나 또는 다른 종류의 객체 혹은 데이터를 throw하는지에 달려있다.
+
+  let title = "오류가 발생했습니다";
+  let message = "Something went wrong!";
+
+  if (error.status === 500) {
+    message = JSON.parse(error.data).message;
+  }
+  if (error.status === 404) {
+    title = "Not Found";
+    message = "리소스나 페이지를 찾을 수 없습니다.";
+  }
+
+  return (
+    <>
+      <MainNavigation />
+      <PageContent title={title}>
+        <p>{message}</p>
+      </PageContent>
+    </>
+  );
+}
+
+export default ErrorPage;
+```
+
+![error2](./README/error2.gif)
