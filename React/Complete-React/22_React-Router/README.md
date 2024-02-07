@@ -447,3 +447,132 @@ export default ProductsPage;
 ```
 
 ![productIds](./readme/productIds.gif)
+
+<br>
+
+### 📖 상대 경로와 절대 경로
+
+- 경로가 '/'로 시작되면 절대 경로이다.
+
+#### 💎 App.js
+
+```js
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import HomePage from "./pages/Home";
+import ProductsPage from "./pages/Products";
+import RootLayout from "./pages/Root";
+import ErrorPage from "./pages/Error";
+import ProductDetailPage from "./pages/ProductDetail";
+
+const router = createBrowserRouter([
+  {
+    path: "/root",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      { path: "", element: <HomePage /> },
+      { path: "products", element: <ProductsPage /> },
+      { path: "products/:productId", element: <ProductDetailPage /> },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+- 위와 같이 작성하면 상대 경로가 된다. 즉 '/'가 없는 경로가 상대 경로이다.
+- 위의 코드들은 래퍼 라우트('/root')의 경로 뒤에 상대경로가 첨부된다는 의미이다.
+- 즉, 상대 경로를 사용한다면 자녀 라우트를 부모 라우트 경로 뒤에 첨부하게 된다.
+- `/root`, `/root/products`, `/root/products/p1`로 접근이 가능하다.
+- 이는 `Link`, `NavLink`의 to 프로퍼티에도 적용이 된다.
+
+#### 💎 Products.js
+
+- `Link` 컴포넌트를 사용할 때 특수한 relative 프로퍼티 추가할 수 있고 이것은 path 또는 route 중에 하나로 설정 가능하다.
+- 해당 세그먼트를 현재 활성화된 라우트 겅로에 대해 상대적으로 추가하는지, 혹은 URL에서 현재 활성화된 경로에 대해 추가하는지 제어한다. &rarr; route/path는 같을 수도 있고 다를 수도 있다.
+
+```js
+import { Link } from "react-router-dom";
+
+const PRODUCTS = [
+  { id: "p1", title: "Product 1" },
+  { id: "p2", title: "Product 2" },
+  { id: "p3", title: "Product 3" },
+];
+
+function ProductsPage() {
+  return (
+    <>
+      <h1>the Products Page</h1>
+      <ul>
+        {PRODUCTS.map((product) => (
+          <li key={product.id}>
+            <Link to={product.id}>{product.title}</Link>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+export default ProductsPage;
+```
+
+#### 💎 ProductDetail.js - relative 프로퍼티
+
+```js
+import { useParams, Link } from "react-router-dom";
+
+function ProductDetailPage() {
+  const params = useParams();
+  // params 객체는 우리가 라우트 정의에서 프로퍼티로 정의한 모든 역동적인 경로 세그먼트가 담긴 간단한 자바스크립트 객체이다.
+
+  return (
+    <>
+      <h1> ProductDetailPage </h1>
+      <p>{params.productId}</p>
+      {/* '/products/:productId' */}
+      <p>
+        <Link to="..">Back</Link>
+      </p>
+    </>
+  );
+}
+
+export default ProductDetailPage;
+```
+
+- `/root/products/p1`에서 Back 버튼을 누르면 다시 `/root`로 돌아옴을 알 수 있다.
+- 그 이유는, 해당 Link는 App.js에서 설정한 라우트에 의해서 상대적으로 정의되었기 때문이다.
+- App.js에서 부모 라우트는 `/root`이고 자녀 라우트로 3개가 있는데, 이때 `products`와 `products/:productId`는 형제 라우트이다. 따라서 라우트를 기준으로 `<Link to="..">`을 하면 부모 라우트로 가는 것이다.
+- 우리는 Back 버튼을 눌렀을 때 `/root/products/p1` &rarr; `/root/producst`로 가고 싶기 때문에 다음과 같이 설정한다.
+
+```js
+import { useParams, Link } from "react-router-dom";
+
+function ProductDetailPage() {
+  const params = useParams();
+
+  return (
+    <>
+      <h1> ProductDetailPage </h1>
+      <p>{params.productId}</p>
+      <p>
+        <Link to=".." relative="path">
+          Back
+        </Link>
+      </p>
+    </>
+  );
+}
+
+export default ProductDetailPage;
+```
+
+- `relative="path"`를 함으로써 Back 버튼을 눌렀을 때 `/root/products/p1`&rarr;`/root/products`로 갈 수 있게 된다.
+
+![relativePath](./readme/relativePath.gif)
