@@ -1105,3 +1105,185 @@ export default EventForm;
 - EditEventPage에서 전달해준 데이터를 이용해서 디폴트값을 설정한다.
 
 ![edit](./README/edit.png)
+
+<br>
+
+### 📖 데이터 제출 | `action() 사용하기`
+
+### 💎 EventForm.js
+
+```js
+import { useNavigate, Form } from "react-router-dom";
+
+import classes from "./EventForm.module.css";
+
+function EventForm({ method, event }) {
+  const navigate = useNavigate();
+  function cancelHandler() {
+    navigate("..");
+  }
+
+  return (
+    <Form method="post" className={classes.form}>
+      <p>
+        <label htmlFor="title">Title</label>
+        <input
+          id="title"
+          type="text"
+          name="title"
+          required
+          defaultValue={event ? event.title : ""}
+        />
+      </p>
+      <p>
+        <label htmlFor="image">Image</label>
+        <input
+          id="image"
+          type="url"
+          name="image"
+          required
+          defaultValue={event ? event.image : ""}
+        />
+      </p>
+      <p>
+        <label htmlFor="date">Date</label>
+        <input
+          id="date"
+          type="date"
+          name="date"
+          required
+          defaultValue={event ? event.date : ""}
+        />
+      </p>
+      <p>
+        <label htmlFor="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          rows="5"
+          required
+          defaultValue={event ? event.description : ""}
+        />
+      </p>
+      <div className={classes.actions}>
+        <button type="button" onClick={cancelHandler}>
+          Cancel
+        </button>
+        <button>Save</button>
+      </div>
+    </Form>
+  );
+}
+
+export default EventForm;
+```
+
+- `Form`은 백엔드로 요청하는 브라우저 기본값을 생략하게 만들고 대신에 전송되었을 요청들을 받아서 액션(action)에 준다. 이때, 각 input에 name 속성이 있어야한다.
+
+#### 💎 NewEventPage.js
+
+```js
+import EventForm from "../components/EventForm";
+import { json, redirect } from "react-router-dom";
+
+function NewEventPage() {
+  return <EventForm />;
+}
+
+export default NewEventPage;
+
+export async function action({ request, params }) {
+  const data = await request.formData();
+  const eventData = {
+    title: data.get("title"), // name을 넣는다.
+    image: data.get("image"),
+    date: data.get("date"),
+    description: data.get("description"),
+  };
+  const response = await fetch("http://localhost:8080/events", {
+    method: "POST",
+    body: JSON.stringify(eventData),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  console.log(response);
+
+  if (!response.ok) {
+    throw json(
+      { message: "데이터를 전송하는데 실패했습니다." },
+      { status: 500 }
+    );
+  }
+
+  return redirect("/events");
+}
+```
+
+- `action()`로 로더 함수처럼 리액트 라우터에 의해서 실행되고 유용한 프로퍼티(request, params)들이 포함된 객체를 받는다.
+
+#### 💎 App.js
+
+```js
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import RootPage from "./pages/RootPage";
+import HomePage from "./pages/HomePage";
+import EventsPage, { loader as eventsLoader } from "./pages/Events";
+import EventDetailPage, {
+  loader as eventDetailLoader,
+} from "./pages/EventDetailPage";
+import NewEventPage, { action as newEventAction } from "./pages/NewEventPage";
+import EditEventPage from "./pages/EditEventPage";
+import EventsRootLayout from "./pages/EventRoot";
+import ErrorPage from "./pages/Error";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootPage />,
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <HomePage /> },
+      {
+        path: "events",
+        element: <EventsRootLayout />,
+        children: [
+          {
+            index: true,
+            element: <EventsPage />,
+            loader: eventsLoader,
+          },
+          {
+            path: ":id",
+            id: "event-detail", // 부모라우트의 데이터를 이용하기 위함
+            loader: eventDetailLoader, // 공통 loader
+            children: [
+              {
+                index: true,
+                element: <EventDetailPage />,
+              },
+              { path: "edit", element: <EditEventPage /> },
+            ],
+          },
+
+          { path: "new", element: <NewEventPage />, action: newEventAction },
+        ],
+      },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+![newEvent](./README/newEvent.png)
+
+<br>
+
+### 📖
