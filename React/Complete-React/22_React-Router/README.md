@@ -103,3 +103,28 @@ export default App;
 <br>
 
 ### 📖 Link로 페이지들 간에 이동하기
+
+#### 💎 Home.js
+
+```js
+import { Link } from "react-router-dom";
+function HomePage() {
+  return (
+    <>
+      <h1>My Home Page</h1>
+      <p>
+        Go to <Link to="/products">the list of products</Link>
+      </p>
+    </>
+  );
+}
+
+export default HomePage;
+```
+
+- Link 컴포넌트는 배후에서 앵커(`<a>`) 요소를 렌더링하게 되지만 기본적으로는 그 요소에 대한 클릭을 감시.
+- 링크를 클릭했을 때, HTTP 요청을 전송하는 브라우저 기본 설정을 막는다.
+- 그 대신에 단순히 라우트 정의를 확인하여 페이지를 업데이트하고 그에 맞는 콘텐츠를 로딩한다.
+  &rarr; 그럼으로써 페이지를 로딩하는데 필요한 스크립트, html 다운을 방지. 상태와 컨텍스트의 초기화를 방지한다.
+
+![link](./readme/link.gif)
