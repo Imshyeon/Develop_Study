@@ -4,7 +4,7 @@ import RootPage from "./pages/RootPage";
 import HomePage from "./pages/HomePage";
 import EventsPage, { loader as eventsLoader } from "./pages/Events";
 import EventDetailPage, {
-  loader as eventsDetailLoader,
+  loader as eventDetailLoader,
 } from "./pages/EventDetailPage";
 import NewEventPage from "./pages/NewEventPage";
 import EditEventPage from "./pages/EditEventPage";
@@ -29,11 +29,18 @@ const router = createBrowserRouter([
           },
           {
             path: ":id",
-            element: <EventDetailPage />,
-            loader: eventsDetailLoader,
+            id: "event-detail", // 부모라우트의 데이터를 이용하기 위함
+            loader: eventDetailLoader, // 공통 loader
+            children: [
+              {
+                index: true,
+                element: <EventDetailPage />,
+              },
+              { path: "edit", element: <EditEventPage /> },
+            ],
           },
+
           { path: "new", element: <NewEventPage /> },
-          { path: ":id/edit", element: <EditEventPage /> },
         ],
       },
     ],

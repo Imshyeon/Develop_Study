@@ -1,10 +1,11 @@
-import { useLoaderData, json, useParams } from "react-router-dom";
+import { useRouteLoaderData, json, useParams } from "react-router-dom";
 
 import EventItem from "../components/EventItem";
 
 function EventDetailPage() {
   // const params = useParams();
-  const data = useLoaderData();
+  const data = useRouteLoaderData("event-detail");
+  // useRouteLoaderData : 부모의 데이터를 받기 위해 사용되는 훅. useLoaderData와 비슷하지만 부모 라우트에서 설정된 아이디값이 필요하다.
 
   return <EventItem event={data.event} />;
 }

@@ -919,3 +919,189 @@ export default App;
 - EventDetailPage에 대한 loader 함수 전달.
 
 ![detail](./README/detail.png)
+
+<br>
+
+### 📖 `useRouteLoaderData` 훅 및 다른 라우트의 데이터에 엑세스하기
+
+#### 💎 App.js
+
+```js
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import RootPage from "./pages/RootPage";
+import HomePage from "./pages/HomePage";
+import EventsPage, { loader as eventsLoader } from "./pages/Events";
+import EventDetailPage, {
+  loader as eventDetailLoader,
+} from "./pages/EventDetailPage";
+import NewEventPage from "./pages/NewEventPage";
+import EditEventPage from "./pages/EditEventPage";
+import EventsRootLayout from "./pages/EventRoot";
+import ErrorPage from "./pages/Error";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootPage />,
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <HomePage /> },
+      {
+        path: "events",
+        element: <EventsRootLayout />,
+        children: [
+          {
+            index: true,
+            element: <EventsPage />,
+            loader: eventsLoader,
+          },
+          {
+            path: ":id",
+            id: "event-detail", // 부모라우트의 데이터를 이용하기 위함
+            loader: eventDetailLoader, // 공통 loader
+            children: [
+              {
+                index: true,
+                element: <EventDetailPage />,
+              },
+              { path: "edit", element: <EditEventPage /> },
+            ],
+          },
+
+          { path: "new", element: <NewEventPage /> },
+        ],
+      },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+- 디테일 페이지에서 편집 페이지로 가기 위함이다. 이때, 편집 페이지에서 디테일 페이지의 데이터를 기반으로 작성하고 싶다 &rarr; 두 페이지의 부모 라우터('/events/:id')를 공유하고 그 아래에 자식 라우터를 설정함으로써 loader 함수 공유 &rarr; 로더 함수를 통해서 데이터를 받을 것이다.
+
+#### 💎 EventDetailPage.js
+
+```js
+import { useRouteLoaderData, json, useParams } from "react-router-dom";
+
+import EventItem from "../components/EventItem";
+
+function EventDetailPage() {
+  const data = useRouteLoaderData("event-detail");
+
+  return <EventItem event={data.event} />;
+}
+
+export default EventDetailPage;
+
+export async function loader({ request, params }) {
+  const id = params.id; // '/events/:id'
+  const response = await fetch("http://localhost:8080/events/" + id);
+
+  if (!response.ok) {
+    throw json(
+      { message: "이벤트 디테일에 대한 정보를 받아올 수 없습니다." },
+      { status: 500 }
+    );
+  } else {
+    return response;
+  }
+}
+```
+
+- `useRouteLoaderData` : 부모의 데이터를 받기 위해 사용되는 훅. useLoaderData와 비슷하지만 부모 라우트에서 설정된 아이디값이 필요하다.
+- 부모 라우터에서 설정된 로더 함수를 통해서 데이터를 받아오고 해당 데이터를 EventItem의 prop으로 전달할 것이기 때문에 `useRouterLoaderData` 훅을 사용
+
+#### 💎 EditEventPage.js
+
+```js
+import { useRouteLoaderData } from "react-router-dom";
+import EventForm from "../components/EventForm";
+
+function EditEventPage() {
+  const data = useRouteLoaderData("event-detail");
+  const event = data.event;
+
+  return <EventForm event={event} />;
+}
+
+export default EditEventPage;
+```
+
+#### 💎 EventForm.js
+
+```js
+import { useNavigate } from "react-router-dom";
+
+import classes from "./EventForm.module.css";
+
+function EventForm({ method, event }) {
+  const navigate = useNavigate();
+  function cancelHandler() {
+    navigate("..");
+  }
+
+  return (
+    <form className={classes.form}>
+      <p>
+        <label htmlFor="title">Title</label>
+        <input
+          id="title"
+          type="text"
+          name="title"
+          required
+          defaultValue={event ? event.title : ""}
+        />
+      </p>
+      <p>
+        <label htmlFor="image">Image</label>
+        <input
+          id="image"
+          type="url"
+          name="image"
+          required
+          defaultValue={event ? event.image : ""}
+        />
+      </p>
+      <p>
+        <label htmlFor="date">Date</label>
+        <input
+          id="date"
+          type="date"
+          name="date"
+          required
+          defaultValue={event ? event.date : ""}
+        />
+      </p>
+      <p>
+        <label htmlFor="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          rows="5"
+          required
+          defaultValue={event ? event.description : ""}
+        />
+      </p>
+      <div className={classes.actions}>
+        <button type="button" onClick={cancelHandler}>
+          Cancel
+        </button>
+        <button>Save</button>
+      </div>
+    </form>
+  );
+}
+
+export default EventForm;
+```
+
+- EditEventPage에서 전달해준 데이터를 이용해서 디폴트값을 설정한다.
+
+![edit](./README/edit.png)
