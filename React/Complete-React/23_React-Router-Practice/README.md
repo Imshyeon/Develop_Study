@@ -560,3 +560,38 @@ export default RootPage;
 ```
 
 - loading indicator 는 우리가 전환할 목적지인 페이지에 추가되는 것이 아니고 전환이 시작되었을 때 이미 화면에 표시되어 있는 페이지, 컴포넌트에 추가된다.
+
+<br>
+
+### 📖 `loader()`에서 응답 리턴하기
+
+#### 💎 Events.js
+
+```js
+import { useLoaderData } from "react-router-dom";
+import EventsList from "../components/EventsList";
+
+function EventsPage() {
+  const data = useLoaderData();
+  const events = data.events;
+
+  return <EventsList events={events} />;
+}
+
+export default EventsPage;
+
+export async function loader() {
+  const response = await fetch("http://localhost:8080/events");
+  if (!response.ok) {
+    // ...
+  } else {
+    return response;
+    // const resData = await response.json();
+    // return resData.events; // 숫자,텍스트,객체 등 다 리턴할 수 있다.
+  }
+}
+```
+
+- `fetch`는 Response 객체의 프로미스를 리턴한다.
+- Response는 최신 브라우저의 기능으로 응답 객체를 사용하여 자신만의 응답을 구축할 수 있다.
+- 어찌되었든 fetch에서 Response의 프로미스를 받게되고 `useLoaderData`혹은 자동으로 프로미스에서 데이터를 추출해주기 때문에 위와같이 코드를 작성해도 된다.
