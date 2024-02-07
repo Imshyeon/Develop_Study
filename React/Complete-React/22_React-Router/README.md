@@ -15,3 +15,53 @@
 - `npm install react-router-dom`
 
   🔗 [React Router](https://reactrouter.com/en/main)
+
+<br>
+
+### 📖 라우트 정의하기
+
+- `createBrowserRouter` : 이 어플리케이션에서 지원하려는 라우트를 정의한다. 해당 함수 안에 라우터 정의 객체로 된 배열을 넣고, 모든 객체들은 각각 하나의 라우트를 가리킨다.
+  - `path` : 경로 지정
+  - `element` : 요소를 정의 -> 해당 경로가 활성화되면 element에서 작성한 JSX코드가 연결
+  - `createBrowserRouter`에서 리턴된 값을 변수나 상수에 저장.
+  - &rarr;해당 router를 화면에 렌더링해야하거나 또는 그 router를 로딩해야하고 적절한 페이지에 렌더링해야함을 알리기 위해서 저장
+- `RouterProvider` : 이 컴포넌트는 우리의 JSX 코드에서 사용할 수 있는 일반 컴포넌트
+  - 이 컴포넌트는 router 프로퍼티가 있는데, 이는 위에서 저장한 상수 router를 사용한다.
+
+```js
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import HomePage from "./pages/Home";
+
+const router = createBrowserRouter([
+  { path: "/", element: <HomePage /> }, // 메인.
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+<br>
+
+### 📖 두번째 라우트 정의하기
+
+```js
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import HomePage from "./pages/Home";
+import ProductsPage from "./pages/Products";
+
+const router = createBrowserRouter([
+  { path: "/", element: <HomePage /> },
+  { path: "/products", element: <ProductsPage /> },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+![router](./readme/router.gif)
