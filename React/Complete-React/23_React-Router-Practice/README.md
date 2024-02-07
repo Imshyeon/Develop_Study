@@ -595,3 +595,11 @@ export async function loader() {
 - `fetch`는 Response 객체의 프로미스를 리턴한다.
 - Response는 최신 브라우저의 기능으로 응답 객체를 사용하여 자신만의 응답을 구축할 수 있다.
 - 어찌되었든 fetch에서 Response의 프로미스를 받게되고 `useLoaderData`혹은 자동으로 프로미스에서 데이터를 추출해주기 때문에 위와같이 코드를 작성해도 된다.
+
+<br>
+
+### 📖 `loader()`로 가는 코드의 종류
+
+- loader 안에 정의된 코드는 서버가 아닌 브라우저에서 실행된다. (클라이언트 쪽 코드이다.)
+- loader 함수에서 어떤 브라우저 API든 사용할 수 있다. ex. `localStorage, Cookie, ...`
+- loader 함수에서 useState같은 리액트 훅은 사용할 수 없다. 그 훅들은 오직 리액트 컴포넌트에서만 사용할 수 있기 때문이다. &rarr; loader 함수는 리액트 컴포넌트가 아니다.
