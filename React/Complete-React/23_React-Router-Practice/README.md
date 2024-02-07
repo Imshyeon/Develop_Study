@@ -1,6 +1,7 @@
 # 연습 프로젝트 : 리액트 라우터
 
 [📌 스스로 해결하기](#-스스로-해결하기)<br>
+[📌 데이터 가져오기 & 제출하기](#-데이터-가져오기--제출하기)<br>
 <br>
 
 ## 📌 스스로 해결하기
@@ -267,7 +268,7 @@ export default EventsNavigation;
 
 ## 📌 데이터 가져오기 & 제출하기
 
-### 📖 loader()를 이용한 데이터 가져오기
+### 📖 `loader()`를 이용한 데이터 가져오기
 
 #### 💎 기존에 사용하던 `useEffect, useState, fetch` 사용하기
 
@@ -390,3 +391,55 @@ export default EventsPage;
 - `useLoaderData` : 가장 가까운 loader 데이터에 엑세스 하기 위해 실행할 수 있는 특수한 훅.
   - 사실 로더 함수에서 async, await을 사용했기 때문에 로더함수는 정확히 말하자면 프로미스를 리턴한다.
   - 그러나 리액트는 자동으로 프로미스로부터 resolving된 데이터를 받는다.
+
+<br>
+
+### 📖 `loader()` 데이터의 다양한 활용법
+
+- `EventsList` 컴포넌트에서도 useLoaderData를 사용할 수 있다.
+
+#### 💎 EventsList.js
+
+```js
+import classes from "./EventsList.module.css";
+import { useLoaderData } from "react-router-dom";
+
+function EventsList() {
+  const events = useLoaderData();
+  return (
+    <div className={classes.events}>
+      <h1>All Events</h1>
+      <ul className={classes.list}>
+        {events.map((event) => (
+          <li key={event.id} className={classes.item}>
+            <a href="...">
+              <img src={event.image} alt={event.title} />
+              <div className={classes.content}>
+                <h2>{event.title}</h2>
+                <time>{event.date}</time>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default EventsList;
+```
+
+#### 💎 Events.js
+
+```js
+import EventsList from "../components/EventsList";
+
+function EventsPage() {
+  return <EventsList />;
+}
+
+export default EventsPage;
+```
+
+- `useLoaderData`는 로더가 정의된 라우트보다 더 높은 상위에서 사용할 수 없다.
+- `useLoaderData`를 사용하기 위해서는 loader를 추가한 컴포넌트(라우트)와 같은 수준이거나 더 낮은 수준에 있는 컴포넌트에서 사용가능하다.
