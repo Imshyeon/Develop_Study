@@ -3,6 +3,7 @@
 [📌 리덕스 및 부수 효과(및 비동기 코드)](#-리덕스-및-부수-효과및-비동기-코드)<br>
 [📌 복습](#-복습)<br>
 [📌 리덕스 및 비동기 코드](#-리덕스-및-비동기-코드)<br>
+[📌 리덕스 DevTools](#-리덕스-devtools)<br>
 <br>
 
 ## 📌 리덕스 및 부수 효과(및 비동기 코드)
@@ -440,3 +441,9 @@ export default App;
 ```
 
 🔗 [레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/2fab03493b9ea2026edf5dc13acda233dc18e217)
+
+<br>
+
+## 📌 리덕스 DevTools
+
+🔗 [Redux Devtools](https://chromewebstore.google.com/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=ko)
