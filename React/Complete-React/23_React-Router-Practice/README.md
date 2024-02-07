@@ -747,3 +747,50 @@ export default ErrorPage;
 ```
 
 ![error2](./README/error2.gif)
+
+<br>
+
+### 📖 `json()` 유틸리티 함수
+
+#### 💎 Events.js
+
+```js
+import { useLoaderData, json } from "react-router-dom";
+import EventsList from "../components/EventsList";
+
+function EventsPage() {
+  const data = useLoaderData();
+  if (data.isError) {
+    return <p>{data.message}</p>;
+  }
+  const events = data.events;
+
+  return <EventsList events={events} />;
+}
+
+export default EventsPage;
+
+export async function loader() {
+  const response = await fetch("http://localhost:8080/events");
+  if (!response.ok) {
+    return json({ message: "이벤트를 가져올 수 없습니다." }, { status: 500 });
+  } else {
+    return response;
+  }
+}
+
+// Error.js
+function ErrorPage() {
+  const error = useRouteError();
+
+  let title = "오류가 발생했습니다";
+  let message = "Something went wrong!";
+
+  if (error.status === 500) {
+    // message = JSON.parse(error.data).message;
+    message = error.data.message;
+  }
+}
+```
+
+- `json()` : json 형식의 데이터가 포함된 `Response` 객체를 포함하는 함수이다.
