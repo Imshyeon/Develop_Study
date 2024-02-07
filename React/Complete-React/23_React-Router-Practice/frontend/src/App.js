@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import RootPage from "./pages/RootPage";
 import HomePage from "./pages/HomePage";
-import EventsPage from "./pages/Events";
+import EventsPage, { loader as eventsLoader } from "./pages/Events";
 import EventDetailPage from "./pages/EventDetailPage";
 import NewEventPage from "./pages/NewEventPage";
 import EditEventPage from "./pages/EditEventPage";
@@ -22,16 +22,7 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <EventsPage />,
-            loader: async () => {
-              // 이 라우터를 방문하기 직전에 리액트 라우터는 항상 로더 함수를 실행.
-              const response = await fetch("http://localhost:8080/events");
-              if (!response.ok) {
-                // ...
-              } else {
-                const resData = await response.json();
-                return resData.events; // EventsPage에 제공해 줄 것이다.
-              }
-            },
+            loader: eventsLoader,
           },
           { path: ":id", element: <EventDetailPage /> },
           { path: "new", element: <NewEventPage /> },
