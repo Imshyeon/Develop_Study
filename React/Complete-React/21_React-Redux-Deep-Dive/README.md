@@ -2,6 +2,7 @@
 
 [📌 리덕스 및 부수 효과(및 비동기 코드)](#-리덕스-및-부수-효과및-비동기-코드)<br>
 [📌 복습](#-복습)<br>
+[📌 리덕스 및 비동기 코드](#-리덕스-및-비동기-코드)<br>
 <br>
 
 ## 📌 리덕스 및 부수 효과(및 비동기 코드)
@@ -24,4 +25,114 @@
 
 <br>
 
-## 📌
+## 📌 리덕스 및 비동기 코드
+
+- 리듀서는 순수한 함수여야하고 부수 효과가 없어야 하며 동기적인 함수이다.
+- http 요청은 비동기 함수라서 해당 코드는 리듀서 함수에 들어갈 수 없다.
+- http 요청을 보내기 위해선
+  1. useEffect를 이용해서 컴포넌트 안에서 실행
+  2. 액션 생성 함수를 만들고 그 안에 작성한다.
+
+<br>
+
+### 📖 컴포넌트 안에서 실행하기
+
+🔗 [강사의 코드 살펴보기](https://github.com/academind/react-complete-guide-code/tree/19-advanced-redux/code/zz-suboptimal-example-code)
+
+- 컴포넌트 안에서 http 요청을 하기 위해선 위의 링크 처럼 코드를 변경해야한다.
+- 이런 방식은 어플리케이션의 모든 부분에서 사용한다면 장바구니를 업데이트 해야한다. 즉, 장바구니를 사용하는 모든 코드에서 사용해야한다.
+- 리덕서 리듀서의 일이 현저하게 줄어든다(그냥 데이터 전달만 하니까). 이는 리덕스를 사용하는 주요 이유가 아니다.
+
+<br>
+
+- 리덕스를 사용할 때 동기적이고 부수효과가 없는 코드는 리듀서를 활용하는 것이 좋다.(단순 데이터 변환 코드)
+- 비동기적이거나 부수효과가 있는 코드는 액션 생성자나 컴포넌트를 활용하는 것이 좋다.
+
+#### 💎 App.js
+
+- 항상 App에서 할 필요는 없으나 이번 예시는 App에서 진행하였다.
+
+```js
+import Cart from "./components/Cart/Cart";
+import Layout from "./components/Layout/Layout";
+import Products from "./components/Shop/Products";
+import Notification from "./components/UI/Notification";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { uiActions } from "./store/ui-slice";
+
+let isInitial = true;
+
+function App() {
+  const showCart = useSelector((state) => state.ui.cartIsVisible);
+  const cart = useSelector((state) => state.cart);
+  const notification = useSelector((state) => state.ui.notification);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const sendCartData = async () => {
+      dispatch(
+        uiActions.showNotification({
+          status: "pending",
+          title: "Sending...",
+          message: "Sending cart data!",
+        })
+      );
+      const response = await fetch(
+        "https://react-http-480df-default-rtdb.firebaseio.com/cart.json",
+        {
+          method: "PUT",
+          body: JSON.stringify(cart),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Sending cart data failed.");
+      }
+
+      dispatch(
+        uiActions.showNotification({
+          status: "success",
+          title: "Success!",
+          message: "Sending cart data successfully",
+        })
+      );
+    };
+
+    if (isInitial) {
+      isInitial = false;
+      return;
+    }
+
+    sendCartData().catch((error) => {
+      dispatch(
+        uiActions.showNotification({
+          status: "error",
+          title: "Error!",
+          message: "Sending cart data failed.",
+        })
+      );
+    });
+  }, [cart, dispatch]);
+  // 장바구니가 변경될 때마다 effect가 실행.
+  // 즉, 리덕스 스토어가 변경될 때마다 해당 컴포넌트 함수가 다시 실행되고 최신 상태가 된다. -> 그것을 db에 저장
+
+  return (
+    <>
+      {notification && (
+        <Notification
+          state={notification.status}
+          title={notification.title}
+          message={notification.message}
+        />
+      )}
+      <Layout>
+        {showCart && <Cart />}
+        <Products />
+      </Layout>
+    </>
+  );
+}
+
+export default App;
+```
