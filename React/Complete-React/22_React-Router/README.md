@@ -205,3 +205,57 @@ export default RootLayout;
 ```
 
 ![nav](./readme/nav.gif)
+
+<br>
+
+### 📖 errorElement로 오류 페이지 표시하기
+
+- 메인에서 존재하지 않는 페이지에 접근할 때 react-router-dom 패키지가 자동으로 오류를 생성해 에러 페이지로 이동
+
+#### 💎 Error.js
+
+```js
+import MainNavigaton from "../components/MainNavigation";
+function ErrorPage() {
+  return (
+    <>
+      <MainNavigaton />
+      <main>
+        <h1>오류가 발생했습니다!</h1>
+        <p>페이지를 찾을 수 없습니다!</p>
+      </main>
+    </>
+  );
+}
+export default ErrorPage;
+```
+
+#### 💎 App.js
+
+```js
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import HomePage from "./pages/Home";
+import ProductsPage from "./pages/Products";
+import RootLayout from "./pages/Root";
+import ErrorPage from "./pages/Error";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />, // 에러 페이지
+    children: [
+      { path: "/", element: <HomePage /> },
+      { path: "/products", element: <ProductsPage /> },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+![error](./readme/error.png)
