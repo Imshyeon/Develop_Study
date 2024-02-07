@@ -5,7 +5,9 @@ function RootPage() {
   return (
     <>
       <MainNavigation />
-      <Outlet />
+      <main>
+        <Outlet />
+      </main>
     </>
   );
 }
