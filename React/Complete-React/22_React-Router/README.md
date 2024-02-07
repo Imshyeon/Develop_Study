@@ -259,3 +259,63 @@ export default App;
 ```
 
 ![error](./readme/error.png)
+
+<br>
+
+### 📖 네비게이션 링크 사용하기
+
+- 활성화된 링크를 강조하기
+- `NavLink`는 `Link`와 똑같이 사용하지만 특수한 동작이 있다.
+  - &rarr; 함수를 받는 `className` 프로퍼티를 추가하면 그 함수는 앵커 태그에 추가되어야 하는 CSS 클래스 네임을 리턴할 것이다.
+  - 해당 함수는 자동적으로 객체를 받고, isActive 프로퍼티를 할당한다.(react-router-dom이 제공하는 프로퍼티이고 불리언이다.)
+- 기본적으로 `NavLink`는 실제로 현재 활성인 라우트의 경로가 NavLink의 경로로 시작하는지 확인한다. 이 프로젝트에서는 '/' 라우트에서 동작하게 된다. &rarr; 이는 모든 라우트에서 활성화되는 것이다. 따라서 react-router-dom은 `end` 프로퍼티도 제공한다.
+  <br>
+
+- `end` : 현재 활성인 라우트의 URL 뒤가 해당 경로로 끝나면, 해당 링크를 활성화했음을 간주한다는 의미..
+
+#### 💎 MainNavigation.js
+
+```js
+import { NavLink } from "react-router-dom";
+import classes from "./MainNavigation.module.css";
+
+function MainNavigaton() {
+  return (
+    <header className={classes.header}>
+      <nav>
+        <ul className={classes.list}>
+          <li>
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive ? classes.active : undefined
+              }
+              style={({ isActive }) => ({
+                textAlign: isActive ? "center" : "left",
+              })}
+              end
+            >
+              Home
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/products"
+              className={({ isActive }) =>
+                isActive ? classes.active : undefined
+              }
+            >
+              Products
+            </NavLink>
+          </li>
+        </ul>
+      </nav>
+    </header>
+  );
+}
+
+export default MainNavigaton;
+```
+
+- '/products' 에는 `end`를 넣을 필요가 없다. 왜냐하면 현재까지 '/products'로 끝나는 페이지가 더 없기 때문이다! &rarr; 유일한 페이지
+- '/'는 `end`를 넣어야만 한다 왜냐하면 '/'는 대부분의 페이지에서 거의 다 쓰이고 있기 때문이다.
