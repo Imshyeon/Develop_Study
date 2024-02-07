@@ -1286,4 +1286,164 @@ export default App;
 
 <br>
 
-### 📖
+### 📖 프로그램적으로 데이터 제출하기(삭제하기) | `action()`을 트리거하는 또다른 방법
+
+#### 💎 EventDetailPage.js
+
+```js
+import {
+  useRouteLoaderData,
+  json,
+  useParams,
+  redirect,
+} from "react-router-dom";
+
+import EventItem from "../components/EventItem";
+
+function EventDetailPage() {
+  // const params = useParams();
+  const data = useRouteLoaderData("event-detail");
+  // useRouteLoaderData : 부모의 데이터를 받기 위해 사용되는 훅. useLoaderData와 비슷하지만 부모 라우트에서 설정된 아이디값이 필요하다.
+
+  return <EventItem event={data.event} />;
+}
+
+export default EventDetailPage;
+
+export async function loader({ request, params }) {
+  const id = params.id; // '/events/:id'
+  const response = await fetch("http://localhost:8080/events/" + id);
+
+  if (!response.ok) {
+    throw json(
+      { message: "이벤트 디테일에 대한 정보를 받아올 수 없습니다." },
+      { status: 500 }
+    );
+  } else {
+    return response;
+  }
+}
+
+export async function action({ request, params }) {
+  const id = params.id;
+  const method = request.method;
+  const response = await fetch("http://localhost:8080/events/" + id, {
+    method: method,
+  });
+
+  if (!response.ok) {
+    throw json(
+      { message: "이벤트를 삭제하는데 실패했습니다." },
+      { status: 500 }
+    );
+  }
+  return redirect("/events");
+}
+```
+
+- action 함수를 적고, 해당 액션의 method를 받아와서 동작하도록 하였다.
+
+#### 💎 App.js
+
+```js
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import RootPage from "./pages/RootPage";
+import HomePage from "./pages/HomePage";
+import EventsPage, { loader as eventsLoader } from "./pages/Events";
+import EventDetailPage, {
+  loader as eventDetailLoader,
+  action as deleteEventAction,
+} from "./pages/EventDetailPage";
+import NewEventPage, { action as newEventAction } from "./pages/NewEventPage";
+import EditEventPage from "./pages/EditEventPage";
+import EventsRootLayout from "./pages/EventRoot";
+import ErrorPage from "./pages/Error";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootPage />,
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <HomePage /> },
+      {
+        path: "events",
+        element: <EventsRootLayout />,
+        children: [
+          {
+            index: true,
+            element: <EventsPage />,
+            loader: eventsLoader,
+          },
+          {
+            path: ":id",
+            id: "event-detail", // 부모라우트의 데이터를 이용하기 위함
+            loader: eventDetailLoader, // 공통 loader
+            children: [
+              {
+                index: true,
+                element: <EventDetailPage />,
+                action: deleteEventAction, // delete action 추가
+              },
+              { path: "edit", element: <EditEventPage /> },
+            ],
+          },
+
+          { path: "new", element: <NewEventPage />, action: newEventAction },
+        ],
+      },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+#### 💎 EventItem.js
+
+```js
+import classes from "./EventItem.module.css";
+import { Link, useSubmit } from "react-router-dom";
+
+function EventItem({ event }) {
+  const submit = useSubmit(); //
+
+  function startDeleteHandler() {
+    const proceed = window.confirm("Are you sure?"); // 불리언값 리턴 받음
+    if (proceed) {
+      submit(null, { method: "delete" }); // submit( {제출하고자하는 데이터}, { method: , action: '/any-different-path'} )
+      // 제출하고자하는 데이터는 formData로 자동으로 감싸지게 될 것이다.
+      // 만일 액션이 다른 라우트 경로에서 정의된다면 action키를 다른 경로로 설정할 수 있다.
+      // 해당 컴포넌트가 속한 라우트가 같거나 이 컴포넌트가 렌더링되는 라우트가 같은 라우트 내에서 정의되므로 따로 action 정의하지 않아도 된다.
+    }
+  }
+
+  return (
+    <article className={classes.event}>
+      <img src={event.image} alt={event.title} />
+      <h1>{event.title}</h1>
+      <time>{event.date}</time>
+      <p>{event.description}</p>
+      <menu className={classes.actions}>
+        <Link to="edit">Edit</Link>
+        <button onClick={startDeleteHandler}>Delete</button>
+      </menu>
+    </article>
+  );
+}
+
+export default EventItem;
+```
+
+- 버튼이 눌렸을 때 `startDeleteHandler` 함수가 동작한다.
+- 사용자가 정말로 삭제를 원하는지 한번 더 물어본다 (proceed)
+- proceed가 true 이면, 삭제 동작을 한다. 이때, useSubmit 훅을 사용한다.
+- submit 함수에서 우리는 삭제만을 원하기 때문에 별도의 데이터를 전달하지 않고 null을 전달한다.
+- submit 함수에서 메서드와 액션 키를 통해서 동작을 제어할 수 있다. 만일 action이 다른 라우트 경로에서 정의되었다면 다른 경로로 지정할 수 있으나 우리의 경우, EventItem과 action이 같은 라우트 내에 정의 되었다.
+
+![delete](./README/delete.gif)

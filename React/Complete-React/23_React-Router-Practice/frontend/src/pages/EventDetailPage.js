@@ -1,4 +1,9 @@
-import { useRouteLoaderData, json, useParams } from "react-router-dom";
+import {
+  useRouteLoaderData,
+  json,
+  useParams,
+  redirect,
+} from "react-router-dom";
 
 import EventItem from "../components/EventItem";
 
@@ -24,4 +29,20 @@ export async function loader({ request, params }) {
   } else {
     return response;
   }
+}
+
+export async function action({ request, params }) {
+  const id = params.id;
+  const method = request.method;
+  const response = await fetch("http://localhost:8080/events/" + id, {
+    method: method,
+  });
+
+  if (!response.ok) {
+    throw json(
+      { message: "이벤트를 삭제하는데 실패했습니다." },
+      { status: 500 }
+    );
+  }
+  return redirect("/events");
 }
