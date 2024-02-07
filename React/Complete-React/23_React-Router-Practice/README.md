@@ -188,28 +188,6 @@ export default EventDetailPage;
 #### 💎 App.js
 
 ```js
-// Challenge / Exercise
-
-// 1. Add five new (dummy) page components (content can be simple <h1> elements)
-//    - HomePage
-//    - EventsPage
-//    - EventDetailPage
-//    - NewEventPage
-//    - EditEventPage
-// 2. Add routing & route definitions for these five pages
-//    - / => HomePage
-//    - /events => EventsPage
-//    - /events/<some-id> => EventDetailPage
-//    - /events/new => NewEventPage
-//    - /events/<some-id>/edit => EditEventPage
-// 3. Add a root layout that adds the <MainNavigation> component above all page components
-// 4. Add properly working links to the MainNavigation
-// 5. Ensure that the links in MainNavigation receive an "active" class when active
-// 6. Output a list of dummy events to the EventsPage
-//    Every list item should include a link to the respective EventDetailPage
-// 7. Output the ID of the selected event on the EventDetailPage
-// BONUS: Add another (nested) layout route that adds the <EventNavigation> component above all /events... page components
-
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import RootPage from "./pages/RootPage";
@@ -280,3 +258,135 @@ export default EventsNavigation;
 ![bonus](./README/bonus.png)
 
 🔗 [레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/tree/ad3d76c815670066536bf0e2f012deec2f9866ba/React/Complete-React/23_React-Router-Practice/frontend/src)
+
+<br>
+
+---
+
+<br>
+
+## 📌 데이터 가져오기 & 제출하기
+
+### 📖 loader()를 이용한 데이터 가져오기
+
+#### 💎 기존에 사용하던 `useEffect, useState, fetch` 사용하기
+
+```js
+// pages/Events.js
+import { useEffect, useState } from "react";
+
+import EventsList from "../components/EventsList";
+
+function EventsPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [fetchedEvents, setFetchedEvents] = useState();
+  const [error, setError] = useState();
+
+  useEffect(() => {
+    async function fetchEvents() {
+      setIsLoading(true);
+      const response = await fetch("http://localhost:8080/events");
+
+      if (!response.ok) {
+        setError("Fetching events failed.");
+      } else {
+        const resData = await response.json();
+        setFetchedEvents(resData.events);
+      }
+      setIsLoading(false);
+    }
+
+    fetchEvents();
+  }, []);
+  return (
+    <>
+      <div style={{ textAlign: "center" }}>
+        {isLoading && <p>Loading...</p>}
+        {error && <p>{error}</p>}
+      </div>
+      {!isLoading && fetchedEvents && <EventsList events={fetchedEvents} />}
+    </>
+  );
+}
+
+export default EventsPage;
+```
+
+![useEffectFetch](./README/useEffectFetch.png)
+
+#### 💎 App.js
+
+```js
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import RootPage from "./pages/RootPage";
+import HomePage from "./pages/HomePage";
+import EventsPage from "./pages/Events";
+import EventDetailPage from "./pages/EventDetailPage";
+import NewEventPage from "./pages/NewEventPage";
+import EditEventPage from "./pages/EditEventPage";
+import EventsRootLayout from "./pages/EventRoot";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootPage />,
+    errorElement: <p>Error</p>,
+    children: [
+      { index: true, element: <HomePage /> },
+      {
+        path: "events",
+        element: <EventsRootLayout />,
+        children: [
+          {
+            index: true,
+            element: <EventsPage />,
+            loader: async () => {
+              const response = await fetch("http://localhost:8080/events");
+              if (!response.ok) {
+                // ...
+              } else {
+                const resData = await response.json();
+                return resData.events; // EventsPage에 제공해 줄 것이다.
+              }
+            },
+          },
+          { path: ":id", element: <EventDetailPage /> },
+          { path: "new", element: <NewEventPage /> },
+          { path: ":id/edit", element: <EditEventPage /> },
+        ],
+      },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+- 리액트 라우터 버전6 이상이면 리액트 라우터가 데이터를 가져오고, 상태를 관리하는 것을 도와준다.
+- `loader`
+  - 함수를 값으로 취하는 프로퍼티.
+  - 로더를 사용하는 라우터를 방문하기 직전에 리액트 라우터는 항상 로더 함수를 실행한다.
+
+#### 💎 Events.js
+
+```js
+import { useLoaderData } from "react-router-dom";
+import EventsList from "../components/EventsList";
+
+function EventsPage() {
+  const events = useLoaderData(); // events는 resData.event가 된다.
+
+  return <EventsList events={events} />;
+}
+
+export default EventsPage;
+```
+
+- `useLoaderData` : 가장 가까운 loader 데이터에 엑세스 하기 위해 실행할 수 있는 특수한 훅.
+  - 사실 로더 함수에서 async, await을 사용했기 때문에 로더함수는 정확히 말하자면 프로미스를 리턴한다.
+  - 그러나 리액트는 자동으로 프로미스로부터 resolving된 데이터를 받는다.
