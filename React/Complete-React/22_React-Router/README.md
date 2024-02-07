@@ -128,3 +128,80 @@ export default HomePage;
   &rarr; 그럼으로써 페이지를 로딩하는데 필요한 스크립트, html 다운을 방지. 상태와 컨텍스트의 초기화를 방지한다.
 
 ![link](./readme/link.gif)
+
+<br>
+
+### 📖 레이아웃 및 중첩된 라우트
+
+#### 💎 App.js
+
+```js
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import HomePage from "./pages/Home";
+import ProductsPage from "./pages/Products";
+import RootLayout from "./pages/Root";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      { path: "/", element: <HomePage /> },
+      { path: "/products", element: <ProductsPage /> },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+- 레이아웃 역할을 하는 루트 라우트를 여러 개 만들 수 있다. &rarr; django에서 base.html을 만든 느낌이라고 생각하면 된다.
+
+#### 💎 components/MainNavigation.js
+
+```js
+import { Link } from "react-router-dom";
+
+function MainNavigaton() {
+  return (
+    <header>
+      <nav>
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/products">Products</Link>
+          </li>
+        </ul>
+      </nav>
+    </header>
+  );
+}
+
+export default MainNavigaton;
+```
+
+#### 💎 Root.js
+
+```js
+import MainNavigaton from "../components/MainNavigation";
+import { Outlet } from "react-router-dom";
+// Outlet : 이 컴포넌트는 자녀 라우트 요소들이 렌더링되어야 할 장소를 표시하는 역할을 한다.
+
+function RootLayout() {
+  return (
+    <>
+      <MainNavigaton />
+      <Outlet />
+    </>
+  );
+}
+export default RootLayout;
+```
+
+![nav](./readme/nav.gif)
