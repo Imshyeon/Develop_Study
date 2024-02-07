@@ -319,3 +319,40 @@ export default MainNavigaton;
 
 - '/products' 에는 `end`를 넣을 필요가 없다. 왜냐하면 현재까지 '/products'로 끝나는 페이지가 더 없기 때문이다! &rarr; 유일한 페이지
 - '/'는 `end`를 넣어야만 한다 왜냐하면 '/'는 대부분의 페이지에서 거의 다 쓰이고 있기 때문이다.
+
+<br>
+
+### 📖 프로그램적으로 페이지 이동(네비게이션)하기
+
+#### 💎 Home.js
+
+```js
+import { Link, useNavigate } from "react-router-dom";
+function HomePage() {
+  const navigate = useNavigate();
+
+  function navigateHandler() {
+    navigate("/products");
+  }
+
+  return (
+    <>
+      <h1>My Home Page</h1>
+      <p>
+        Go to <Link to="/products">the list of products</Link>
+      </p>
+      <p>
+        <button onClick={navigateHandler}>Navigate</button>
+      </p>
+    </>
+  );
+}
+
+export default HomePage;
+```
+
+- `useNavigate`: 네비게이션 동작을 트리거할 수 있다. 즉, 코드 안에서 다른 라우트로 전환 가능.
+
+<br>
+
+### 📖 동적 라우트 정의하고 사용하기
