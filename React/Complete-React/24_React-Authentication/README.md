@@ -1,6 +1,8 @@
 # 리액트 앱 인증(Authentication)
 
 [📌 인증(Authentication)이란?](#-인증authentication이란)<br>
+[📌 기본 설정](#-기본-설정)<br>
+[📌 인증 작업 실행하기](#-인증-작업-실행하기)<br>
 <br>
 
 ## 📌 인증(Authentication)이란?
@@ -28,6 +30,8 @@
 - 이후에 클라이언트가 다시 백엔드에 요청을 보낼 때 해당 토큰을 요청(Request)에 첨부하면 백엔드는 토큰을 살펴보고 검증하여 유효한 토큰이면 보호된 리소스에 대한 접근이 승인된다.
 
 <br>
+
+## 📌 기본 설정
 
 ### 📖 라우트 설정
 
@@ -79,3 +83,90 @@ export default AuthForm;
 - url은 다음과 같아진다.
   - 현재 로그인 모드라면, 'http://localhost:3000/auth?mode=login'
   - 현재 signup 모드라면, 'http://localhost:3000/auth?mode=signup'
+
+<br>
+
+## 📌 인증 작업 실행하기
+
+### 📖 인증 작업 실행하기
+
+#### 💎 Authentication.js
+
+```js
+import { json, redirect } from "react-router-dom";
+import AuthForm from "../components/AuthForm";
+
+function AuthenticationPage() {
+  return <AuthForm />;
+}
+
+export default AuthenticationPage;
+
+export async function action({ request, params }) {
+  const searchParams = new URL(request.url).searchParams;
+  const mode = searchParams.get("mode") || "login"; // 모드
+
+  if (mode !== "login" && mode !== "signup") {
+    throw json({ message: "미지원 모드입니다." }, { status: 422 });
+  }
+
+  const data = await request.formData();
+  const authData = {
+    email: data.get("email"),
+    password: data.get("password"),
+  };
+
+  const response = await fetch("http://localhost:8080/" + mode, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(authData),
+  });
+
+  if (response.status === 422 || response.status === 401) {
+    // 오류 코드를 받으면
+    return response;
+  }
+
+  if (!response.ok) {
+    throw json({ message: "사용자 인증 불가합니다." }, { status: 500 });
+  }
+
+  // 백엔드에서 얻는 토큰 관리할 예정
+  return redirect("/");
+}
+```
+
+#### 💎 App.js
+
+```js
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+
+import AuthenticationPage, {
+  action as authAction,
+} from "./pages/Authentication";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <HomePage /> },
+      //...
+      {
+        path: "auth",
+        element: <AuthenticationPage />,
+        action: authAction, // 액션 추가
+      },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
