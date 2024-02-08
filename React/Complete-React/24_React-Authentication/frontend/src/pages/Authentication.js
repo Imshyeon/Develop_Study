@@ -38,6 +38,10 @@ export async function action({ request, params }) {
     throw json({ message: "사용자 인증 불가합니다." }, { status: 500 });
   }
 
-  // 백엔드에서 얻는 토큰 관리할 예정
+  const resData = await response.json();
+  const token = resData.token;
+  // 메모리에 저장할 수도 있고 쿠키에 저장할 수 있다.
+  localStorage.setItem("token", token); // 로컬저장소에 저장.
+
   return redirect("/");
 }

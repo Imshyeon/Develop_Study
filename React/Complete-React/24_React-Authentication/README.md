@@ -236,3 +236,180 @@ export default AuthForm;
 ```
 
 ![error](./readme/error.png)
+
+<br>
+
+### 📖 Request에 인증 토큰 첨부하기
+
+#### 💎 Authentication.js
+
+```js
+import { json, redirect } from "react-router-dom";
+import AuthForm from "../components/AuthForm";
+
+function AuthenticationPage() {
+  return <AuthForm />;
+}
+
+export default AuthenticationPage;
+
+export async function action({ request, params }) {
+  const searchParams = new URL(request.url).searchParams;
+  const mode = searchParams.get("mode") || "login"; // 모드
+
+  if (mode !== "login" && mode !== "signup") {
+    throw json({ message: "미지원 모드입니다." }, { status: 422 });
+  }
+
+  const data = await request.formData();
+  const authData = {
+    email: data.get("email"),
+    password: data.get("password"),
+  };
+
+  const response = await fetch("http://localhost:8080/" + mode, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(authData),
+  });
+
+  if (response.status === 422 || response.status === 401) {
+    return response;
+  }
+
+  if (!response.ok) {
+    throw json({ message: "사용자 인증 불가합니다." }, { status: 500 });
+  }
+
+  // ===== backend에서 생성된 토큰을 받아와 로컬저장소에 저장 =====
+  const resData = await response.json();
+  const token = resData.token;
+  // 메모리에 저장할 수도 있고 쿠키에 저장할 수 있다.
+  localStorage.setItem("token", token); // 로컬저장소에 저장.
+
+  return redirect("/");
+}
+```
+
+- 백엔드에서 생성된 토큰을 받아와서 로컬 저장소에 token이라는 키 이름으로 저장.
+
+#### 💎 utils/auth.js
+
+```js
+export function getAuthToken() {
+  const token = localStorage.getItem("token");
+  return token;
+}
+```
+
+#### 💎 EventDetail.js
+
+```js
+// ...
+import { getAuthToken } from "../util/auth";
+
+function EventDetailPage() {
+  //...
+}
+
+export default EventDetailPage;
+
+async function loadEvent(id) {
+  //...
+}
+
+async function loadEvents() {
+  // ...
+}
+
+export async function loader({ request, params }) {
+  // ...
+}
+
+export async function action({ params, request }) {
+  const eventId = params.eventId;
+
+  const token = getAuthToken();
+
+  const response = await fetch("http://localhost:8080/events/" + eventId, {
+    method: request.method,
+    headers: {
+      // 토큰에 대한 Request 헤더 추가
+      Authorization: "Bearer " + token,
+    },
+  });
+
+  if (!response.ok) {
+    throw json(
+      { message: "Could not delete event." },
+      {
+        status: 500,
+      }
+    );
+  }
+  return redirect("/events");
+}
+```
+
+- 헤더에 토큰에 대한 내용을 덧붙여 백엔드에 요청을 할 수 있도록 함.
+- 토큰을 이용해서 이벤트에 대한 내용을 삭제할 수 있게 되었다.
+
+![로컬저장소](./readme/localStorage.png)
+
+#### 💎 EventForm.js
+
+```js
+//...
+import { getAuthToken } from "../util/auth";
+
+function EventForm({ method, event }) {
+  //...
+}
+
+export default EventForm;
+
+export async function action({ request, params }) {
+  const method = request.method;
+  const data = await request.formData();
+
+  const eventData = {
+    title: data.get("title"),
+    image: data.get("image"),
+    date: data.get("date"),
+    description: data.get("description"),
+  };
+
+  let url = "http://localhost:8080/events";
+
+  if (method === "PATCH") {
+    const eventId = params.eventId;
+    url = "http://localhost:8080/events/" + eventId;
+  }
+
+  const token = getAuthToken();
+  const response = await fetch(url, {
+    method: method,
+    headers: {
+      "Content-Type": "application/json",
+      // Authentication을 위해 토큰 헤더 추가
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify(eventData),
+  });
+
+  if (response.status === 422) {
+    return response;
+  }
+
+  if (!response.ok) {
+    throw json({ message: "Could not save event." }, { status: 500 });
+  }
+
+  return redirect("/events");
+}
+```
+
+- 토큰을 이용하여 새로운 이벤트를 추가 및 편집이 가능할 수 있게 되었다.
+  ![토큰](./readme/token.gif)
