@@ -4,7 +4,7 @@ import { Suspense } from "react";
 
 function EventsPage() {
   const { events } = useLoaderData();
-  console.log(events);
+  // console.log(events);
   // resolve는 연기된 값 중 하나를 값으로 취한다.
   return (
     // Suspense : 다른 데이터가 도착하길 기다리는 동안 폴백을 도와주는 특정한 상황에서 사용할 수 있다.
