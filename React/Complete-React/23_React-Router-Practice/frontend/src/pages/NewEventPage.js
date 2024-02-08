@@ -23,7 +23,11 @@ export async function action({ request, params }) {
     },
   });
 
-  console.log(response);
+  if (response.status === 422) {
+    // backend의 검증 코드
+    return response;
+    // 리턴된 action 데이터도 페이지와 컴포넌트에서 사용할 수 있다.(로더와 마찬가지)
+  }
 
   if (!response.ok) {
     throw json(
