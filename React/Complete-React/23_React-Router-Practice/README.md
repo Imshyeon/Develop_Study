@@ -2,6 +2,7 @@
 
 [📌 스스로 해결하기](#-스스로-해결하기)<br>
 [📌 데이터 가져오기 & 제출하기](#-데이터-가져오기--제출하기)<br>
+[📌 추가](#-추가)<br>
 <br>
 
 ## 📌 스스로 해결하기
@@ -1921,3 +1922,9 @@ export default App;
 - EventForm으로부터 action을 받아와 NewEvent, EditEvent의 action에 사용한다.
 
 ![액션재사용](./README/액션재사용.gif)
+
+<br>
+
+## 📌 추가
+
+### 📖 `useFetcher()`를 이용한 배후 작업
