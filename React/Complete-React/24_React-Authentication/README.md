@@ -474,3 +474,116 @@ export default App;
 
 - `Form`의 action을 통해 해당 버튼이 눌렸을 때 '/logout' 라우트로 이동을 하게 된다. &rarr; 토큰을 제거 &rarr; 홈화면으로 리다이렉트
   ![logout](./readme/logout.png)
+
+<br>
+
+### 📖 로그인/로그아웃 상태에 따라 UI 업데이트하기
+
+#### 💎 auth.js
+
+```js
+export function tokenLoader() {
+  return getAuthToken();
+}
+```
+
+- 토큰을 읽는 로더 설정
+
+#### 💎 App.js
+
+```js
+// ...
+import { tokenLoader } from "./util/auth";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    id: "root",
+    loader: tokenLoader, // 로그아웃을 했는지 안했는지 알아 볼 수 있다.
+    //...
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+- 전체 라우트에 auth.js에서 설정한 로더를 입력하고, id를 부여한다.
+
+#### 💎 MainNavigation.js
+
+```js
+function MainNavigation() {
+  const token = useRouteLoaderData("root");
+  return (
+    {
+    !token && (
+        <li>
+        <NavLink
+            to="/auth?mode=login"
+            className={({ isActive }) => (isActive ? classes.active : undefined)}
+        >
+            Authentication
+        </NavLink>
+        </li>
+    );
+    }
+    {
+    token && (
+        <li>
+        <Form action="/logout" method="POST">
+            <button>Logout</button>
+        </Form>
+        </li>
+    );
+    }
+  )
+}
+```
+
+#### 💎 EventsNavigation.js
+
+```js
+function EventsNavigation() {
+  const token = useRouteLoaderData("root");
+  return (
+    {
+    token && (
+        <li>
+        <NavLink
+            to="/events/new"
+            className={({ isActive }) => (isActive ? classes.active : undefined)}
+        >
+            New Event
+        </NavLink>
+        </li>
+    );
+    }
+  )
+}
+```
+
+#### 💎 EventItem.js
+
+```js
+function EventItem() {
+  const token = useRouteLoaderData("root");
+  return (
+    {
+    token && (
+        <menu className={classes.actions}>
+        <Link to="edit">Edit</Link>
+        <button onClick={startDeleteHandler}>Delete</button>
+        </menu>
+    );
+    }
+  )
+}
+```
+
+![ui](./readme/ui.gif)

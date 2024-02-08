@@ -17,12 +17,15 @@ import AuthenticationPage, {
   action as authAction,
 } from "./pages/Authentication";
 import { action as logoutAction } from "./pages/Logout";
+import { tokenLoader } from "./util/auth";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
     errorElement: <ErrorPage />,
+    id: "root",
+    loader: tokenLoader, // 로그아웃을 했는지 안했는지 알아 볼 수 있다.
     children: [
       { index: true, element: <HomePage /> },
       {
