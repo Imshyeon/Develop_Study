@@ -1447,3 +1447,87 @@ export default EventItem;
 - submit 함수에서 메서드와 액션 키를 통해서 동작을 제어할 수 있다. 만일 action이 다른 라우트 경로에서 정의되었다면 다른 경로로 지정할 수 있으나 우리의 경우, EventItem과 action이 같은 라우트 내에 정의 되었다.
 
 ![delete](./README/delete.gif)
+
+<br>
+
+### 📖 폼의 제출 상태를 이용하여 UI 상태 업데이트 하기
+
+#### 💎 EventForm.js
+
+```js
+import { useNavigate, Form, useNavigation } from "react-router-dom";
+
+import classes from "./EventForm.module.css";
+
+function EventForm({ method, event }) {
+  const navigate = useNavigate();
+
+  // navigation의 상태를 이용해서 해당 상태에 따른 UI 업데이트
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
+
+  function cancelHandler() {
+    navigate("..");
+  }
+
+  return (
+    <Form method="post" className={classes.form}>
+      <p>
+        <label htmlFor="title">Title</label>
+        <input
+          id="title"
+          type="text"
+          name="title"
+          required
+          defaultValue={event ? event.title : ""}
+        />
+      </p>
+      <p>
+        <label htmlFor="image">Image</label>
+        <input
+          id="image"
+          type="url"
+          name="image"
+          required
+          defaultValue={event ? event.image : ""}
+        />
+      </p>
+      <p>
+        <label htmlFor="date">Date</label>
+        <input
+          id="date"
+          type="date"
+          name="date"
+          required
+          defaultValue={event ? event.date : ""}
+        />
+      </p>
+      <p>
+        <label htmlFor="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          rows="5"
+          required
+          defaultValue={event ? event.description : ""}
+        />
+      </p>
+      <div className={classes.actions}>
+        {/* disabled={isSubmitting} */}
+        <button type="button" onClick={cancelHandler} disabled={isSubmitting}>
+          취소하기
+        </button>
+        <button disabled={isSubmitting}>
+          {isSubmitting ? "저장 중..." : "저장하기"}
+        </button>
+      </div>
+    </Form>
+  );
+}
+
+export default EventForm;
+```
+
+- 작성한 폼을 제출 중(Save)이라면 버튼 disabled하고 '저장 중' 이라는 문구 띄우기
+
+![submittingUI](./README/submittingUI.gif)
