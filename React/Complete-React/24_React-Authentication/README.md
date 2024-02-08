@@ -413,3 +413,64 @@ export async function action({ request, params }) {
 
 - 토큰을 이용하여 새로운 이벤트를 추가 및 편집이 가능할 수 있게 되었다.
   ![토큰](./readme/token.gif)
+
+<br>
+
+### 📖 사용자 로그아웃 추가하기
+
+- 토큰 유무에 따라 UI를 업데이트 하는 것이 필요하다. &rarr; 토큰을 제거할 필요도 있다.
+- 토큰을 제거하는 것은 로그아웃을 하면 없어지도록 하자!
+
+#### 💎 pages/Logout.js
+
+```js
+import { redirect } from "react-router-dom";
+
+export function action() {
+  localStorage.removeItem("token");
+  return redirect("/");
+}
+```
+
+#### 💎 App.js
+
+```js
+//...
+import { action as logoutAction } from "./pages/Logout";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      //...
+      {
+        path: "logout",
+        action: logoutAction, // logout 액션 추가
+      },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+- 로그아웃을 위한 액션만을 추가한 뒤, App에 라우트 추가.
+
+#### 💎 MainNavigation.js
+
+```js
+<li>
+  <Form action="/logout" method="POST">
+    <button>Logout</button>
+  </Form>
+</li>
+```
+
+- `Form`의 action을 통해 해당 버튼이 눌렸을 때 '/logout' 라우트로 이동을 하게 된다. &rarr; 토큰을 제거 &rarr; 홈화면으로 리다이렉트
+  ![logout](./readme/logout.png)
