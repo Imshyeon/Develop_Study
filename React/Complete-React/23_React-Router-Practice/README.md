@@ -1972,3 +1972,58 @@ export default NewsletterSignup;
 - `action="/newsletter"` &rarr; newsletter 라우트의 액션을 트리거한다.
 - 즉 Event 창에서 입력하고 버튼을 눌르면 transition(전환)되지 않고 폼을 제출하고 있다.
 - `useFetcher` 은 전환하지 않은 채로 액션이나 로더와 상호작용하려는 경우에 사용해야하는 툴이다.(라우트 변경을 트리거 하지 않는 경우)
+
+<br>
+
+### 📖 `defer()` 함수로 데이터 가져오기를 연기하는 방법
+
+- 데이터가 로딩되는 때를 연기할 수 있게 하는 기능이다.
+- 데이터가 다 도착하지 않았어도 컴포넌트를 미리 렌더링하여 사용자 경험 개선할 수 있다.
+
+#### 💎 Events.js
+
+```js
+import { useLoaderData, json, defer, Await } from "react-router-dom";
+import EventsList from "../components/EventsList";
+import { Suspense } from "react";
+
+function EventsPage() {
+  const { events } = useLoaderData();
+  console.log(events);
+  // resolve는 연기된 값 중 하나를 값으로 취한다.
+  return (
+    // Suspense : 다른 데이터가 도착하길 기다리는 동안 폴백을 도와주는 특정한 상황에서 사용할 수 있다.
+    <Suspense fallback={<p style={{ textAlign: "center" }}>Loading...</p>}>
+      <Await resolve={events}>
+        {/* 데이터가 도착하면(프로미스가 리졸빙되고 데이터가 도착하면) 실행할 함수 */}
+        {(loadedEvents) => <EventsList events={loadedEvents} />}
+      </Await>
+    </Suspense>
+  );
+}
+
+export default EventsPage;
+
+async function loadEvents() {
+  const response = await fetch("http://localhost:8080/events");
+  if (!response.ok) {
+    throw json({ message: "이벤트를 가져올 수 없습니다." }, { status: 500 });
+  } else {
+    const resData = await response.json();
+    return resData.events;
+  }
+}
+
+export function loader() {
+  return defer({
+    events: loadEvents(),
+  });
+}
+```
+
+- loader에서 fetch동작을 따로 loadEvents 함수로 분리시킨다. 이때, 바로 `response`를 반환하는 것이 아니다!
+- loadEvents함수는 Promise를 리턴한다.
+- 기존의 loader 함수 안에 `defer()`를 이용하여 loadEvents()의 결과값을 불러오고 `defer()`는 객체를 입력받는다. 해당 객체 안에는 해당 페이지에서 오갈 수 있는 모든 HTTP 요청을 넣어줘야한다.
+- loadEvents 함수로 받아온 프로미스를 defer 안의 events 키에 저장된다.
+
+![defer](./README/defer.gif)
