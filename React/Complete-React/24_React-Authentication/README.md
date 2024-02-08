@@ -587,3 +587,86 @@ function EventItem() {
 ```
 
 ![ui](./readme/ui.gif)
+
+<br>
+
+### 📖 라우트 보호 추가하기
+
+- 현 상태에서 직접 라우트로 접근하면 로그아웃 상태임에도 접근이 가능하다. (ex. edit, new)
+- 로그인 상태가 아니면 해당 라우트로 접근이 불가능하도록 만들어야한다.
+- 로더를 사용하자!
+
+#### 💎 auth.js
+
+```js
+export function checkAuthLoader() {
+  const token = getAuthToken();
+
+  if (!token) {
+    return redirect("/auth");
+  }
+  return null;
+}
+```
+
+#### 💎 App.js
+
+```js
+//...
+import { tokenLoader, checkAuthLoader } from "./util/auth";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    id: "root",
+    loader: tokenLoader, // 로그아웃을 했는지 안했는지 알아 볼 수 있다.
+    children: [
+      { index: true, element: <HomePage /> },
+      {
+        path: "events",
+        element: <EventsRootLayout />,
+        children: [
+          {
+            index: true,
+            element: <EventsPage />,
+            loader: eventsLoader,
+          },
+          {
+            path: ":eventId",
+            id: "event-detail",
+            loader: eventDetailLoader,
+            children: [
+              {
+                index: true,
+                element: <EventDetailPage />,
+                action: deleteEventAction,
+              },
+              {
+                path: "edit",
+                element: <EditEventPage />,
+                action: manipulateEventAction,
+                loader: checkAuthLoader, // 라우트 접근 제한 로더
+              },
+            ],
+          },
+          {
+            path: "new",
+            element: <NewEventPage />,
+            action: manipulateEventAction,
+            loader: checkAuthLoader, // 라우트 접근 제한 로더
+          },
+        ],
+      },
+      //...
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
