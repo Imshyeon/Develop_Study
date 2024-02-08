@@ -670,3 +670,44 @@ function App() {
 
 export default App;
 ```
+
+<br>
+
+### 📖 자동 로그아웃 추가하기
+
+- 현재 백엔드의 토큰은 1시간이면 만료된다. 따라서 한시간 뒤면 사용자를 로그아웃 & 기존의 토큰 삭제 해야한다.
+- 현재 프로젝트는 유일한 루트 컴포넌트를 사용하고, 그 아래로 children 라우트를 가지고 있다.
+- 따라서 어플리케이션이 시작되고 RootLayout이 렌더링 되면 타이머를 시작하도록 한다.
+
+#### 💎 Root.js
+
+```js
+import { Outlet, useLoaderData, useSubmit } from "react-router-dom";
+
+import MainNavigation from "../components/MainNavigation";
+import { useEffect } from "react";
+
+function RootLayout() {
+  const token = useLoaderData();
+  const submit = useSubmit();
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      submit(null, { action: "/logout", method: "POST" });
+    }, 1 * 60 * 60 * 1000); // 1000밀리초 * 60초 * 60분 * 1시간 = 1시간
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [token, submit]);
+
+  return (
+    //...
+  );
+}
+
+export default RootLayout;
+```
