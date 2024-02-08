@@ -43,5 +43,10 @@ export async function action({ request, params }) {
   // 메모리에 저장할 수도 있고 쿠키에 저장할 수 있다.
   localStorage.setItem("token", token); // 로컬저장소에 저장.
 
+  // 토큰 만료 시간 저장할 필요가 있다.
+  const expiration = new Date();
+  expiration.setHours(expiration.getHours() + 1);
+  localStorage.setItem("expiration", expiration.toISOString());
+
   return redirect("/");
 }

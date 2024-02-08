@@ -711,3 +711,113 @@ function RootLayout() {
 
 export default RootLayout;
 ```
+
+<br>
+
+### 📖 토큰 만료 관리하기
+
+#### 💎 Authentication.js
+
+```js
+//...
+export async function action({ request, params }) {
+  //...
+
+  // 토큰 만료 시간 저장할 필요가 있다.
+  const expiration = new Date();
+  expiration.setHours(expiration.getHours() + 1);
+  localStorage.setItem("expiration", expiration.toISOString());
+
+  return redirect("/");
+}
+```
+
+- 토큰 만료 시간을 저장
+
+#### 💎 auth.js
+
+```js
+// 토큰 만료시간 계산
+export function getTokenDuration() {
+  const storedExpirationDate = localStorage.getItem("expiration");
+  const expirationDate = new Date(storedExpirationDate);
+  const now = new Date();
+  const duration = expirationDate.getTime() - now.getTime(); // 토큰 만료가 되었다면 음수가 나올 것이다.
+  return duration;
+}
+
+export function getAuthToken() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return null;
+  }
+
+  const tokenDuration = getTokenDuration();
+  if (tokenDuration < 0) {
+    // 토큰이 만료되었다면
+    return "EXPIRED";
+  }
+
+  return token;
+}
+```
+
+- 토큰 만료시간을 계산하는 코드를 작성하고, 이미 토큰이 만료되었다면 "EXPIRED"라는 문자열을 리턴한다.
+
+#### 💎 Root.js
+
+```js
+import { Outlet, useLoaderData, useSubmit } from "react-router-dom";
+
+import MainNavigation from "../components/MainNavigation";
+import { useEffect } from "react";
+import { getTokenDuration } from "../util/auth";
+
+function RootLayout() {
+  const token = useLoaderData();
+  const submit = useSubmit();
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
+
+    // 만약 토큰이 만료되었다면 로그아웃
+    if (token === "EXPIRED") {
+      submit(null, { action: "/logout", method: "POST" });
+      return;
+    }
+
+    const tokenDuration = getTokenDuration(); // 토큰 만료시간을 받아와서 해당 시간을 타이머로 설정한다.
+    console.log(tokenDuration);
+
+    setTimeout(() => {
+      submit(null, { action: "/logout", method: "POST" });
+    }, tokenDuration);
+  }, [token, submit]);
+
+  return (
+    //...
+  );
+}
+
+export default RootLayout;
+```
+
+- 직접 한시간을 하드코딩한 것이 아니라, 토큰 만료시간을 받아와서 타이머로 설정한다.
+
+#### 💎 Logout.js
+
+```js
+import { redirect } from "react-router-dom";
+
+export function action() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("expiration");
+  return redirect("/");
+}
+```
+
+- 로그아웃 시 토큰 만료 시간을 삭제.
+
+![expiration](./readme/expiration.png)
