@@ -1674,3 +1674,250 @@ export default EventForm;
 - `useActionData` : action이 리턴한 데이터에 엑세스 할 수 있다.
 
 ![errorMessage](./README/errorMessage.png)
+
+<br>
+
+### 📖 액션 재사용하기 | EditEventPage
+
+- EditEvent는 새로운 NewEvent를 생성하는 action과 꽤 비슷하다.
+- 이 액션을 재사용하면 좋을 듯 하다.
+
+#### 💎 NewEventPage.js
+
+```js
+import EventForm from "../components/EventForm";
+
+function NewEventPage() {
+  return <EventForm method="post" />;
+}
+
+export default NewEventPage;
+```
+
+- action 함수를 EventForm.js로 이동.
+
+#### 💎 EventForm.js
+
+```js
+import {
+  useNavigate,
+  Form,
+  useNavigation,
+  useActionData,
+  json,
+  redirect,
+} from "react-router-dom";
+
+import classes from "./EventForm.module.css";
+
+function EventForm({ method, event }) {
+  const data = useActionData(); // action에서 온 데이터를 받음.
+  const navigate = useNavigate();
+
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
+
+  function cancelHandler() {
+    navigate("..");
+  }
+
+  return (
+    <Form method={method} className={classes.form}>
+      {data && data.errors && (
+        <ul>
+          {Object.values(data.errors).map((error) => (
+            <li key={error}>{error}</li>
+          ))}
+        </ul>
+      )}
+      <p>
+        <label htmlFor="title">Title</label>
+        <input
+          id="title"
+          type="text"
+          name="title"
+          required
+          defaultValue={event ? event.title : ""}
+        />
+      </p>
+      <p>
+        <label htmlFor="image">Image</label>
+        <input
+          id="image"
+          type="url"
+          name="image"
+          required
+          defaultValue={event ? event.image : ""}
+        />
+      </p>
+      <p>
+        <label htmlFor="date">Date</label>
+        <input
+          id="date"
+          type="date"
+          name="date"
+          required
+          defaultValue={event ? event.date : ""}
+        />
+      </p>
+      <p>
+        <label htmlFor="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          rows="5"
+          required
+          defaultValue={event ? event.description : ""}
+        />
+      </p>
+      <div className={classes.actions}>
+        <button type="button" onClick={cancelHandler} disabled={isSubmitting}>
+          취소하기
+        </button>
+        <button disabled={isSubmitting}>
+          {isSubmitting ? "저장 중..." : "저장하기"}
+        </button>
+      </div>
+    </Form>
+  );
+}
+
+export default EventForm;
+
+export async function action({ request, params }) {
+  const method = request.method;
+
+  const data = await request.formData();
+  const eventData = {
+    title: data.get("title"), // name을 넣는다.
+    image: data.get("image"),
+    date: data.get("date"),
+    description: data.get("description"),
+  };
+
+  let url = "http://localhost:8080/events";
+
+  if (method === "PATCH") {
+    // edit의 경우
+    const eventId = params.id;
+    url = "http://localhost:8080/events/" + eventId;
+  }
+
+  const response = await fetch(url, {
+    method: method,
+    body: JSON.stringify(eventData),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.status === 422) {
+    // backend의 검증 코드
+    return response;
+    // 리턴된 action 데이터도 페이지와 컴포넌트에서 사용할 수 있다.(로더와 마찬가지)
+  }
+
+  if (!response.ok) {
+    throw json(
+      { message: "데이터를 전송하는데 실패했습니다." },
+      { status: 500 }
+    );
+  }
+
+  return redirect("/events");
+}
+```
+
+- 해당 Form을 재사용 가능하게 하기 위해선 Form method를 변경할 필요가 있다. New 이벤트를 만들기 위해서의 method는 POST, Edit 이벤트를 위해서 method는 PATCH이다.
+- Form의 method를 동적으로 받아오기 위해서 NewEventPage, EditEventPage에 method 속성을 전달 받는다.
+- action은 request를 이용해 method를 받아오고 해당 method가 PATCH이면 fetch 시, url을 변경할 수 있도록 한다.
+
+#### 💎 EditEventForm.js
+
+```js
+import { useRouteLoaderData } from "react-router-dom";
+import EventForm from "../components/EventForm";
+
+function EditEventPage() {
+  const data = useRouteLoaderData("event-detail");
+  const event = data.event;
+
+  return <EventForm event={event} method="patch" />;
+}
+
+export default EditEventPage;
+```
+
+#### 💎 App.js
+
+```js
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import RootPage from "./pages/RootPage";
+import HomePage from "./pages/HomePage";
+import EventsPage, { loader as eventsLoader } from "./pages/Events";
+import EventDetailPage, {
+  loader as eventDetailLoader,
+  action as deleteEventAction,
+} from "./pages/EventDetailPage";
+import NewEventPage from "./pages/NewEventPage";
+import EditEventPage from "./pages/EditEventPage";
+import EventsRootLayout from "./pages/EventRoot";
+import ErrorPage from "./pages/Error";
+import { action as manipulateEventAction } from "./components/EventForm";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootPage />,
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <HomePage /> },
+      {
+        path: "events",
+        element: <EventsRootLayout />,
+        children: [
+          {
+            index: true,
+            element: <EventsPage />,
+            loader: eventsLoader,
+          },
+          {
+            path: ":id",
+            id: "event-detail", // 부모라우트의 데이터를 이용하기 위함
+            loader: eventDetailLoader, // 공통 loader
+            children: [
+              {
+                index: true,
+                element: <EventDetailPage />,
+                action: deleteEventAction,
+              },
+              {
+                path: "edit",
+                element: <EditEventPage />,
+                action: manipulateEventAction,
+              },
+            ],
+          },
+
+          {
+            path: "new",
+            element: <NewEventPage />,
+            action: manipulateEventAction,
+          },
+        ],
+      },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+- EventForm으로부터 action을 받아와 NewEvent, EditEvent의 action에 사용한다.
+
+![액션재사용](./README/액션재사용.gif)
