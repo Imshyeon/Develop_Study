@@ -651,3 +651,75 @@ export default function EventForm({ inputData, onSubmit, children }) {
 ![createNew](./readme/createNew.png)
 
 🔗 [레파지토리에서 해당 코드 보기](https://github.com/Imshyeon/Develop_Study/commit/5cabd1fc1b231fde18b34c0e7fa60c3955561275)
+
+<br>
+
+### 📖 `useMutation` 성공 시의 동작 및 쿼리 무효화 | 새로운 이벤트 작성 완료
+
+#### 💎 NewEvent.jsx
+
+```jsx
+import { Link, useNavigate } from "react-router-dom";
+
+import { useMutation } from "@tanstack/react-query";
+import { createNewEvent } from "../../util/http.js";
+
+import Modal from "../UI/Modal.jsx";
+import EventForm from "./EventForm.jsx";
+import ErrorBlock from "../UI/ErrorBlock.jsx";
+
+import { queryClient } from "../../util/http.js";
+
+export default function NewEvent() {
+  const navigate = useNavigate();
+
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationFn: createNewEvent, // mutationKey도 있으나 mutation 동작은 캐시 처리를 하지는 않는다.
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["events"],
+      });
+      navigate("/events"); // 성공했을 때 이동.
+    }, //mutation이 성공하면 해당 함수가 실행. => mutation이 성공할 때까지 화면에 계속 머묾
+  });
+
+  function handleSubmit(formData) {
+    mutate({ event: formData });
+  }
+
+  //...
+}
+```
+
+- `onSuccess:()=>{}` : mutation이 성공할 때까지 새로운 이벤트를 생성하는 모달에 계속 머물게 한다.
+
+- 새로운 이벤트가 생성됨과 동시에 바로 데이터를 가져와서 화면에 렌더링해야한다. &rarr; 리액트 쿼리에서 제공하는 메서드를 이용해 하나 이상의 쿼리를 무효화하는 것이다.
+- 즉, 데이터가 오래되었으니 업데이트가 필요함을 알려야한다.
+
+<br>
+
+- `queryClient.invalidateQueries({})` : 쿼리를 무효화한다. 현재 화면에 표시된 컴포넌트와 관련된 쿼리가 실행된 경우 특정 쿼리로 가져왔던 데이터가 오래되었으니 만료로 표시하고 즉시 다시 가져오라고 리액트 쿼리에게 알린다.
+  - `queryKey: ['events']` : 이 키가 포함된 모든 쿼리를 무효화한다. events 라는 키워드가 있는 키는 모두 무효화.
+  - 만약 `exact: true`로 설정한다면 위에서의 queryKey가 events로 정확히 일치하는 쿼리만 무효화된다.
+
+#### 💎 App.jsx, http.js
+
+```js
+// http.js
+import { QueryClient } from "@tanstack/react-query";
+
+export const queryClient = new QueryClient();
+
+// App.jsx
+import { queryClient } from "./util/http.js";
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
+}
+```
+
+![createNew2](./readme/createNew2.gif)
