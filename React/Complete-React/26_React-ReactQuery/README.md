@@ -514,3 +514,138 @@ export default function NewEvent() {
 3. `isPending` : true/false
 4. `isError` : `useQuery`에서와 같다.
 5. `error` : 오류의 세부정보
+
+<br>
+
+### 📖 추가 데이터 가져오기 및 `useMutation` 테스트하기 | 이미지 추가하기
+
+#### 💎 http.js
+
+```js
+export async function fetchSelectableImages({ signal }) {
+  const response = await fetch("http://localhost:3000/events/images", {
+    signal,
+  });
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while fetching the images");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const { images } = await response.json();
+
+  return images;
+}
+```
+
+#### 💎 EventForm.jsx
+
+```jsx
+import { useState } from "react";
+
+import { useQuery } from "@tanstack/react-query";
+import { fetchSelectableImages } from "../../util/http.js";
+
+import ImagePicker from "../ImagePicker.jsx";
+import ErrorBlock from "../UI/ErrorBlock.jsx";
+
+export default function EventForm({ inputData, onSubmit, children }) {
+  const [selectedImage, setSelectedImage] = useState(inputData?.image);
+
+  const { data, isPending, isError } = useQuery({
+    queryKey: ["events-images"],
+    queryFn: fetchSelectableImages,
+  });
+
+  function handleSelectImage(image) {
+    setSelectedImage(image);
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+
+    onSubmit({ ...data, image: selectedImage });
+  }
+
+  return (
+    <form id="event-form" onSubmit={handleSubmit}>
+      <p className="control">
+        <label htmlFor="title">Title</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          defaultValue={inputData?.title ?? ""}
+        />
+      </p>
+
+      {isPending && <p>Loading selectable images...</p>}
+      {isError && (
+        <ErrorBlock
+          title="Failed to load selectable images"
+          message="Plz try agiain later."
+        />
+      )}
+      {data && (
+        <div className="control">
+          <ImagePicker
+            images={data}
+            onSelect={handleSelectImage}
+            selectedImage={selectedImage}
+          />
+        </div>
+      )}
+
+      <p className="control">
+        <label htmlFor="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          defaultValue={inputData?.description ?? ""}
+        />
+      </p>
+
+      <div className="controls-row">
+        <p className="control">
+          <label htmlFor="date">Date</label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            defaultValue={inputData?.date ?? ""}
+          />
+        </p>
+
+        <p className="control">
+          <label htmlFor="time">Time</label>
+          <input
+            type="time"
+            id="time"
+            name="time"
+            defaultValue={inputData?.time ?? ""}
+          />
+        </p>
+      </div>
+
+      <p className="control">
+        <label htmlFor="location">Location</label>
+        <input
+          type="text"
+          id="location"
+          name="location"
+          defaultValue={inputData?.location ?? ""}
+        />
+      </p>
+
+      <p className="form-actions">{children}</p>
+    </form>
+  );
+}
+```
+
+![createNew](./readme/createNew.png)
