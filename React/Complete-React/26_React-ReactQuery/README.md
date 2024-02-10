@@ -420,3 +420,97 @@ if (isLoading) {
 - `isLoading` : 쿼리가 비활성화됐다고 해서 enabled 속성이 true가 되지는 않는다.(`isPending`과는 다른 점)
 
 ![findEvent3](./readme/findEvent3.gif)
+
+<br>
+
+### 📖 `useMutation`을 사용하여 데이터 변경 | 데이터 전송하기
+
+- `useQuery`는 데이터를 가져올 때만 사용하고 이번엔 데이터를 전송하는 것이니까 `useMutation`를 사용한다.
+- POST 요청을 전송할 때 요청 전송을 위한 로직을 직접 작성해서 `useQuery`를 이용할 수는 있다.
+- 그러나 `useMutation`은 데이터를 변경하는 쿼리에 최적화 되어있다.
+- `useMutation`은 `useQuery`와는 다르게 컴포넌트가 렌더링될 때 자동으로 요청을 보내지 않는다. 대신 요청을 언제 실행할 것인지를 차후에 반환할 `mutate` 함수로 지정해줘야 한다.
+
+#### 💎 http.js
+
+```js
+export async function createNewEvent(eventData) {
+  const response = await fetch("http://localhost:3000/events", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(eventData),
+  });
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while creating the event");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const { event } = await response.json();
+
+  return event;
+}
+```
+
+#### 💎 NewEvent.jsx
+
+```jsx
+import { Link, useNavigate } from "react-router-dom";
+
+import { useMutation } from "@tanstack/react-query";
+import { createNewEvent } from "../../util/http.js";
+
+import Modal from "../UI/Modal.jsx";
+import EventForm from "./EventForm.jsx";
+import ErrorBlock from "../UI/ErrorBlock.jsx";
+
+export default function NewEvent() {
+  const navigate = useNavigate();
+
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationFn: createNewEvent, // mutationKey도 있으나 mutation 동작은 캐시 처리를 하지는 않는다.
+  });
+
+  function handleSubmit(formData) {
+    mutate({ event: formData });
+  }
+
+  return (
+    <Modal onClose={() => navigate("../")}>
+      <EventForm onSubmit={handleSubmit}>
+        {isPending && "Submitting..."}
+        {!isPending && (
+          <>
+            <Link to="../" className="button-text">
+              Cancel
+            </Link>
+            <button type="submit" className="button">
+              Create
+            </button>
+          </>
+        )}
+      </EventForm>
+      {isError && (
+        <ErrorBlock
+          title="Failed to create event"
+          message={
+            error.info?.message ||
+            "Failed to create event. Plz check your inputs and try again later."
+          }
+        />
+      )}
+    </Modal>
+  );
+}
+```
+
+- `useMutation`에서 반환된 객체에는
+
+1. `data` : 전송된 요청의 응답으로 반환된 데이터
+2. `mutate` : 해당 훅을 사용하는 컴포넌트에서 어디서든 `mutate` 함수를 호출해 요청을 전송할 수 있다.
+3. `isPending` : true/false
+4. `isError` : `useQuery`에서와 같다.
+5. `error` : 오류의 세부정보
