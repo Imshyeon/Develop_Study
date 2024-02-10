@@ -395,3 +395,28 @@ const { data, isPending, isError, error } = useQuery({
 ![findEvent2](./readme/findEvent2.gif)
 
 - Recently added events에 데이터가 다시 표기가 된 것을 볼 수 있다.
+
+<br>
+
+### 📖 쿼리 활성화 및 비활성화 | 검색 로직 -3
+
+- 유효한 결과가 나오는 이유는 검색어를 상태(State)로 관리하고 있기 때문이다. &rarr; FindEventSection은 상태가 바뀔 때마다 재실행된다.
+- 그러나 가장 처음 웹페이지를 방문했을 때, 검색에는 모든 이벤트가 표시되어있다. 이는 의도한 바와는 다르다. &rarr; 검색어를 입력하지 않았을 경우 `useQuery`를 FindEventSection으로 전송하지 않도록 하는 것이 좋다. 즉, 검색어를 입력할 때까지 쿼리를 비활성화하는 것이다.
+
+#### 💎 FindEventSection.jsx
+
+```jsx
+const { data, isLoading, isError, error } = useQuery({
+  queryKey: ["events", { search: searchTerm }],
+  queryFn: ({ signal }) => fetchEvents({ signal, searchTerm }),
+  enabled: searchTerm !== undefined, // false: 비활성화, true: 활성화(기본값)
+});
+
+if (isLoading) {
+  content = <LoadingIndicator />;
+}
+```
+
+- `isLoading` : 쿼리가 비활성화됐다고 해서 enabled 속성이 true가 되지는 않는다.(`isPending`과는 다른 점)
+
+![findEvent3](./readme/findEvent3.gif)
