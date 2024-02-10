@@ -254,3 +254,104 @@ const { data, isPending, isError, error } = useQuery({
 <br>
 
 ### 📖 동적 쿼리 함수 및 쿼리 키
+
+#### 💎 http.js
+
+```js
+export async function fetchEvents(searchTerm) {
+  let url = "http://localhost:3000/events";
+  if (searchTerm) {
+    url += "?search=" + searchTerm;
+    // 백엔드에서 검색을 위한 동적으로 해당 쿼리(?search=)는 useQuery에서 검색에 대한 쿼리동작이 구현되었을 때 사용되어야한다.
+  }
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while fetching the events");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const { events } = await response.json();
+
+  return events;
+}
+```
+
+#### 💎 FindEventSection.jsx
+
+```jsx
+import { useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchEvents } from "../../util/http";
+import LoadingIndicator from "../UI/LoadingIndicator";
+import ErrorBlock from "../UI/ErrorBlock";
+import EventItem from "./EventItem";
+
+export default function FindEventSection() {
+  const searchElement = useRef();
+  const [searchTerm, setSearchTerm] = useState();
+
+  const { data, isPending, isError, error } = useQuery({
+    // searchTerm이 변경되면 다른 쿼리가 전송될 수 있도록 함.
+    queryKey: ["events", { search: searchTerm }],
+    queryFn: () => fetchEvents(searchTerm),
+  });
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    setSearchTerm(searchElement.current.value);
+  }
+
+  let content = <p>Please enter a search term and to find events.</p>;
+
+  if (isPending) {
+    content = <LoadingIndicator />;
+  }
+
+  if (isError) {
+    content = (
+      <ErrorBlock
+        title="An error occured"
+        message={error.info?.message || "Failed to fetch event."}
+      />
+    );
+  }
+
+  if (data) {
+    content = (
+      <ul className="events-list">
+        {data.map((event) => (
+          <li key={event.id}>
+            <EventItem event={event} />
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  return (
+    <section className="content-section" id="all-events-section">
+      <header>
+        <h2>Find your next event!</h2>
+        <form onSubmit={handleSubmit} id="search-form">
+          <input
+            type="search"
+            placeholder="Search events"
+            ref={searchElement}
+          />
+          <button>Search</button>
+        </form>
+      </header>
+      {content}
+    </section>
+  );
+}
+```
+
+![findEvent1](./readme/findEvent1.png)
+
+- Recently added Events에는 아무런 내용이 뜨지 않게 되었다.
+- 개발자 Network 탭에서 'http://localhost:3000/events?search=[object%20Object]' 로 요청을 한 것이 확인 되었다.
+- '?search=[object%20Object]'로 검색 로직이 잘못 동작되었다.
