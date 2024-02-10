@@ -253,7 +253,7 @@ const { data, isPending, isError, error } = useQuery({
 
 <br>
 
-### 📖 동적 쿼리 함수 및 쿼리 키
+### 📖 동적 쿼리 함수 및 쿼리 키 | 검색 로직 -1
 
 #### 💎 http.js
 
@@ -355,3 +355,43 @@ export default function FindEventSection() {
 - Recently added Events에는 아무런 내용이 뜨지 않게 되었다.
 - 개발자 Network 탭에서 'http://localhost:3000/events?search=[object%20Object]' 로 요청을 한 것이 확인 되었다.
 - '?search=[object%20Object]'로 검색 로직이 잘못 동작되었다.
+
+<br>
+
+### 📖 쿼리 구성 객체 및 요청 취소 | 검색 로직 -2
+
+- 위에서 잘못된 검색 로직이 동작된 이유는 NewEventsSection에 사용된 `useQuery` 훅에서 발생하였다.
+
+```jsx
+const { data, isPending, isError, error } = useQuery({
+  queryKey: ["events"],
+  queryFn: fetchEvents,
+  staleTime: 5000,
+});
+```
+
+- 해당 `useQuery` 훅은 여기에 정의한 쿼리 함수에 기본 데이터를 전달하고 있다.
+- 리액트 쿼리는 쿼리 함수에 기본적으로 데이터를 전달하는데, 이때 전달되는 데이터는 쿼리에 사용된 쿼리 키와 signal 객체이다. 해당 signal은 요청을 취소할 때 필요하다.
+
+#### 💎 http.js
+
+```js
+export async function fetchEvents({ signal, searchTerm }) {
+  //...
+}
+```
+
+- `signal` : 요청 전송이 취소되는 것을 파악할 수 있다. 예를 들어 사용자가 페이지를 벗어나면 리액트 쿼리는 전송 중인 요청을 취소하려 할 것이다.
+
+#### 💎 FindEventSection.jsx
+
+```jsx
+const { data, isPending, isError, error } = useQuery({
+  queryKey: ["events", { search: searchTerm }],
+  queryFn: ({ signal }) => fetchEvents({ signal, searchTerm }),
+});
+```
+
+![findEvent2](./readme/findEvent2.gif)
+
+- Recently added events에 데이터가 다시 표기가 된 것을 볼 수 있다.
