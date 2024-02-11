@@ -2,13 +2,15 @@ import { Link, useNavigate, Outlet, useParams } from "react-router-dom";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { fetchEvent, deleteEvent, queryClient } from "../../util/http.js";
+import { useState } from "react";
 
 import Header from "../Header.jsx";
-import LoadingIndicator from "../UI/LoadingIndicator.jsx";
 import ErrorBlock from "../UI/ErrorBlock.jsx";
+import Modal from "../UI/Modal.jsx";
 
 export default function EventDetails() {
-  // const eventId = useLoaderData();
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const params = useParams();
   const navigate = useNavigate();
 
@@ -17,7 +19,12 @@ export default function EventDetails() {
     queryFn: ({ signal }) => fetchEvent({ signal, id: params.id }),
   });
 
-  const { mutate } = useMutation({
+  const {
+    mutate,
+    isPending: isPendingDeletion,
+    isError: isErrorDeleting,
+    error: errorDeleting,
+  } = useMutation({
     mutationFn: deleteEvent,
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -28,6 +35,14 @@ export default function EventDetails() {
       navigate("/events");
     },
   });
+
+  function handleStartDelete() {
+    setIsDeleting(true);
+  }
+
+  function handleStopDelete() {
+    setIsDeleting(false);
+  }
 
   function deleteEventDetail() {
     mutate({ id: params.id }); // 변형함수(Mutation)를 트리거 할 수 있는 mutate 함수
@@ -68,7 +83,7 @@ export default function EventDetails() {
         <header>
           <h1>{data.title}</h1>
           <nav>
-            <button onClick={deleteEventDetail}>Delete</button>
+            <button onClick={handleStartDelete}>Delete</button>
             <Link to="edit">Edit</Link>
           </nav>
         </header>
@@ -90,6 +105,34 @@ export default function EventDetails() {
 
   return (
     <>
+      {isDeleting && (
+        <Modal onClose={handleStopDelete}>
+          <h2>Are you sure?</h2>
+          <p>이 이벤트를 정말 삭제하시겠습니까?</p>
+          <div className="form-actions">
+            {isPendingDeletion && <p>삭제 중...</p>}
+            {!isPendingDeletion && (
+              <>
+                <button onClick={handleStopDelete} className="button-text">
+                  Cancel
+                </button>
+                <button onClick={deleteEventDetail} className="button">
+                  Delete
+                </button>
+              </>
+            )}
+          </div>
+          {isErrorDeleting && (
+            <ErrorBlock
+              title="이벤트 삭제에 실패"
+              message={
+                errorDeleting.info?.message ||
+                "이벤트를 삭제하는데 실패했습니다."
+              }
+            />
+          )}
+        </Modal>
+      )}
       <Outlet />
       <Header>
         <Link to="/events" className="nav-item">
@@ -99,9 +142,4 @@ export default function EventDetails() {
       <article id="event-details">{content}</article>
     </>
   );
-}
-
-export function loader({ params }) {
-  const id = params.id;
-  return id;
 }
