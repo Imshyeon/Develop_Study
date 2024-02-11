@@ -22,6 +22,8 @@ export default function EventDetails() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["events"],
+        refetchType: "none", // invalidateQueries를 호출할 때 이 기존 쿼리가 즉시 자동으로 다시 트리거되지 않도록 한다.
+        // => 아직 이벤트 세부정보 페이지 안에 있을 때 즉시 자동으로 트리거 되지 않도록 한다!
       }); // 이벤트를 삭제했으므로 리액트 쿼리가 다시 이벤트 데이터를 가져오도록 해야한다.
       navigate("/events");
     },

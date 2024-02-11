@@ -3,6 +3,7 @@
 [📌 프로젝트 시작하기](#-프로젝트-시작하기)<br>
 [📌 리액트 쿼리](#-리액트-쿼리)<br>
 [📌 실습 과제](#-실습-과제)<br>
+[📌 데모 앱 개선](#-데모-앱-개선)<br>
 <br>
 
 ## 📌 프로젝트 시작하기
@@ -850,3 +851,40 @@ export default function EventDetails() {
 
 - 🚨 나는 해당 이벤트의 id를 `useParams`를 사용하여 가져올 생각을 못하고 로더함수를 통해서 별도로 아이디를 리턴받았다.
 - 물론 동작은 했지만 그래도 앞으로는 `useParams`를 고려해야겠다!!!! 🚨
+
+<br>
+
+## 📌 데모 앱 개선
+
+### 📖 무효화 후 자동 다시 가져오기 비활성화
+
+![deleteError](./readme/deleteError.png)
+
+- 실습 과제에서 데이터를 삭제하고 다시 홈으로 돌아왔을 때 fetch 오류가 발생한 것을 볼 수 있다.
+
+![404Detail](./readme/404Detail.png)
+
+- 특정 ID가 있는 특정 이벤트에서 오류가 발생했다.
+- 이는 이벤트를 삭제한 후에는 모든 이벤트 관련 쿼리가 무효화되지만 여전히 세부 정보 페이지에 위치하기 때문에 발생한다.
+- 따라서 EventDetails의 `queryClient.invalidateQueries()`에 다음을 추가해야한다.
+
+```jsx
+// EventDetails.jsx
+const { mutate } = useMutation({
+  mutationFn: deleteEvent,
+  onSuccess: () => {
+    queryClient.invalidateQueries({
+      queryKey: ["events"],
+      refetchType: "none", // invalidateQueries를 호출할 때 이 기존 쿼리가 즉시 자동으로 다시 트리거되지 않도록 한다.
+      // => 아직 이벤트 세부정보 페이지 안에 있을 때 즉시 자동으로 트리거 되지 않도록 한다!
+    });
+    navigate("/events");
+  },
+});
+```
+
+![404Clear](./readme/404Clear.png)
+
+오류 해결!
+
+<br>
