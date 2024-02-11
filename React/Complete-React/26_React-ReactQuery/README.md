@@ -889,7 +889,7 @@ const { mutate } = useMutation({
 
 <br>
 
-### 📖 데모 앱 개선 및 Mutation 개념 반복
+### 📖 데모 앱 개선 및 Mutation 개념 반복 | 이벤트 삭제 모달
 
 #### 💎 EventDetail.jsx
 
@@ -1047,3 +1047,127 @@ export default function EventDetails() {
 ![modal](./readme/modal.gif)
 
 <br>
+
+### 📖 리액트 쿼리의 실제 이점 | 이벤트 편집하기
+
+#### 💎 EditEvent.jsx
+
+```jsx
+import { Link, useNavigate, useParams } from "react-router-dom";
+
+import { useQuery } from "@tanstack/react-query";
+import { fetchEvent } from "../../util/http.js";
+
+import Modal from "../UI/Modal.jsx";
+import EventForm from "./EventForm.jsx";
+import LoadingIndicator from "../UI/LoadingIndicator.jsx";
+import ErrorBlock from "../UI/ErrorBlock.jsx";
+
+export default function EditEvent() {
+  const navigate = useNavigate();
+
+  const params = useParams();
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: ["events", { id: params.id }],
+    queryFn: ({ signal }) => fetchEvent({ signal, id: params.id }),
+  });
+
+  function handleSubmit(formData) {}
+
+  function handleClose() {
+    navigate("../");
+  }
+
+  let content;
+
+  if (isPending) {
+    content = (
+      <div className="center">
+        <LoadingIndicator />
+      </div>
+    );
+  }
+
+  if (isError) {
+    content = (
+      <>
+        <ErrorBlock
+          title="데이터 로드 실패"
+          message={
+            error.info?.message || "해당 데이터를 불러오는데 실패했습니다."
+          }
+        />
+        <div className="form-actions">
+          <Link to="/events" className="button">
+            Okay
+          </Link>
+        </div>
+      </>
+    );
+  }
+
+  if (data) {
+    content = (
+      <EventForm inputData={data} onSubmit={handleSubmit}>
+        <Link to="../" className="button-text">
+          Cancel
+        </Link>
+        <button type="submit" className="button">
+          Update
+        </button>
+      </EventForm>
+    );
+  }
+
+  return <Modal onClose={handleClose}>{content}</Modal>;
+}
+```
+
+- 업데이트를 위해 사용한 `useQuery`에서 동일한 키와 데이터를 이미 해당 이벤트를 불러오는데에서 사용했기 때문에 edit 버튼을 눌렀을 때 모달이 로딩 없이 바로 열리는 것을 볼 수 있다!
+
+![updateInstant](./readme/updateInstant.gif)
+
+<br>
+
+### 📖 Mutation을 이용하여 데이터 업데이트
+
+#### 💎 http.js
+
+```js
+export async function updateEvent({ id, event }) {
+  const response = await fetch(`http://localhost:3000/events/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ event }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    const error = new Error("해당 이벤트를 업데이트하는데 실패했습니다.");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  return response.json();
+}
+```
+
+#### 💎 EditEvent.jsx
+
+```jsx
+import { useMutation } from "@tanstack/react-query";
+import { updateEvent } from "../../util/http.js";
+
+export default function EditEvent() {
+
+  const { mutate } = useMutation({
+    mutationFn: updateEvent,
+  });
+
+  function handleSubmit(formData) {
+    mutate({ id: params.id, event: formData });
+    navigate("../"); // 업데이트 모달 닫기 -> 세부 이벤트 페이지
+  }
+```
