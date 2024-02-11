@@ -2,6 +2,7 @@
 
 [📌 프로젝트 시작하기](#-프로젝트-시작하기)<br>
 [📌 리액트 쿼리](#-리액트-쿼리)<br>
+[📌 실습 과제](#-실습-과제)<br>
 <br>
 
 ## 📌 프로젝트 시작하기
@@ -725,3 +726,10 @@ function App() {
 ![createNew2](./readme/createNew2.gif)
 
 🔗 [레파지토리에서 코드 보기](https://github.com/Imshyeon/Develop_Study/commit/8395f85aac4f473b849bbadc1572074c42e16124)
+
+---
+
+## 📌 실습 과제
+
+- View Detail 버튼을 눌렀을 때 해당 이벤트의 내용을 가져와서 보이기!
+- detail 페이지에서 delete 버튼을 눌렀을 때 해당 이벤트 삭제 후, 다시 '/events'로 돌아오기

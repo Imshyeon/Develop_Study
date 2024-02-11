@@ -60,3 +60,36 @@ export async function fetchSelectableImages({ signal }) {
 
   return images;
 }
+
+export async function fetchEvent({ eventId, signal }) {
+  const response = await fetch("http://localhost:3000/events/" + eventId, {
+    signal,
+  });
+
+  if (!response.ok) {
+    const error = new Error("해당 이벤트를 불러오는데 실패했습니다.");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const { event } = await response.json();
+  console.log(event);
+  return event;
+}
+
+export async function deleteEvent({ id }) {
+  console.log(id);
+  const response = await fetch(`http://localhost:3000/events/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const error = new Error("해당 이벤트를 삭제하는데 실패했습니다.");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  return response.json();
+}
