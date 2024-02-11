@@ -11,8 +11,8 @@ export default function FindEventSection() {
 
   const { data, isLoading, isError, error } = useQuery({
     // searchTerm이 변경되면 다른 쿼리가 전송될 수 있도록 함.
-    queryKey: ["events", { search: searchTerm }],
-    queryFn: ({ signal }) => fetchEvents({ signal, searchTerm }),
+    queryKey: ["events", { searchTerm: searchTerm }],
+    queryFn: ({ signal, queryKey }) => fetchEvents({ signal, ...queryKey[1] }),
     enabled: searchTerm !== undefined, // false: 비활성화, true: 활성화(기본값)
   });
 

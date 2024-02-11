@@ -1247,3 +1247,87 @@ const { mutate } = useMutation({
 - 수정하려는 데이터에 오류가 있을 때(비어있는 제목..), 이전의 데이터로 다시 롤백할 필요가 있다.
 - `previousEvent, onError`가 이에 해당되는 로직이다.
 - `onSettled`는 성공 여부와 관계없이 백엔드와 프론트엔드가 서로 동기화 되기 위해서 `invalidateQueries`를 이용한다.
+
+<br>
+
+### 📖 쿼리 키를 쿼리 함수 입력으로 사용하기 | 최근 이벤트 데이터만 출력하기
+
+- Recently added events에 말 그대로 최근에 추가된 이벤트만 보이게 할 것이다.(일부의 이벤트만 보일 필요가 있다.)
+
+#### 💎 backend/app.js
+
+```js
+app.get("/events", async (req, res) => {
+  const { max, search } = req.query;
+  const eventsFileContent = await fs.readFile("./data/events.json");
+  let events = JSON.parse(eventsFileContent);
+
+  if (search) {
+    events = events.filter((event) => {
+      const searchableText = `${event.title} ${event.description} ${event.location}`;
+      return searchableText.toLowerCase().includes(search.toLowerCase());
+    });
+  }
+
+  if (max) {
+    events = events.slice(events.length - max, events.length);
+  }
+
+  res.json({
+    events: events.map((event) => ({
+      id: event.id,
+      title: event.title,
+      image: event.image,
+      date: event.date,
+      location: event.location,
+    })),
+  });
+});
+```
+
+- max 속성이 정의되어있다면 해당 숫자 만큼까지의 이벤트만 표현!
+
+#### 💎 http.js
+
+```js
+export async function fetchEvents({ signal, searchTerm, max }) {
+  console.log(searchTerm);
+  let url = "http://localhost:3000/events";
+  if (searchTerm && max) {
+    url += "?search=" + searchTerm + "&max=" + max;
+  } else if (searchTerm) {
+    url += "?search=" + searchTerm;
+  } else if (max) {
+    url += "?max=" + max;
+  }
+
+  const response = await fetch(url, { signal: signal });
+
+  // ...
+}
+```
+
+#### 💎 NewEventsSection.jsx
+
+```jsx
+export default function NewEventsSection() {
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: ["events", { max: 3 }],
+    queryFn: ({ signal, queryKey }) => fetchEvents({ signal, ...queryKey[1] }), // queryKey의 {max : 3}을 해당 쿼리함수에 전달
+    staleTime: 5000,
+  });
+}
+```
+
+이러한 방식은 FindEventSection에도 적용이 가능하다!
+
+```jsx
+// FindEventSection
+const { data, isLoading, isError, error } = useQuery({
+  queryKey: ["events", { searchTerm: searchTerm }],
+  queryFn: ({ signal, queryKey }) => fetchEvents({ signal, ...queryKey[1] }),
+  enabled: searchTerm !== undefined,
+});
+```
+
+![max](./readme/max.gif)

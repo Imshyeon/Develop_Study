@@ -7,8 +7,8 @@ import EventItem from "./EventItem.jsx";
 
 export default function NewEventsSection() {
   const { data, isPending, isError, error } = useQuery({
-    queryKey: ["events"], // 모든 쿼리(전송하는 모든 GET HTTP 요청)에는 쿼리 키가 있다.
-    queryFn: fetchEvents, // 해당 함수를 이용해 실제 요청을 전송할 때 실행할 코드를 정의.
+    queryKey: ["events", { max: 3 }], // 모든 쿼리(전송하는 모든 GET HTTP 요청)에는 쿼리 키가 있다.
+    queryFn: ({ signal, queryKey }) => fetchEvents({ signal, ...queryKey[1] }), // 해당 함수를 이용해 실제 요청을 전송할 때 실행할 코드를 정의.
     staleTime: 5000,
     // gcTime: 30000,
   });

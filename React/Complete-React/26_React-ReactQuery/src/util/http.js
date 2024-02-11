@@ -2,13 +2,18 @@ import { QueryClient } from "@tanstack/react-query";
 
 export const queryClient = new QueryClient();
 
-export async function fetchEvents({ signal, searchTerm }) {
+export async function fetchEvents({ signal, searchTerm, max }) {
   console.log(searchTerm);
   let url = "http://localhost:3000/events";
-  if (searchTerm) {
+  if (searchTerm && max) {
+    url += "?search=" + searchTerm + "&max=" + max;
+  } else if (searchTerm) {
     url += "?search=" + searchTerm;
     // 백엔드에서 검색을 위한 동적으로 해당 쿼리(?search=)는 useQuery에서 검색에 대한 쿼리동작이 구현되었을 때 사용되어야한다.
+  } else if (max) {
+    url += "?max=" + max;
   }
+
   const response = await fetch(url, { signal: signal });
 
   if (!response.ok) {
