@@ -731,5 +731,122 @@ function App() {
 
 ## 📌 실습 과제
 
+### 📖 실습 과제 - 스스로 해결하기
+
 - View Detail 버튼을 눌렀을 때 해당 이벤트의 내용을 가져와서 보이기!
 - detail 페이지에서 delete 버튼을 눌렀을 때 해당 이벤트 삭제 후, 다시 '/events'로 돌아오기
+
+🔗 [레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/6b46c6d640694d64049a3026566bcfeb1425e0b1)
+
+<br>
+
+### 📖 실습 과제 - 해설
+
+#### 💎 http.js
+
+```js
+export async function fetchEvent({ id, signal }) {
+  const response = await fetch(`http://localhost:3000/events/${id}`, {
+    signal,
+  });
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while fetching the event");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const { event } = await response.json();
+
+  return event;
+}
+
+export async function deleteEvent({ id }) {
+  const response = await fetch(`http://localhost:3000/events/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while deleting the event");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  return response.json();
+}
+```
+
+#### 💎 EventsDetail.jsx
+
+```jsx
+import { useParams } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { fetchEvent } from "../../util/http.js";
+
+export default function EventDetails() {
+  const params = useParams();
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: ["events", { id: params.id }],
+    queryFn: ({ signal }) => fetchEvent({ signal, id: params.id }),
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: deleteEvent,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["events"],
+      }); // 이벤트를 삭제했으므로 리액트 쿼리가 다시 이벤트 데이터를 가져오도록 해야한다.
+      navigate("/events");
+    },
+  });
+
+  function deleteEventDetail() {
+    mutate({ id: params.id }); // 변형함수(Mutation)를 트리거 할 수 있는 mutate 함수
+  }
+
+  let content;
+
+  if (isPending) {
+    content = (
+      <div id="event-details-content" className="center">
+        <p> 데이터 가져오는 중.. </p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    content = (
+      <div id="event-details-content" className="center">
+        <ErrorBlock
+          title="이벤트 로드에 실패"
+          message={
+            error.info?.message || "이벤트 데이터를 가져오는데 실패했습니다."
+          }
+        />
+      </div>
+    );
+  }
+
+  if (data) {
+    content = (
+      <div id="event-details-content">
+        <img src={`http://localhost:3000/${data.image}`} alt={data.title} />
+        <div id="event-details-info">
+          <div>
+            <p id="event-details-location">{data.location}</p>
+            <time dateTime={`Todo-DateT$Todo-Time`}>
+              {data.date} @ {data.time}
+            </time>
+          </div>
+          <p id="event-details-description">{data.description}</p>
+        </div>
+      </div>
+    );
+  }
+}
+```
+
+- 🚨 나는 해당 이벤트의 id를 `useParams`를 사용하여 가져올 생각을 못하고 로더함수를 통해서 별도로 아이디를 리턴받았다.
+- 물론 동작은 했지만 그래도 앞으로는 `useParams`를 고려해야겠다!!!! 🚨

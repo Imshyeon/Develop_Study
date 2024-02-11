@@ -61,8 +61,8 @@ export async function fetchSelectableImages({ signal }) {
   return images;
 }
 
-export async function fetchEvent({ eventId, signal }) {
-  const response = await fetch("http://localhost:3000/events/" + eventId, {
+export async function fetchEvent({ id, signal }) {
+  const response = await fetch(`http://localhost:3000/events/${id}`, {
     signal,
   });
 
