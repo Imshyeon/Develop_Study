@@ -1161,7 +1161,6 @@ import { useMutation } from "@tanstack/react-query";
 import { updateEvent } from "../../util/http.js";
 
 export default function EditEvent() {
-
   const { mutate } = useMutation({
     mutationFn: updateEvent,
   });
@@ -1170,4 +1169,39 @@ export default function EditEvent() {
     mutate({ id: params.id, event: formData });
     navigate("../"); // 업데이트 모달 닫기 -> 세부 이벤트 페이지
   }
+}
 ```
+
+<br>
+
+### 📖 낙관적 업데이트 | 업데이트된 상태 반영하기
+
+- 이전에는 mutation안에 `onSuccess`를 이용해서 변형을 완료 시켰다.
+- 이번에는 `onSuccess`를 사용하지 않고 낙관적 업데이트라는 작업을 통해 UI가 즉시 업데이트되도록 할 것이다.
+
+#### 💎 EditEvent.jsx
+
+```jsx
+const { mutate } = useMutation({
+  mutationFn: updateEvent,
+  onMutate: async (data) => {
+    const newEvent = data.event;
+
+    await queryClient.cancelQueries({
+      queryKey: ["events", { id: params.id }],
+    });
+
+    queryClient.setQueriesData(["events", { id: params.id }], newEvent);
+  },
+});
+```
+
+- `onMutate`는 `mutate`를 호출하는 즉시 실행된다.
+  - `data` : onMutate의 값으로 mutate에 전달된다. &rarr; `{ id: params.id, event: formData }`
+  - `queryClient.setQueriesData( 편집하려는 쿼리의 키, 해당 쿼리 키 아래에서 저장하려는 새로운 데이터 )` : 이미 저장된 데이터를 응답을 기다리지 않고 수정할 것이다.
+  - `queryClient.cancelQueries` : 특정 키의 모든 활성 쿼리를 취소한다.
+    - 이 코드를 실행하면 해당 키에 대해 나가는 쿼리가 있는 경우 해당 쿼리가 취소되도록 한다. &rarr; 해당 쿼리의 응답 데이터와 낙관적으로 업데이트된 쿼리 데이터가 충돌되지 않는다.
+    - 업데이트 요청이 완료되기 전에 진행중인 요청이 완료되면 이전 데이터를 다시 가져오게 된다(원하지 않는 동작).
+    - 해당 함수는 프로미스를 반환하므로 await을 사용한다.
+
+![update](./readme/update.gif)
