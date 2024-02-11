@@ -1331,3 +1331,206 @@ const { data, isLoading, isError, error } = useQuery({
 ```
 
 ![max](./readme/max.gif)
+
+<br>
+
+### 📖 리액트 쿼리와 리액트 라우터
+
+- 리액트 쿼리와 라우터를 함께 사용하는 방식이다.
+
+#### 💎 EditEvent.jsx
+
+```jsx
+import {
+  Link,
+  redirect,
+  useNavigate,
+  useParams,
+  useSubmit,
+  useNavigation,
+} from "react-router-dom";
+
+import { useQuery } from "@tanstack/react-query";
+import { fetchEvent, updateEvent, queryClient } from "../../util/http.js";
+
+import Modal from "../UI/Modal.jsx";
+import EventForm from "./EventForm.jsx";
+import ErrorBlock from "../UI/ErrorBlock.jsx";
+
+export default function EditEvent() {
+  const navigate = useNavigate();
+
+  const { state } = useNavigation();
+  const submit = useSubmit();
+
+  const params = useParams();
+  const { data, isError, error } = useQuery({
+    queryKey: ["events", { id: params.id }],
+    queryFn: ({ signal }) => fetchEvent({ signal, id: params.id }),
+    staleTime: 10000, // 캐시된 데이터가 10초 미만인 경우 내부적으로 다시 가져오지 않고 이미 있는 데이터를 사용한다.
+  });
+
+  function handleSubmit(formData) {
+    submit(formData, { method: "PUT" }); // 액션 함수를 트리거한다.
+  }
+
+  function handleClose() {
+    navigate("../");
+  }
+
+  let content;
+
+  if (isError) {
+    content = (
+      <>
+        <ErrorBlock
+          title="데이터 로드 실패"
+          message={
+            error.info?.message || "해당 데이터를 불러오는데 실패했습니다."
+          }
+        />
+        <div className="form-actions">
+          <Link to="/events" className="button">
+            Okay
+          </Link>
+        </div>
+      </>
+    );
+  }
+
+  if (data) {
+    content = (
+      <EventForm inputData={data} onSubmit={handleSubmit}>
+        {state === "submitting" ? (
+          <p>전송 중...</p>
+        ) : (
+          <>
+            <Link to="../" className="button-text">
+              Cancel
+            </Link>
+            <button type="submit" className="button">
+              Update
+            </button>
+          </>
+        )}
+      </EventForm>
+    );
+  }
+
+  return <Modal onClose={handleClose}>{content}</Modal>;
+}
+
+export function loader({ params }) {
+  // 해당 컴포넌트가 실행되기 전에 로더함수 먼저 실행
+
+  // 쿼리를 프로그래매틱 방식으로 트리거.
+  return queryClient.fetchQuery({
+    queryKey: ["events", { id: params.id }],
+    queryFn: ({ signal }) => fetchEvent({ signal, id: params.id }),
+  });
+  // 이렇게 하면 컴포넌트를 렌더링하기 전에 해당 프로미스가 해결될 때까지 기다릴 수 있다.
+  // 그러나 컴포넌트 내부에서 useQuery를 사용하는 것이 더 좋다... => 캐시 때문에
+}
+
+export async function action({ request, params }) {
+  const formData = await request.formData();
+  const updatedEventData = Object.fromEntries(formData);
+  await updateEvent({ id: params.id, event: updatedEventData });
+
+  // 이제, 낙관적 업데이트 실행되지 않음
+  await queryClient.invalidateQueries(["events"]);
+
+  return redirect("../"); // 세부 정보 페이지로 이동
+}
+```
+
+- `loader,action`함수를 이용해 편집 동작을 실행한다. 해당 컴포넌트 안에 `useQuery`를 없애도 되긴 하지만 캐시 작업을 위해서 남겨두었다.
+
+#### 💎 App.jsx
+
+```jsx
+import {
+  Navigate,
+  RouterProvider,
+  createBrowserRouter,
+} from "react-router-dom";
+
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./util/http.js";
+
+import Events from "./components/Events/Events.jsx";
+import EventDetails from "./components/Events/EventDetails.jsx";
+import NewEvent from "./components/Events/NewEvent.jsx";
+import EditEvent, {
+  loader as editEventLoader, // loader 추가
+  action as editEventAction, // action 추가
+} from "./components/Events/EditEvent.jsx";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Navigate to="/events" />,
+  },
+  {
+    path: "/events",
+    element: <Events />,
+
+    children: [
+      {
+        path: "/events/new",
+        element: <NewEvent />,
+      },
+    ],
+  },
+  {
+    path: "/events/:id",
+    element: <EventDetails />,
+    children: [
+      {
+        path: "/events/:id/edit",
+        element: <EditEvent />,
+        loader: editEventLoader, // 로더
+        action: editEventAction, // 액션
+      },
+    ],
+  },
+]);
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
+}
+
+export default App;
+```
+
+- 로더와 액션을 연결하였다.
+
+#### 💎 Header.jsx
+
+```jsx
+import { useIsFetching } from "@tanstack/react-query";
+
+export default function Header({ children }) {
+  const fetching = useIsFetching(); // 리액트 쿼리가 어플리케이션 어딘가에서 데이터를 가져오는지 확인할 수 있는 값을 얻게 된다.
+  // 리액트 쿼리가 데이터를 가져오면 0보다 높은 숫자를, 데이터를 가져오지 않으면 0이 된다.
+  return (
+    <>
+      <div id="main-header-loading">{fetching > 0 && <progress />}</div>
+      <header id="main-header">
+        <div id="header-title">
+          <h1>React Events</h1>
+        </div>
+        <nav>{children}</nav>
+      </header>
+    </>
+  );
+}
+```
+
+- 리액트 쿼리가 어플리케이션 어딘가에서 데이터를 가지고 오는지를 판별하여 진행 바를 통해 이벤트 데이터가 편집됨(그 외의 다른 동작에도 진행바가 보이긴 한다.)을 표현하고자 한다.
+
+![loaderAndaction](./readme/loaderAndaction.gif)
