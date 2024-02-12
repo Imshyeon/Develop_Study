@@ -317,7 +317,7 @@ main {
   width: 30rem;
   max-width: 90%;
   z-index: 10;
-  animation: slide-up-fade-in 0.3s ease-out forwards; /* 요소가 DOM에 추가될 때 CSS에 의해 자동으로 실행된다. */
+  /* animation: slide-up-fade-in 0.3s ease-out forwards; 요소가 DOM에 추가될 때 CSS에 의해 자동으로 실행된다. */
   /* forwards: 지속시간이 끝나 애니메이션이 종료되면 최종 상태를 유지하라는 의미. */
 }
 

@@ -1,14 +1,20 @@
-import { createPortal } from 'react-dom';
+import { createPortal } from "react-dom";
+import { motion } from "framer-motion";
 
 export default function Modal({ title, children, onClose }) {
   return createPortal(
     <>
       <div className="backdrop" onClick={onClose} />
-      <dialog open className="modal">
+      <motion.dialog
+        initial={{ opacity: 0, y: 30 }} // 해당 요소가 DOM에 추가된 직후 곧바로 재생될 애니메이션의 초기상태를 정의.=> 시작 상태를 지정.
+        animate={{ opacity: 1, y: 0 }}
+        open
+        className="modal"
+      >
         <h2>{title}</h2>
         {children}
-      </dialog>
+      </motion.dialog>
     </>,
-    document.getElementById('modal')
+    document.getElementById("modal")
   );
 }

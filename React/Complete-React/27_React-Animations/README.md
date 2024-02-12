@@ -124,3 +124,36 @@ export default function ChallengeItem() {
 ```
 
 ![framer-1](./readme/framer-1.gif)
+
+<br>
+
+### 📖 진입 애니메이션 추가하기
+
+#### 💎 Modal.jsx
+
+```jsx
+import { createPortal } from "react-dom";
+import { motion } from "framer-motion";
+
+export default function Modal({ title, children, onClose }) {
+  return createPortal(
+    <>
+      <div className="backdrop" onClick={onClose} />
+      <motion.dialog
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        open
+        className="modal"
+      >
+        <h2>{title}</h2>
+        {children}
+      </motion.dialog>
+    </>,
+    document.getElementById("modal")
+  );
+}
+```
+
+- `initial` 속성을 통해 해당 요소가 DOM에 추가된 직후 곧바로 재생될 애니메이션의 초기상태를 정의. &rarr; 시작 상태를 지정.
+
+![framer-2](./readme/framer-2.gif)
