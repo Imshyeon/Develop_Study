@@ -157,3 +157,78 @@ export default function Modal({ title, children, onClose }) {
 - `initial` 속성을 통해 해당 요소가 DOM에 추가된 직후 곧바로 재생될 애니메이션의 초기상태를 정의. &rarr; 시작 상태를 지정.
 
 ![framer-2](./readme/framer-2.gif)
+
+<br>
+
+### 📖 요소가 사라지는/삭제되는 애니메이션 넣기
+
+#### 💎 Modal.jsx
+
+```jsx
+import { createPortal } from "react-dom";
+import { motion } from "framer-motion";
+
+export default function Modal({ title, children, onClose }) {
+  return createPortal(
+    <>
+      <div className="backdrop" onClick={onClose} />
+      <motion.dialog
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 30 }} // 요소가 DOM에서 삭제될 때 적용하고 싶은 애니메이션 상태
+        open
+        className="modal"
+      >
+        <h2>{title}</h2>
+        {children}
+      </motion.dialog>
+    </>,
+    document.getElementById("modal")
+  );
+}
+```
+
+- `exit` : 요소가 DOM에서 삭제될 때 적용하고 싶은 애니메이션 상태
+
+#### 💎 Header.jsx
+
+```jsx
+import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+
+import NewChallenge from "./NewChallenge.jsx";
+
+export default function Header() {
+  const [isCreatingNewChallenge, setIsCreatingNewChallenge] = useState();
+
+  function handleStartAddNewChallenge() {
+    setIsCreatingNewChallenge(true);
+  }
+
+  function handleDone() {
+    setIsCreatingNewChallenge(false);
+  }
+
+  return (
+    <>
+      {/* 프레이머모션이 해당 코드를 실행할때 코드가 렌더링하는 요소(모달)이 즉시 삭제되는 것을 방지하고 exit 속성이 있는지 확인. */}
+      {/* exit을 확인하면 exit 애니메이션부터 실행한 뒤, 삭제한다. */}
+      <AnimatePresence>
+        {isCreatingNewChallenge && <NewChallenge onDone={handleDone} />}
+      </AnimatePresence>
+      <header id="main-header">
+        <h1>Your Challenges</h1>
+        <button onClick={handleStartAddNewChallenge} className="button">
+          Add Challenge
+        </button>
+      </header>
+    </>
+  );
+}
+```
+
+- `AnimatePresence` : 어떤 요소에 애니메이션을 적용할때(요소를 사라지게하는 애니메이션) 조건에 따라 요소를 표시하거나 삭제하는 코드를 감싸는 래퍼로 쓰인다.
+- 프레이머 모션이 해당 코드를 실행할때 코드가 렌더링하는 요소(모달)이 즉시 삭제되는 것을 방지하고 `exit` 속성이 있는지 확인.
+- `exit`을 확인하면 `exit` 애니메이션부터 실행한 뒤, 삭제한다.
+
+![framer-3](./readme/framer-3.gif)
