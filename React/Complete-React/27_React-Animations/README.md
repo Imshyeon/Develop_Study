@@ -746,6 +746,8 @@ export default function ChallengeItem({
 
 ### 📖 공유된 요소에 애니메이션 적용하기
 
+#### 💎 ChallengeTabs.jsx
+
 ```jsx
 import { motion } from "framer-motion";
 
@@ -771,3 +773,55 @@ function Tab({ isSelected, onSelect, badgeCaption, children }) {
   - 페이지의 다른 위치에 있는 같은 layoutId를 지닌 다른 요소가 렌더링 되는 때를 자동으로 감지해서 애니메이션을 적용.
 
 ![12](./readme/framer-12.gif)
+
+<br>
+
+### 📖 키를 활용해 애니메이션 다시 트리거하기
+
+- 항목에 변경이 있을 때마다 탭에 속한 항목을 표시해주는 숫자 배지에 애니메이션 적용하기
+
+#### 💎 Badge.jsx
+
+```jsx
+import { motion } from "framer-motion";
+
+export default function Badge({ caption }) {
+  return (
+    <motion.span
+      animate={{ scale: [1, 1.2, 1] }}
+      transition={{ duration: 0.3 }}
+      className="badge"
+    >
+      {caption}
+    </motion.span>
+  );
+}
+```
+
+- Badge에 적용할 애니메이션 기술
+- 가장 처음에만 실행되고 그 다음부턴 실행이 되지 않음.
+
+#### 💎 ChallengeTabs.jsx
+
+```jsx
+function Tab({ isSelected, onSelect, badgeCaption, children }) {
+  return (
+    <li>
+      <button
+        className={isSelected ? "selected" : undefined}
+        onClick={onSelect}
+      >
+        {children}
+        <Badge key={badgeCaption} caption={badgeCaption}></Badge>
+      </button>
+      {isSelected && (
+        <motion.div layoutId="tab-indicator" className="active-tab-indicator" />
+      )}
+    </li>
+  );
+}
+```
+
+- Badge에 key 속성을 추가함으로써 리액트에게 해당 컴포넌트를 재실행하도록 함.
+
+![13](./readme/framer-13.gif)
