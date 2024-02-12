@@ -481,7 +481,7 @@ export default function NewChallenge({ onDone }) {
 
 <br>
 
-### 📖 명령적 접근법으로 애니메이션 구현하기
+### 📖 명령적 접근법으로 애니메이션 구현하기 - useAnimate
 
 - 사용자가 폼에 입력하지 않은 채로 제출하려할 때, 해당 입력창이 흔들리는 효과를 주자.
 
@@ -537,3 +537,19 @@ export default function NewChallenge({ onDone }) {
 - `form`에 해당 애니메이션 함수를 발생시키기 위해 scope 연결
 
 ![8](./readme/framer-8.gif)
+
+<br>
+
+### 📖 레이아웃 변화에 애니메이션 적용하기
+
+#### 💎 ChallengeItem.jsx
+
+```jsx
+export default function ChallengeItem() {
+  return <motion.li layout>{/* ... */}</motion.li>;
+}
+```
+
+- `layout` : 모션 컴포넌트에 해당 속성을 추가하면 프레이머 모션이 해당 컴포넌트에 속한 레이아웃 변화에 자동으로 애니메이션을 적용함.
+
+![9](./readme/framer-9.gif)
