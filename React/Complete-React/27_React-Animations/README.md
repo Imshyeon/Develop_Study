@@ -647,3 +647,97 @@ export default function Challenges() {
 - `AnimatePresence` 의 모드를 wait으로 설정함으로써 첫번째 요소가 사라진 뒤에 약간 기다렸다가 두번째 요소가 나타나도록 한다.
 
 ![10](./readme/framer-10.gif)
+
+🔗 [해당 코드 레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/ee7531e09a84e3472767f92b66f7723d09826c04)
+
+<br>
+
+### 📖 레이아웃 애니메이션과 다른 애니메이션 통합하기
+
+- ChallengeItem의 `layout`으로 인해서 자동으로 애니메이션이 적용되고 있다. 이로 인해서 View Details 버튼을 눌렀을 때 애니메이션이 약간 울렁이는 듯한 모습이 보인다.
+
+#### 💎 ChallengeItem.jsx
+
+```jsx
+import { useContext } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
+import { ChallengesContext } from "../store/challenges-context.jsx";
+
+export default function ChallengeItem({
+  challenge,
+  onViewDetails,
+  isExpanded,
+}) {
+  const { updateChallengeStatus } = useContext(ChallengesContext);
+
+  const formattedDate = new Date(challenge.deadline).toLocaleDateString(
+    "en-US",
+    {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }
+  );
+
+  function handleCancel() {
+    updateChallengeStatus(challenge.id, "failed");
+  }
+
+  function handleComplete() {
+    updateChallengeStatus(challenge.id, "completed");
+  }
+
+  return (
+    <motion.li layout exit={{ y: -30, opacity: 0 }}>
+      <article className="challenge-item">
+        <header>
+          <img {...challenge.image} />
+          <div className="challenge-item-meta">
+            <h2>{challenge.title}</h2>
+            <p>Complete until {formattedDate}</p>
+            <p className="challenge-item-actions">
+              <button onClick={handleCancel} className="btn-negative">
+                Mark as failed
+              </button>
+              <button onClick={handleComplete}>Mark as completed</button>
+            </p>
+          </div>
+        </header>
+        <div className="challenge-item-details">
+          <p>
+            <button onClick={onViewDetails}>
+              View Details{" "}
+              <motion.span
+                animate={{ rotate: isExpanded ? 180 : 0 }}
+                className="challenge-item-details-icon"
+              >
+                &#9650;
+              </motion.span>
+            </button>
+          </p>
+
+          {/* 디테일 설명 애니메이션 추가 */}
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+              >
+                <p className="challenge-item-description">
+                  {challenge.description}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </article>
+    </motion.li>
+  );
+}
+```
+
+- 디테일 설명이 나타날 때의 애니메이션을 기술함으로써 해결한다.
+
+![11](./readme/framer-11.gif)
