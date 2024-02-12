@@ -280,15 +280,15 @@ main {
   display: inline-block;
   font-size: 0.85rem;
   margin-left: 0.25rem;
-  transition: transform 0.3s ease-out;
+  /* transition: transform 0.3s ease-out; */
   /* 트랜스폼에 변화가 있다면 값변화에 애니메이션을 적용하겠다! */
   /* 지속시간 설정 */
   /* 애니메이션의 속도 조절 */
 }
 
-.challenge-item-details.expanded .challenge-item-details-icon {
+/* .challenge-item-details.expanded .challenge-item-details-icon {
   transform: rotate(180deg);
-}
+} */
 
 .challenge-item-description {
   margin: 0;

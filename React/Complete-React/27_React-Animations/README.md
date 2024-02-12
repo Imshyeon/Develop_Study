@@ -101,3 +101,26 @@
 - 설치하기 : `npm install framer-motion`
 
 ### 📖 프레이머 모션 기초
+
+🔗 [프레이머의 모션 기초 학습을 위한 레파지토리](https://github.com/Imshyeon/Develop_Study/tree/js/React/Complete-React/28_FramerMotion)
+
+<br>
+
+### 📖 조건 값 사이에 애니메이션 넣기
+
+- `isExpaned`가 true이면 180도 회전, false이면 회전하지 않는다.
+
+```jsx
+export default function ChallengeItem() {
+  return (
+    <motion.span
+      animate={{ rotate: isExpanded ? 180 : 0 }}
+      className="challenge-item-details-icon"
+    >
+      &#9650;
+    </motion.span>
+  );
+}
+```
+
+![framer-1](./readme/framer-1.gif)
