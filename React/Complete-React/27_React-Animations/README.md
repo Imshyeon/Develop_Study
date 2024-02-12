@@ -439,3 +439,42 @@ export default function NewChallenge({ onDone }) {
   - 해당 속성을 0이 아닌 값으로 설정하면 모든 자식 항목 사이에 그에 해당하는 시차가 생긴다.
 
 ![framer-6](./readme/framer-6.gif)
+
+<br>
+
+### 📖 색상 애니메이션 추가 및 키 프레임으로 효과 주기
+
+#### 💎 Header.jsx
+
+```jsx
+<motion.button
+  whileHover={{ scale: 1.1, backgroundColor: "#8b11f0" }} // 색상 코드
+  transition={{ type: "spring", stiffness: 500 }}
+  onClick={handleStartAddNewChallenge}
+  className="button"
+>
+  Add Challenge
+</motion.button>
+```
+
+#### 💎 NewChallenge.jsx
+
+```jsx
+<motion.li
+  variants={{
+    hidden: { opacity: 0, scale: 0.5 },
+    visible: { opacity: 1, scale: [0.8, 1.3, 1] }, // 크기가 80 -> 130 -> 100%로 변경
+  }}
+  exit={{ opacity: 1, scale: 1 }}
+  transition={{ type: "spring" }}
+  key={image.alt}
+  onClick={() => handleSelectImage(image)}
+  className={selectedImage === image ? "selected" : undefined}
+>
+  <img {...image} />
+</motion.li>
+```
+
+- 속성에 대한 값으로 배열을 넣으면 항목들이 애니메이션으로 표시될 때 프레이머 모션이 거치는 키 프레임의 배열을 생성하게 된다.
+
+![7](./readme/framer-7.gif)
