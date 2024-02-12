@@ -478,3 +478,62 @@ export default function NewChallenge({ onDone }) {
 - 속성에 대한 값으로 배열을 넣으면 항목들이 애니메이션으로 표시될 때 프레이머 모션이 거치는 키 프레임의 배열을 생성하게 된다.
 
 ![7](./readme/framer-7.gif)
+
+<br>
+
+### 📖 명령적 접근법으로 애니메이션 구현하기
+
+- 사용자가 폼에 입력하지 않은 채로 제출하려할 때, 해당 입력창이 흔들리는 효과를 주자.
+
+```jsx
+import { useContext, useRef, useState } from "react";
+import { motion, useAnimate, stagger } from "framer-motion";
+
+import { ChallengesContext } from "../store/challenges-context.jsx";
+import Modal from "./Modal.jsx";
+import images from "../assets/images.js";
+
+export default function NewChallenge({ onDone }) {
+  //...
+
+  const [scope, animate] = useAnimate();
+
+  if (
+    !challenge.title.trim() ||
+    !challenge.description.trim() ||
+    !challenge.deadline.trim() ||
+    !challenge.image
+  ) {
+    animate(
+      "input, textarea",
+      { x: [-10, 0, 10, 0] },
+      { type: "spring", duration: 0.2, delay: stagger(0.05) }
+    );
+    return;
+  }
+  //...
+
+  return (
+    <Modal title="New Challenge" onClose={onDone}>
+      <form id="new-challenge" onSubmit={handleSubmit} ref={scope}>
+        {/* ... */}
+      </form>
+    </Modal>
+  );
+}
+```
+
+- `useAnimate`는 배열에 두 개의 요소를 반환한다.
+
+  - ref(animate함수에서 설정하는 선택자의 범위를 정해주는 JSX요소에 연결된다)
+  - 함수
+
+- `animate` 함수에는 총 세 개의 인수가 필요하다.
+
+  1. 애니메이션화 되어야 하는 요소 타게팅 하기 위해 css 선택자..
+  2. 애니메이션을 설명하는 객체를 입력
+  3. 설정 객체. 애니메이션이 어떤 식으로 플레이되는지 설정 가능
+
+- `form`에 해당 애니메이션 함수를 발생시키기 위해 scope 연결
+
+![8](./readme/framer-8.gif)
