@@ -376,3 +376,66 @@ export default function NewChallenge({ onDone }) {
 - 이때, 자식 컴포넌트에서는 부모에서 사용했던 키를 사용하지 못한다..!
 
 ![framer-5](./readme/framer-5.gif)
+
+<br>
+
+### 📖 리스트 애니메이션에 스테거링 효과 주기
+
+- 스테거링 : 리스트 항목이 애니메이션으로 나타나는 데 시차를 두는 것. 즉, 동시에 플레이 되는 것이 아니라 하나씩 플레이 되는 것.
+
+1. 리스트 항목의 부모 요소로 간다
+2. 모션 요소로 바꾼다.
+
+#### 💎 NewChallenge.jsx
+
+```jsx
+import { useContext, useRef, useState } from "react";
+import { motion } from "framer-motion";
+
+import { ChallengesContext } from "../store/challenges-context.jsx";
+import Modal from "./Modal.jsx";
+import images from "../assets/images.js";
+
+export default function NewChallenge({ onDone }) {
+  // ...
+
+  return (
+    <Modal title="New Challenge" onClose={onDone}>
+      <form id="new-challenge" onSubmit={handleSubmit}>
+        {/* ... */}
+
+        <motion.ul
+          id="new-challenge-images"
+          variants={{
+            visible: { transition: { staggerChildren: 0.05 } },
+          }}
+        >
+          {images.map((image) => (
+            <motion.li
+              variants={{
+                hidden: { opacity: 0, scale: 0.5 },
+                visible: { opacity: 1, scale: 1 },
+              }}
+              exit={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring" }}
+              key={image.alt}
+              onClick={() => handleSelectImage(image)}
+              className={selectedImage === image ? "selected" : undefined}
+            >
+              <img {...image} />
+            </motion.li>
+          ))}
+        </motion.ul>
+
+        {/* ... */}
+      </form>
+    </Modal>
+  );
+}
+```
+
+- `staggerChildren` : 해당 옵션은 부모 요소에 속한 자식 요소가 애니메이션을 시작하는 시점의 차이를 조절하는데 쓰인다.
+  - 기본값은 모두 동시에 시작하도록 설정
+  - 해당 속성을 0이 아닌 값으로 설정하면 모든 자식 항목 사이에 그에 해당하는 시차가 생긴다.
+
+![framer-6](./readme/framer-6.gif)
