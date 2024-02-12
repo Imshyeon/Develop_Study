@@ -553,3 +553,97 @@ export default function ChallengeItem() {
 - `layout` : 모션 컴포넌트에 해당 속성을 추가하면 프레이머 모션이 해당 컴포넌트에 속한 레이아웃 변화에 자동으로 애니메이션을 적용함.
 
 ![9](./readme/framer-9.gif)
+
+<br>
+
+### 📖 여러 요소 애니메이션 조율하기
+
+#### 💎 Challenges.jsx
+
+```jsx
+import { useContext, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
+import { ChallengesContext } from "../store/challenges-context.jsx";
+import ChallengeItem from "./ChallengeItem.jsx";
+import ChallengeTabs from "./ChallengeTabs.jsx";
+
+export default function Challenges() {
+  const { challenges } = useContext(ChallengesContext);
+  const [selectedType, setSelectedType] = useState("active");
+  const [expanded, setExpanded] = useState(null);
+
+  function handleSelectType(newType) {
+    setSelectedType(newType);
+  }
+
+  function handleViewDetails(id) {
+    setExpanded((prevId) => {
+      if (prevId === id) {
+        return null;
+      }
+
+      return id;
+    });
+  }
+
+  const filteredChallenges = {
+    active: challenges.filter((challenge) => challenge.status === "active"),
+    completed: challenges.filter(
+      (challenge) => challenge.status === "completed"
+    ),
+    failed: challenges.filter((challenge) => challenge.status === "failed"),
+  };
+
+  const displayedChallenges = filteredChallenges[selectedType];
+
+  return (
+    <div id="challenges">
+      <ChallengeTabs
+        challenges={filteredChallenges}
+        onSelectType={handleSelectType}
+        selectedType={selectedType}
+      >
+        {/* mode="sync"가 기본값 : 동시에 플레이 */}
+        {/* mode="wait" : 첫번째 요소가 사라지기를 기다렸다가 나타나는 애니메이션 추가를 취해 wait 모션.. */}
+        <AnimatePresence mode="wait">
+          {displayedChallenges.length > 0 && (
+            <motion.ol
+              key="list" // 별개의 애니메이션을 알리기 위함. -> AnimatePresence안에 1개 이상의 요소가 있음
+              exit={{ y: -30, opacity: 0 }}
+              className="challenge-items"
+            >
+              <AnimatePresence>
+                {displayedChallenges.map((challenge) => (
+                  <ChallengeItem
+                    key={challenge.id}
+                    challenge={challenge}
+                    onViewDetails={() => handleViewDetails(challenge.id)}
+                    isExpanded={expanded === challenge.id}
+                  />
+                ))}
+              </AnimatePresence>
+            </motion.ol>
+          )}
+
+          {displayedChallenges.length === 0 && (
+            <motion.p
+              key="fallback"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              No challenges found.
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </ChallengeTabs>
+    </div>
+  );
+}
+```
+
+- 현재 `AnimatePresence` 안에 `motion.ol, motion.p`가 있다. 이 둘을 구분하기 위해 key 속성을 각각 부여하여 별개의 애니메이션임을 구분시켜준다.
+- `AnimatePresence` 의 모드를 wait으로 설정함으로써 첫번째 요소가 사라진 뒤에 약간 기다렸다가 두번째 요소가 나타나도록 한다.
+
+![10](./readme/framer-10.gif)
