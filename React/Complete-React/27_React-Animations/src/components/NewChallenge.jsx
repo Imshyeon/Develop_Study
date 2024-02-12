@@ -1,8 +1,9 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useRef, useState } from "react";
+import { motion } from "framer-motion";
 
-import { ChallengesContext } from '../store/challenges-context.jsx';
-import Modal from './Modal.jsx';
-import images from '../assets/images.js';
+import { ChallengesContext } from "../store/challenges-context.jsx";
+import Modal from "./Modal.jsx";
+import images from "../assets/images.js";
 
 export default function NewChallenge({ onDone }) {
   const title = useRef();
@@ -58,13 +59,20 @@ export default function NewChallenge({ onDone }) {
 
         <ul id="new-challenge-images">
           {images.map((image) => (
-            <li
+            <motion.li
+              variants={{
+                hidden: { opacity: 0, scale: 0.5 }, // 부모 컴포넌트가 활성화될때 자동으로 함께 활성화
+                visible: { opacity: 1, scale: 1 },
+              }}
+              // 자식 컴포넌트에서는 배리언트의 키를 사용하지 못한다..
+              exit={{ opacity: 1, scale: 1 }} // 모달의 exit을 오버라이드 -> 해당 컴포넌트 안에서만 적용된다. 이로써 이미지는 exit일때 부모 컴포넌트(modal)에서 지정한 exit 애니메이션과는 다르게 동작 -> 모달 닫는데 딜레이가 사라질것
+              transition={{ type: "spring" }}
               key={image.alt}
               onClick={() => handleSelectImage(image)}
-              className={selectedImage === image ? 'selected' : undefined}
+              className={selectedImage === image ? "selected" : undefined}
             >
               <img {...image} />
-            </li>
+            </motion.li>
           ))}
         </ul>
 

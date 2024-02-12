@@ -280,3 +280,99 @@ export default function Header() {
 - `while~` : 사용자가 탭하거나 커서를 올릴때 등 특수한 상황에만 적용하는 애니메이션 상태를 정의.
 
 ![framer-4](./readme/framer-4.gif)
+
+<br>
+
+### 📖 애니메이션 상태 재사용하기 - `variants`
+
+#### 💎 Modal.jsx
+
+```jsx
+import { createPortal } from "react-dom";
+import { motion } from "framer-motion";
+
+export default function Modal({ title, children, onClose }) {
+  // const hiddenAnimationState = { opacity: 0, y: 30 }; -> 방법 1 : 값을 지정해서 직접 설정하는 방법
+  return createPortal(
+    <>
+      <div className="backdrop" onClick={onClose} />
+      <motion.dialog
+        variants={{
+          hidden: { opacity: 0, y: 30 }, //원하는 키값 설정 가능
+          visible: { opacity: 1, y: 0 },
+        }} // 애니메이션 상태 재사용에 유용
+        initial="hidden"
+        animate="visible"
+        exit="hidden"
+        open
+        className="modal"
+      >
+        <h2>{title}</h2>
+        {children}
+      </motion.dialog>
+    </>,
+    document.getElementById("modal")
+  );
+}
+```
+
+- 방법 1 : 상수를 이용해 별도로 애니메이션을 지정해서 직접 설정하는 방법
+- 방법 2 : `variants` 를 이용. 원하는 키 값을 설정 가능하여 애니메이션 상태를 재사용하는데 유용하다.
+
+<br>
+
+### 📖 중첩 애니메이션과 배리언트 - `variants`
+
+- 애니메이션 상태를 정의하고 재사용하는 것 뿐만 아니라 컴포넌트 트리 안 깊숙한 곳에서 애니메이션을 트리거하는데 쓰일 수도 있다.
+- 조상 컴포넌트에서 애니메이션을 특정 베리언트로 설정하면 된다.
+
+- 래퍼나 부모 컴포넌트에서 특정 애니메이션 상태를 배리언트로 설정하고 래핑된 컴포넌트 또는 자식 컴포넌트 안에서 동일한 배리언트를 쓸 수 있다.(일종의 상속..?)
+
+#### 💎 NewChallenge.jsx
+
+```jsx
+import { useContext, useRef, useState } from "react";
+import { motion } from "framer-motion";
+
+import { ChallengesContext } from "../store/challenges-context.jsx";
+import Modal from "./Modal.jsx";
+import images from "../assets/images.js";
+
+export default function NewChallenge({ onDone }) {
+  // ...
+
+  return (
+    <Modal title="New Challenge" onClose={onDone}>
+      <form id="new-challenge" onSubmit={handleSubmit}>
+        {/* ... */}
+        <ul id="new-challenge-images">
+          {images.map((image) => (
+            <motion.li
+              variants={{
+                hidden: { opacity: 0, scale: 0.5 }, // 부모 컴포넌트가 활성화될때 자동으로 함께 활성화
+                visible: { opacity: 1, scale: 1 },
+              }}
+              // 자식 컴포넌트에서는 배리언트의 키를 사용하지 못한다..
+              exit={{ opacity: 1, scale: 1 }} // 모달의 exit을 오버라이드
+              transition={{ type: "spring" }}
+              key={image.alt}
+              onClick={() => handleSelectImage(image)}
+              className={selectedImage === image ? "selected" : undefined}
+            >
+              <img {...image} />
+            </motion.li>
+          ))}
+        </ul>
+        {/* ... */}
+      </form>
+    </Modal>
+  );
+}
+```
+
+- 자식 컴포넌트에서의 `variants`를 선언하여 부모의 키 값 애니메이션 동안, 자식은 어떤 동작을 할 지 선언.
+- 모달이 닫히는데 딜레이가 발생 &rarr; 부모의 exit 속성 때문이다. 모달이 닫히면서 다시 사진이 `hidden` 상태로 변화하고 이미지가 다시 변화한 뒤에 그제서야 모달이 닫힌다.
+- `exit`을 오버라이드 &rarr; 해당 컴포넌트 안에서만 적용된다. 이로써 이미지는 exit일때 부모 컴포넌트(modal)에서 지정한 exit 애니메이션과는 다르게 동작 &rarr; 모달 닫는데 딜레이가 사라질것
+- 이때, 자식 컴포넌트에서는 부모에서 사용했던 키를 사용하지 못한다..!
+
+![framer-5](./readme/framer-5.gif)
