@@ -741,3 +741,33 @@ export default function ChallengeItem({
 - 디테일 설명이 나타날 때의 애니메이션을 기술함으로써 해결한다.
 
 ![11](./readme/framer-11.gif)
+
+<br>
+
+### 📖 공유된 요소에 애니메이션 적용하기
+
+```jsx
+import { motion } from "framer-motion";
+
+function Tab({ isSelected, onSelect, badgeCaption, children }) {
+  return (
+    <li>
+      <button
+        className={isSelected ? "selected" : undefined}
+        onClick={onSelect}
+      >
+        {children}
+        <Badge caption={badgeCaption}></Badge>
+      </button>
+      {isSelected && (
+        <motion.div layoutId="tab-indicator" className="active-tab-indicator" /> // layoutId 추가
+      )}
+    </li>
+  );
+}
+```
+
+- `layoutId` : 모션 요소에 layoutId를 추가하면 프레이머 모션이 애니메이션 적용.
+  - 페이지의 다른 위치에 있는 같은 layoutId를 지닌 다른 요소가 렌더링 되는 때를 자동으로 감지해서 애니메이션을 적용.
+
+![12](./readme/framer-12.gif)

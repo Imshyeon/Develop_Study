@@ -47,6 +47,8 @@ export default function Challenges() {
           {displayedChallenges.length > 0 && (
             <motion.ol
               key="list" // 별개의 애니메이션을 알리기 위함. -> AnimatePresence안에 1개 이상의 요소가 있음
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ y: -30, opacity: 0 }}
               className="challenge-items"
             >
