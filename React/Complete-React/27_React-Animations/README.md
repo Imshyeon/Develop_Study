@@ -1,6 +1,7 @@
 # 리액트 앱에 애니메이션 넣기
 
 [📌 CSS 이용하기](#-css-이용하기)<br>
+[📌 프레이머 모션](#-프레이머-모션)<br>
 <br>
 
 ## 📌 CSS 이용하기
@@ -87,3 +88,16 @@
 🔗 [MDN animation](https://developer.mozilla.org/ko/docs/Web/CSS/animation)
 
 <br>
+
+## 📌 프레이머 모션
+
+### 📖 프레이머 모션 소개
+
+- CSS로 DOM에서 나타나게 하는 애니메이션을 적용할 수 있지만 사라지는 애니메이션은 어렵다.
+- CSS로는 복잡한 애니메이션은 적용시키기 힘들다.
+
+🔗 [Framer Motion](https://www.framer.com/motion/)
+
+- 설치하기 : `npm install framer-motion`
+
+### 📖 프레이머 모션 기초
