@@ -410,3 +410,64 @@ describe("Greeting Component", () => {
 <br>
 
 ### 📖 비동기 코드 테스트하기
+
+#### 💎 Async.js
+
+```js
+import { useEffect, useState } from "react";
+
+const Async = () => {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/posts")
+      .then((response) => response.json())
+      .then((data) => {
+        setPosts(data);
+      });
+  }, []);
+
+  return (
+    <div>
+      <ul>
+        {posts.map((post) => (
+          <li key={post.id}>{post.title}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default Async;
+```
+
+#### 💎 Async.test.js
+
+```js
+import { render, screen } from "@testing-library/react";
+import Async from "./Async";
+
+describe("Async Component", () => {
+  test("renders posts if request succeeds", async () => {
+    render(<Async />);
+
+    const listItemElements = await screen.findAllByRole("listitem", {}, {});
+    expect(listItemElements).not.toHaveLength(0); // 빈 배열인지 아닌지 확인.
+  });
+});
+```
+
+- 처음엔 `getAllByRole`을 이용해서 리스트 아이템을 찾고, 빈 배열인지 아닌지 확인하려 했다.
+- 그러나 Async 코드는 비동기 코드이므로 가장 초기에는 빈 배열로 세팅되어있다.
+
+  > `getAllByRole`을 사용하면 `screen`의 아이템들을 즉시 가져온다. 따라서 프로미스를 사용하는 `findAllByRole` 이나 `find`를 이용한다.
+
+- `findAllByRole / find`을 사용하면 프로미스를 반환한다. &rarr; 스크린을 여러 차례 실행.
+  - `findAllByRole('요소', {exact.. }, {timeout...}) ` : 기본 타임아웃은 1초
+  - 프로미스를 이용하므로 `async / await`을 사용한다.
+
+![5](./readme/test5.png)
+
+<br>
+
+### 📖 모의 작업
