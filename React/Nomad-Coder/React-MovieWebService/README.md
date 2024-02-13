@@ -6,6 +6,7 @@
 [📌 The Basic of React](#-the-basic-of-react)<br>
 [📌 State](#-state)<br>
 [📌 Props](#-props)<br>
+[📌 Create React App 사용하기](#-create-react-app-사용하기)<br>
 <br>
 
 ## 📌 Introduction
@@ -382,3 +383,14 @@
 ```
 
 - `memo`를 이용해 처음 렌더링 된 것에서 어떠한 변화도 없었다면 재렌더링(재실행) 되지 않도록 하였다!
+
+<br>
+
+## 📌 Create React App 사용하기
+
+🔗 [create react app 정식 문서 바로가기](https://create-react-app.dev/docs/getting-started)
+
+### 📖 설치하기
+
+- `npx create-react-app my-app`
+- `npm i prop-types`
