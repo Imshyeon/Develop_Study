@@ -308,3 +308,105 @@ describe("Greeting Component", () => {
 <br>
 
 ### 📖 연결된 컴포넌트 테스트하기
+
+#### 💎 Output.js
+
+```js
+const Output = (props) => {
+  return <p>{props.children}</p>;
+};
+
+export default Output;
+```
+
+#### 💎 Greeting.js
+
+```js
+import { useState } from "react";
+import Output from "./Output";
+
+const Greeting = () => {
+  const [changedText, setChangedText] = useState(false);
+
+  const changeTextHandler = () => {
+    setChangedText(true);
+  };
+
+  return (
+    <div>
+      <h2>Hello world</h2>
+      {!changedText && <Output>It's nice to meet you</Output>}
+      {changedText && <Output>Changed!</Output>}
+      <button onClick={changeTextHandler}>Change Text</button>
+    </div>
+  );
+};
+
+export default Greeting;
+```
+
+#### 💎 Greeting.test.js
+
+```js
+import Greeting from "./Greeting";
+import userEvent from "@testing-library/user-event";
+import { render, screen } from "@testing-library/react";
+
+describe("Greeting Component", () => {
+  test("renders Hello world as an text", () => {
+    // Arrange
+    render(<Greeting />); // 컴포넌트 엘리먼트 생성
+
+    // Act
+    // .. 여기선 없다.
+
+    // Assert
+    const helloWorldElement = screen.getByText("Hello world", { exact: true });
+    expect(helloWorldElement).toBeInTheDocument(); // expect 함수의 결과에 matcher 함수들이있음..
+  });
+
+  test("renders nice to meet you if the button was NOT clicked", () => {
+    render(<Greeting />);
+
+    const outputElement = screen.getByText("nice to meet you", {
+      exact: false,
+    });
+    expect(outputElement).toBeInTheDocument();
+  });
+
+  test("renders Changed! if the button was clicked", () => {
+    // Arrange
+    render(<Greeting />);
+
+    // Act
+    const buttonElement = screen.getByRole("button");
+    userEvent.click(buttonElement);
+
+    // Assert
+    const outputElement = screen.getByText("Changed!");
+    expect(outputElement).toBeInTheDocument();
+  });
+
+  // 버튼을 클릭했을 때 nice to meet you가 보이지 않는지 테스트
+  test("NOT renders nice to meet you if the button was NOT clicked", () => {
+    render(<Greeting />);
+
+    const buttonElement = screen.getByRole("button");
+    userEvent.click(buttonElement);
+
+    const outputElement = screen.queryByText("nice to meet you");
+    // expect(outputElement).not.toBeInTheDocument();
+    expect(outputElement).toBeNull(); //도 가능
+  });
+});
+```
+
+- `render(<Greeting />)` : 해당 컴포넌트에서 요구되는 컴포넌트 트리 전체를 렌더링하고 있음.
+
+  - Greeting을 렌더링하면서 Output 컴포넌트같은 컴포넌트의 콘텐츠를 렌더링한다. &rarr; 통합 테스트(Integration Tests)
+
+- Output이 더 복잡해진다면 테스트를 분리하는 것이 좋지만 여기서는 굳이 분리할 필요가 없다.
+
+<br>
+
+### 📖 비동기 코드 테스트하기
