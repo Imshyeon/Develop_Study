@@ -5,6 +5,7 @@
 [📌 Introduction](#-introduction)<br>
 [📌 The Basic of React](#-the-basic-of-react)<br>
 [📌 State](#-state)<br>
+[📌 Props](#-props)<br>
 <br>
 
 ## 📌 Introduction
@@ -324,3 +325,60 @@
   </script>
 </html>
 ```
+
+<br>
+
+## 📌 Props
+
+### 📖 props를 이용해서 같은 스타일의 버튼 적용하기
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ReactJS로 영화 웹 서비스 만들기</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    function Btn({ children, changeValue }) {
+      return (
+        <button
+          onClick={changeValue}
+          style={{
+            backgroundColor: "tomato",
+            color: "white",
+            padding: "10px 20px",
+            border: 0,
+            borderRadius: 10,
+          }}
+        >
+          {children}
+        </button>
+      );
+    }
+    const MemorizedBtn = React.memo(Btn);
+    function App() {
+      const [value, setValue] = React.useState("Save Changes");
+      const changeValue = () => setValue("Revert Changes");
+      return (
+        <div>
+          <MemorizedBtn changeValue={changeValue}>{value}</MemorizedBtn>
+          <MemorizedBtn>Confirm</MemorizedBtn>
+        </div>
+      );
+    }
+
+    const root = document.getElementById("root");
+    ReactDOM.createRoot(root).render(<App />);
+  </script>
+</html>
+```
+
+- `memo`를 이용해 처음 렌더링 된 것에서 어떠한 변화도 없었다면 재렌더링(재실행) 되지 않도록 하였다!

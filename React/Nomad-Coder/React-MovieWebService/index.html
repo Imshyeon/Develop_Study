@@ -12,124 +12,35 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script type="text/babel">
-    const root = document.getElementById("root");
-
-    function MinutesToHours() {
-      const [amount, setAmount] = React.useState(0);
-      const [fliped, setFliped] = React.useState(false);
-
-      function handleChangeInput(event) {
-        setAmount(event.target.value);
-      }
-
-      function reset() {
-        setAmount(0);
-      }
-
-      function onFlip() {
-        reset();
-        setFliped((prevState) => !prevState);
-      }
-
+    function Btn({ children, changeValue }) {
       return (
-        <div>
-          <h3>Minutes to Hours</h3>
-          <div>
-            <label htmlFor="minutes">Minutes</label>
-            <input
-              id="minutes"
-              type="number"
-              placeholder="Minutes"
-              value={fliped ? amount * 60 : amount}
-              onChange={handleChangeInput}
-              disabled={fliped}
-            />
-          </div>
-          <div>
-            <label htmlFor="hours">Hours</label>
-            <input
-              id="hours"
-              type="number"
-              placeholder="Hours"
-              value={fliped ? amount : Math.round(amount / 60)}
-              onChange={handleChangeInput}
-              disabled={!fliped}
-            />
-          </div>
-          <button onClick={reset}>Reset</button>
-          <button onClick={onFlip}>Flip</button>
-        </div>
+        <button
+          onClick={changeValue}
+          style={{
+            backgroundColor: "tomato",
+            color: "white",
+            padding: "10px 20px",
+            border: 0,
+            borderRadius: 10,
+          }}
+        >
+          {children}
+        </button>
       );
     }
-
-    function KmToMiles() {
-      const [amount, setAmount] = React.useState(0);
-      const [fliped, setFliped] = React.useState(false);
-      function handleChangeInput(event) {
-        setAmount(event.target.value);
-      }
-      function reset() {
-        setAmount(0);
-      }
-
-      function onFlip() {
-        reset();
-        setFliped((prevState) => !prevState);
-      }
-
-      return (
-        <div>
-          <h3>km 2 m </h3>
-          <div>
-            <label htmlFor="km">Km</label>
-            <input
-              id="km"
-              type="number"
-              placeholder="Km"
-              value={fliped ? amount * 1.609 : amount}
-              onChange={handleChangeInput}
-              disabled={fliped}
-            />
-          </div>
-          <div>
-            <label htmlFor="hours">Miles</label>
-            <input
-              id="miles"
-              type="number"
-              placeholder="Miles"
-              value={fliped ? amount : amount / 1.609}
-              onChange={handleChangeInput}
-              disabled={!fliped}
-            />
-          </div>
-          <button onClick={reset}>Reset</button>
-          <button onClick={onFlip}>Flip</button>
-        </div>
-      );
-    }
-
+    const MemorizedBtn = React.memo(Btn);
     function App() {
-      const [index, setIndex] = React.useState("xx");
-
-      function onSelect(event) {
-        setIndex(event.target.value);
-      }
+      const [value, setValue] = React.useState("Save Changes");
+      const changeValue = () => setValue("Revert Changes");
       return (
         <div>
-          <h1>Super Converter</h1>
-          <select value={index} onChange={onSelect}>
-            <option value="xx"> Select Your Units </option>
-            <option value="0"> Minutes & Hours </option>
-            <option value="1"> Km & Miles </option>
-          </select>
-          <hr />
-          {index === "xx" ? <h3>Plz select your units</h3> : null}
-          {index === "0" ? <MinutesToHours /> : null}
-          {index === "1" ? <KmToMiles /> : null}
+          <MemorizedBtn changeValue={changeValue}>{value}</MemorizedBtn>
+          <MemorizedBtn>Confirm</MemorizedBtn>
         </div>
       );
     }
 
+    const root = document.getElementById("root");
     ReactDOM.createRoot(root).render(<App />);
   </script>
 </html>
