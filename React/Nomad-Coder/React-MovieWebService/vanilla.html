@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ReactJS로 영화 웹 서비스 만들기</title>
+  </head>
+  <body>
+    <span>Total click: 0</span>
+    <button id="btn">Click me</button>
+  </body>
+  <script>
+    let counter = 0;
+    const button = document.getElementById("btn");
+    const span = document.querySelector("span");
+    function handleClick() {
+      counter += 1;
+      span.textContent = `Total Click: ${counter}`;
+    }
+    button.addEventListener("click", handleClick);
+  </script>
+</html>
