@@ -10,13 +10,24 @@
   </body>
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
     const root = document.getElementById("root");
-    const span = React.createElement(
-      "span",
-      { id: "zoe-span", style: { color: "blue" } },
-      "Hello I am a span"
-    );
-    ReactDOM.createRoot(root).render(span);
+
+    function App() {
+      const [counter, setCounter] = React.useState(0);
+
+      function handleClick() {
+        setCounter((prevCounter) => prevCounter + 1);
+      }
+      return (
+        <div>
+          <h3>Total Clicks: {counter}</h3>
+          <button onClick={handleClick}>Click me</button>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(root).render(<App />);
   </script>
 </html>
