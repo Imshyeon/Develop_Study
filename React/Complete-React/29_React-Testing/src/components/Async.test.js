@@ -3,6 +3,11 @@ import Async from "./Async";
 
 describe("Async Component", () => {
   test("renders posts if request succeeds", async () => {
+    // Arrange
+    window.fetch = jest.fn(); // mock 함수를 만듦. => fetch를 더미함수로 덮어씀.
+    window.fetch.mockResolvedValueOnce({
+      json: async () => [{ id: "p1", title: "First Post" }], // response.json()을 사용했으니까 여기서도 json..
+    }); // fetch 함수가 호출되었을 때 결정되어야하는 값을 설정할 수 있게 한다.
     render(<Async />);
 
     const listItemElements = await screen.findAllByRole("listitem", {}, {});
