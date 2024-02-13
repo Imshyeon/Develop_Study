@@ -182,3 +182,145 @@
 ```
 
 - React를 사용하면 counter 수가 바뀌는 부분만 업데이트 된다!
+
+<br>
+
+### 📖 State를 이용해 컨버터 만들기
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ReactJS로 영화 웹 서비스 만들기</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const root = document.getElementById("root");
+
+    function MinutesToHours() {
+      const [amount, setAmount] = React.useState(0);
+      const [fliped, setFliped] = React.useState(false);
+
+      function handleChangeInput(event) {
+        setAmount(event.target.value);
+      }
+
+      function reset() {
+        setAmount(0);
+      }
+
+      function onFlip() {
+        reset();
+        setFliped((prevState) => !prevState);
+      }
+
+      return (
+        <div>
+          <h3>Minutes to Hours</h3>
+          <div>
+            <label htmlFor="minutes">Minutes</label>
+            <input
+              id="minutes"
+              type="number"
+              placeholder="Minutes"
+              value={fliped ? amount * 60 : amount}
+              onChange={handleChangeInput}
+              disabled={fliped}
+            />
+          </div>
+          <div>
+            <label htmlFor="hours">Hours</label>
+            <input
+              id="hours"
+              type="number"
+              placeholder="Hours"
+              value={fliped ? amount : Math.round(amount / 60)}
+              onChange={handleChangeInput}
+              disabled={!fliped}
+            />
+          </div>
+          <button onClick={reset}>Reset</button>
+          <button onClick={onFlip}>Flip</button>
+        </div>
+      );
+    }
+
+    function KmToMiles() {
+      const [amount, setAmount] = React.useState(0);
+      const [fliped, setFliped] = React.useState(false);
+      function handleChangeInput(event) {
+        setAmount(event.target.value);
+      }
+      function reset() {
+        setAmount(0);
+      }
+
+      function onFlip() {
+        reset();
+        setFliped((prevState) => !prevState);
+      }
+
+      return (
+        <div>
+          <h3>km 2 m </h3>
+          <div>
+            <label htmlFor="km">Km</label>
+            <input
+              id="km"
+              type="number"
+              placeholder="Km"
+              value={fliped ? amount * 1.609 : amount}
+              onChange={handleChangeInput}
+              disabled={fliped}
+            />
+          </div>
+          <div>
+            <label htmlFor="hours">Miles</label>
+            <input
+              id="miles"
+              type="number"
+              placeholder="Miles"
+              value={fliped ? amount : amount / 1.609}
+              onChange={handleChangeInput}
+              disabled={!fliped}
+            />
+          </div>
+          <button onClick={reset}>Reset</button>
+          <button onClick={onFlip}>Flip</button>
+        </div>
+      );
+    }
+
+    function App() {
+      const [index, setIndex] = React.useState("xx");
+
+      function onSelect(event) {
+        setIndex(event.target.value);
+      }
+      return (
+        <div>
+          <h1>Super Converter</h1>
+          <select value={index} onChange={onSelect}>
+            <option value="xx"> Select Your Units </option>
+            <option value="0"> Minutes & Hours </option>
+            <option value="1"> Km & Miles </option>
+          </select>
+          <hr />
+          {index === "xx" ? <h3>Plz select your units</h3> : null}
+          {index === "0" ? <MinutesToHours /> : null}
+          {index === "1" ? <KmToMiles /> : null}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(root).render(<App />);
+  </script>
+</html>
+```
