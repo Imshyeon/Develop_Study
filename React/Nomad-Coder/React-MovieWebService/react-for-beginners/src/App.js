@@ -1,38 +1,51 @@
-import Button from "./Button";
-import styles from "./App.module.css";
+// import Todo from "./Todo";
+// import Coin from "./Coin";
 
 import { useState, useEffect } from "react";
+import Movie from "./Movie";
 
 function App() {
-  const [counter, setCounter] = useState(0);
-  const [keyword, setKeyword] = useState("");
-
-  const onClick = () => setCounter((prevCounter) => prevCounter + 1);
-  const onChange = (event) => {
-    setKeyword(event.target.value);
-  };
-
+  const [loading, setLoading] = useState(false);
+  const [movies, setMovies] = useState([]);
   useEffect(() => {
-    console.log("CALL THE API..");
-  }, []);
-  useEffect(() => {
-    if (keyword !== "") {
-      console.log("SEARCH FOR", keyword);
+    setLoading(true);
+    async function fetchMovies() {
+      const response = await fetch(
+        "https://yts.mx/api/v2/list_movies.json?minimum_rating=8.5?sort_by=year"
+      );
+      if (!response.ok) {
+        throw new Error("데이터를 가져오는데 실패했습니다.");
+      }
+      const resData = await response.json();
+      return resData.data.movies;
     }
-  }, [keyword]);
 
-  console.log("I run all the time.");
+    try {
+      fetchMovies().then((movies) => {
+        setMovies(movies);
+        setLoading(false);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   return (
     <div>
-      <input
-        value={keyword}
-        onChange={onChange}
-        type="text"
-        placeholder="Search here..."
-      />
-      <h1 className={styles.title}>{counter}</h1>
-      <Button onClick={onClick} text={"Continue"} />
+      {loading && <p>데이터를 가져오는 중...</p>}
+      <div>
+        {!loading &&
+          movies &&
+          movies.map((movie) => (
+            <Movie
+              key={movie.id}
+              title={movie.title_long}
+              coverImg={movie.medium_cover_image}
+              summary={movie.summary}
+              genres={movie.genres}
+            />
+          ))}
+      </div>
     </div>
   );
 }

@@ -442,3 +442,200 @@ function App() {
 
 export default App;
 ```
+
+<br>
+
+## 📌 Practice Movie App
+
+### 📖 To Do List
+
+```js
+import { useState } from "react";
+
+function App() {
+  const [toDos, setToDos] = useState([]);
+
+  function onSubmit(event) {
+    event.preventDefault();
+    const fd = new FormData(event.target);
+    const data = Object.fromEntries(fd.entries());
+
+    setToDos((prevTodos) => {
+      return [...prevTodos, data];
+    });
+
+    event.target.reset();
+  }
+  console.log(toDos);
+  return (
+    <div>
+      <h1>My To Dos({toDos.length})</h1>
+      <form onSubmit={onSubmit}>
+        <input type="text" name="todo" placeholder="Write your to do..." />
+        <button type="submit">+ Add to do</button>
+      </form>
+      <hr />
+      <ul>
+        {toDos.map((todo, idx) => (
+          <li key={`${todo.todo}-${idx}`}>{todo.todo}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default App;
+```
+
+![todo](./readme/todo.png)
+
+<br>
+
+### 📖 Coin Tracker
+
+```js
+// import Todo from "./Todo";
+
+import { useEffect, useState } from "react";
+
+function App() {
+  const [loading, setLoading] = useState(false);
+  const [coins, setCoins] = useState([]);
+
+  useEffect(() => {
+    setLoading(true);
+    async function fetchCoinData() {
+      const response = await fetch("https://api.coinpaprika.com/v1/tickers");
+      if (!response.ok) {
+        throw new Error("데이터를 가져올 수 없습니다.");
+      }
+      const resData = await response.json();
+      return resData;
+    }
+
+    try {
+      fetchCoinData().then((data) => {
+        setCoins(data);
+        setLoading(false);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  return (
+    <div>
+      <h1>The Coins!{!loading && `(${coins.length})`}</h1>
+
+      {loading && <p>데이터 불러오는 중...</p>}
+      {!loading && (
+        <>
+          <select>
+            {coins.map((coin) => (
+              <option key={coin.id}>
+                {coin.name}({coin.symbol}) : ${coin.quotes["USD"].price} USD
+              </option>
+            ))}
+          </select>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default App;
+```
+
+![coin](./readme/coin.gif)
+
+<br>
+
+### 📖 Movie app - 1 | 데이터 가져오기
+
+#### 💎 App.js
+
+```js
+// import Todo from "./Todo";
+// import Coin from "./Coin";
+
+import { useState, useEffect } from "react";
+import Movie from "./Movie";
+
+function App() {
+  const [loading, setLoading] = useState(false);
+  const [movies, setMovies] = useState([]);
+  useEffect(() => {
+    setLoading(true);
+    async function fetchMovies() {
+      const response = await fetch(
+        "https://yts.mx/api/v2/list_movies.json?minimum_rating=8.5?sort_by=year"
+      );
+      if (!response.ok) {
+        throw new Error("데이터를 가져오는데 실패했습니다.");
+      }
+      const resData = await response.json();
+      return resData.data.movies;
+    }
+
+    try {
+      fetchMovies().then((movies) => {
+        setMovies(movies);
+        setLoading(false);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  return (
+    <div>
+      {loading && <p>데이터를 가져오는 중...</p>}
+      <div>
+        {!loading &&
+          movies &&
+          movies.map((movie) => (
+            <Movie
+              key={movie.id}
+              title={movie.title_long}
+              coverImg={movie.medium_cover_image}
+              summary={movie.summary}
+              genres={movie.genres}
+            />
+          ))}
+      </div>
+    </div>
+  );
+}
+
+export default App;
+```
+
+#### 💎 Movie.js
+
+```js
+import PropTypes from "prop-types";
+
+export default function Movie({ title, coverImg, summary, genres }) {
+  return (
+    <div>
+      <h2>{title}</h2>
+      <img src={coverImg} alt="movie background img" />
+      <p>{summary}</p>
+      <ul>
+        {genres.map((genre) => (
+          <li key={genre}>{genre}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+Movie.propTypes = {
+  title: PropTypes.string.isRequired,
+  coverImg: PropTypes.string.isRequired,
+  summary: PropTypes.string.isRequired,
+  genres: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
+```
+
+![movie](./readme/movie.gif)
