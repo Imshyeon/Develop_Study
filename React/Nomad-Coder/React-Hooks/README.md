@@ -149,3 +149,100 @@ export default function App() {
 <br>
 
 ## 📌 `useEffect`
+
+### 📖 `useTitle`
+
+#### 💎 useTitle.js
+
+```js
+import { useState, useEffect } from "react";
+
+const useTitle = (initialTitle) => {
+  const [title, setTitle] = useState(initialTitle);
+  const updateTitle = () => {
+    const htmlTitle = document.querySelector("title");
+    htmlTitle.textContent = title;
+  };
+  useEffect(updateTitle, [title]);
+
+  return setTitle;
+};
+
+export default useTitle;
+```
+
+#### 💎 App.js
+
+```js
+import "./App.css";
+import useTitle from "./customHooks/useTitle";
+
+export default function App() {
+  const titleUpdater = useTitle("Loading...");
+  setTimeout(() => titleUpdater("Home"), 5000);
+  return (
+    <div className="App">
+      <div>Hi</div>
+    </div>
+  );
+}
+```
+
+![useTitle](./readme/useTitle.gif)
+
+<br>
+
+### 📖 `useClick`
+
+#### 💎 useClick.js
+
+```js
+import { useEffect, useRef } from "react";
+
+const useClick = (onClick) => {
+  const element = useRef();
+
+  useEffect(() => {
+    const el = element.current;
+    if (el) {
+      el.addEventListener("click", onClick);
+    }
+
+    return () => {
+      if (el) {
+        el.removeEventListener("click", onClick);
+      }
+    };
+  }, [onClick]);
+
+  return element;
+};
+
+export default useClick;
+```
+
+#### 💎 App.js
+
+```js
+import "./App.css";
+import useClick from "./customHooks/useClick";
+import { useCallback } from "react";
+
+export default function App() {
+  const sayHello = useCallback(() => {
+    console.log("hello");
+  }, []);
+  const title = useClick(sayHello);
+  return (
+    <div className="App">
+      <h1 ref={title}>Hi</h1>
+    </div>
+  );
+}
+```
+
+![useClick](./readme/useClick.gif)
+
+<br>
+
+### 📖 `useConfirm` & `usePreventLeave`
