@@ -246,3 +246,135 @@ export default function App() {
 <br>
 
 ### 📖 `useConfirm` & `usePreventLeave`
+
+#### 💎 useConfirm.js
+
+```js
+const useConfirm = (message = "", callback, rejection) => {
+  if (!callback || typeof callback !== "function") {
+    return;
+  }
+  if (!rejection || typeof rejection !== "function") {
+    return;
+  }
+  const confirmAction = () => {
+    if (window.confirm(message)) {
+      callback();
+    } else {
+      rejection();
+    }
+  };
+
+  return confirmAction;
+};
+
+export default useConfirm;
+```
+
+#### 💎 App.js
+
+```js
+import "./App.css";
+import useConfirm from "./customHooks/useConfirm.js";
+
+export default function App() {
+  const deleteWorld = () => {
+    console.log("deleting the world...");
+  };
+  const abort = () => console.log("abort...");
+  const confirmDelete = useConfirm("Are you sure", deleteWorld, abort);
+  return (
+    <div className="App">
+      <button onClick={confirmDelete}>Delete the world</button>
+    </div>
+  );
+}
+```
+
+---
+
+#### 💎 usePreventLeave.js
+
+```js
+const usePreventLeave = () => {
+  const listener = (event) => {
+    event.preventDefault();
+    event.returnValue = "";
+  };
+  const enablePrevent = () => {
+    window.addEventListener("beforeunload", listener);
+  };
+  const disablePrevent = () => {
+    window.removeEventListener("beforeunload", listener);
+  };
+
+  return {
+    enablePrevent,
+    disablePrevent,
+  };
+};
+
+export default usePreventLeave;
+```
+
+#### 💎 App.js
+
+```js
+import "./App.css";
+import usePreventLeave from "./customHooks/usePreventLeave";
+
+export default function App() {
+  const { enablePrevent, disablePrevent } = usePreventLeave();
+
+  return (
+    <div className="App">
+      <button onCLick={enablePrevent}>protect</button>
+      <button onCLick={disablePrevent}>unProtect</button>
+    </div>
+  );
+}
+```
+
+<br>
+
+### 📖 `useBeforeLeave`
+
+#### 💎 useBeforeLeave.js
+
+```js
+import { useEffect, useCallback } from "react";
+
+const useBeforeLeave = (onBefore) => {
+  const handle = useCallback(() => {
+    onBefore();
+  }, [onBefore]);
+  useEffect(() => {
+    document.addEventListener("mouseleave", handle);
+
+    return () => {
+      document.removeEventListener("mouseleave", handle);
+    };
+  }, [handle]);
+};
+export default useBeforeLeave;
+```
+
+#### 💎 App.js
+
+```js
+import "./App.css";
+import useBeforeLeave from "./customHooks/useBeforeLeave";
+import { useCallback } from "react";
+
+export default function App() {
+  const begForLife = useCallback(() => {
+    console.log("Plz don't leave");
+  }, []);
+  useBeforeLeave(begForLife);
+  return (
+    <div className="App">
+      <h1>Hello</h1>
+    </div>
+  );
+}
+```

@@ -1,15 +1,15 @@
 import "./App.css";
-import useClick from "./customHooks/useClick";
+import useBeforeLeave from "./customHooks/useBeforeLeave";
 import { useCallback } from "react";
 
 export default function App() {
-  const sayHello = useCallback(() => {
-    console.log("hello");
+  const begForLife = useCallback(() => {
+    console.log("Plz don't leave");
   }, []);
-  const title = useClick(sayHello);
+  useBeforeLeave(begForLife);
   return (
     <div className="App">
-      <h1 ref={title}>Hi</h1>
+      <h1>Hello</h1>
     </div>
   );
 }
