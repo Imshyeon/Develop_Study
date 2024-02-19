@@ -6,11 +6,8 @@
 AppleHomePage/
 animationExample/
 Javascript/Complete-Udemy/수업자료/
-node_modules
-.DS_Store
-dist
-dist-ssr
-*.local
+# Created by https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,react,node
+# Edit at https://www.toptal.com/developers/gitignore?templates=macos,visualstudiocode,react,node
 
 ### macOS ###
 # General
@@ -185,6 +182,19 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
+### react ###
+.DS_*
+**/*.backup.*
+**/*.back.*
+
+node_modules
+
+*.sublime*
+
+psd
+thumb
+sketch
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
@@ -204,4 +214,4 @@ dist
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,node
+# End of https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,react,node
