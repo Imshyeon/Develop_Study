@@ -1,7 +1,11 @@
 # 타입스크립트 기본 & 기본 타입
 
+🔗 [TypeScript Docs](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)
+
 [📌 Using Types](#-using-types)<br>
 [📌 특별한 타입](#-특별한-타입)<br>
+[📌 함수](#-함수)<br>
+[📌 기타 타입](#-기타-타입)<br>
 <br>
 
 ## 📌 Using Types
@@ -399,3 +403,123 @@ function isOlder(user: User, checkAge: number) {
   return checkAge > user.age;
 }
 ```
+
+<br>
+
+## 📌 함수
+
+### 📖 함수 반환 타입 및 `void`
+
+#### 💎 함수 반환 타입
+
+- 타입스크립트는 함수의 반환 타입을 추론한다.
+
+```ts
+function add(n1: number, n2: number): number {
+  return n1 + n2;
+}
+```
+
+- 위와 같이 직접 타입을 명시적으로 설정할 수 있으나 타입스크립트가 추론하도록 두는 것이 좋다.
+
+#### 💎 `void`
+
+```ts
+function add(n1: number, n2: number) {
+  return n1 + n2;
+}
+
+function printResult(num: number) {
+  // function printResult(num: number): void => 아무것도 반환하지 않는다.
+  // 반환 구문이 없다!
+  console.log("Result: " + num);
+}
+
+printResult(add(5, 12)); // Result: 17
+console.log(printResult(add(5, 12))); // undefined
+```
+
+- 반환 구문이 없는 함수를 `console.log`로 찍어보면 undefined가 나온다.
+- `undefined` 자체는 타입스크립트의 타입이다. 만약 함수가 `undefined`를 반환하고자 한다면 **반환 구문(`return`)은 있지만 실제로 아무것도 반환하지 않도록 한다**
+
+```ts
+function printResult(num: number): undefined {
+  console.log("Result: " + num);
+  return; // 굳이 undefined를 하려고 할 때 사용할 수 있으나 그런 상황은 거의 존재하지 않는다.
+}
+```
+
+<br>
+
+### 📖 타입의 기능을 하는 함수
+
+- `Function` 타입은 함수를 정의하는 타입. 매개변수와 함수의 반환 값까지 정의한다.
+
+```ts
+let combineValues: Function; // 해당 변수를 함수를 받는다!
+
+combineValues = add;
+
+console.log(combineValues(8, 8)); // 16
+
+// ===== 화살표 함수를 이용해 매개변수과 반환값 타입 선언 =====
+
+let combineValues: (a: number, b: number) => number; // 해당 변수를 함수를 받는다!
+
+combineValues = add;
+
+console.log(combineValues(8, 8)); // 16
+```
+
+<br>
+
+### 📖 함수 타입 및 콜백
+
+```ts
+function addAndHandle(n1: number, n2: number, cb: (num: number) => void) {
+  const result = n1 + n2;
+  cb(result);
+}
+
+addAndHandle(10, 20, (result) => {
+  console.log(result);
+}); // 30
+```
+
+- 콜백함수는 자신이 전달되는 인수가 반환값을 기대하지 않는 경우(`void`)에도 값을 반환할 수 있다.
+
+<br>
+
+## 📌 기타 타입
+
+### 📖 `unknown` 타입
+
+```ts
+let userInput: unknown; // 사용자가 무엇을 입력할 지 모르기 때문
+let userName: string;
+
+userInput = 5;
+userInput = "Max"; // 어떤 값을 넣든지 오류 발생하지 않음
+
+if (typeof userInput === "string") {
+  userName = userInput;
+}
+```
+
+- `any`는 타입스크립트에서 가장 유연한 타입으로 아예 타입 확인 자체를 하지 않음.
+- `unknown`은 `any`보다 조금 더 제한적이다. &rarr; 모든 것을 확인하지 않고 타입 확인을 한다.
+
+<br>
+
+### 📖 `never` 타입
+
+```ts
+function generateError(message: string, code: number): never {
+  throw { message: message, errorCode: code };
+  // 사실 이 함수는 never를 반환한다. 절대 반환 값을 생성하지 않기 때문.
+}
+
+generateError("An error occurred", 500);
+```
+
+- `generateError`함수는 `never`를 반환한다. 절대 반환 값을 생성하지 않기 때문.
