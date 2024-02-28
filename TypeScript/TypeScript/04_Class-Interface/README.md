@@ -730,3 +730,143 @@ user1 = new Person("Zoe");
 user1.greet("Hi there - I am"); // Hi there - I am zoe
 console.log(user1); // Person {age: 23, name: 'Zoe'}
 ```
+
+<br>
+
+### 📖 왜 인터페이스인가
+
+- 툭정 기능을 갖춰야할 때 유용하다.
+- 인터페이스를 활용해 특정한 구조를 가지도록 강제한다.
+
+<br>
+
+### 📖 읽기 전용 인터페이스 속성
+
+- 인터페이스 안에 `public, private` 키워드는 사용할 수 없지만 `readonly` 접근 제한자는 사용할 수 있다.
+
+```ts
+interface Greetable {
+  readonly name: string; // 읽기 전용 설정
+
+  greet(phrase: string): void;
+}
+
+class Person implements Greetable {
+  name: string; // 읽기 전용으로 설정
+  age = 23;
+
+  constructor(n: string) {
+    this.name = n;
+  }
+  greet(phrase: string) {
+    console.log(phrase + " " + this.name);
+  }
+}
+
+let user1: Greetable;
+user1 = new Person("Zoe");
+
+user1.greet("Hi there - I am");
+console.log(user1);
+```
+
+<br>
+
+### 📖 인터페이스 확장하기
+
+```ts
+interface Named {
+  readonly name: string;
+}
+
+// 인터페이스 결합. 여러개의 인터페이스를 결합할 수 있다.
+interface Greetable extends Named {
+  greet(phrase: string): void;
+}
+
+class Person implements Greetable {
+  name: string;
+  age = 23;
+
+  constructor(n: string) {
+    this.name = n;
+  }
+  greet(phrase: string) {
+    console.log(phrase + " " + this.name);
+  }
+}
+
+let user1: Greetable;
+user1 = new Person("Zoe");
+
+user1.greet("Hi there - I am");
+console.log(user1);
+```
+
+<br>
+
+### 📖 함수 타입으로서의 인터페이스
+
+```ts
+// type AddFn = (a: number, b: number) => number;
+interface AddFn {
+  (a: number, b: number): number; // 익명함수 작성. 인터페이스를 이 형태 함수 타입을 사용하도록 함
+}
+
+let add: AddFn;
+add = (n1: number, n2: number) => {
+  return n1 + n2;
+};
+```
+
+<br>
+
+### 📖 선택적 매개변수 & 속성
+
+```ts
+interface Named {
+  readonly name?: string;
+  outputName?: string; // 인터페이스를 구현하는 클래스에 해당 프로퍼티가 있을 수도 있지만 없어도 된다는 의미.
+}
+
+interface Greetable extends Named {
+  greet(phrase: string): void;
+}
+
+class Person implements Greetable {
+  name?: string; // 선택적
+  age = 23;
+
+  constructor(n?: string) {
+    // 선택적
+    if (n) {
+      this.name = n;
+    }
+  }
+  greet(phrase: string) {
+    if (this.name) {
+      console.log(phrase + " " + this.name);
+    } else {
+      console.log("Hi!");
+    }
+  }
+}
+
+let user1: Greetable;
+user1 = new Person();
+
+user1.greet("Hi there - I am"); // Hi!
+console.log(user1);
+```
+
+<br>
+
+### 📖 자바스크립트로 인터페이스 컴파일
+
+app.js에는 인터페이스의 코드가 없다. 인터페이스는 변환되지 않는다. 오직 타입 스크립트에서만 제공하는 기능이다. 더 명확한 구조를 가진 깔끔한 코드를 작성하는데 도움되지만 런타임에는 인터페이스가 동작되진 않는다.
+
+<br>
+<br>
+
+🔗 [Class](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)<br>
+🔗 [Interface](https://www.typescriptlang.org/docs/handbook/2/objects.html)<br>
