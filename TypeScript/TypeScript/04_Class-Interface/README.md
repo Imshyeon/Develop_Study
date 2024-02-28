@@ -432,3 +432,44 @@ accounting.printEmployeeInfomation();
 <br>
 
 ### 📖 정적 메서드 & 속성
+
+- 정적 메서드 & 속성 : 클래스의 인스턴스를 통해 엑세스하지 않더라도 사용할 수 있는 프로퍼티와 메서드
+- `new` 키워드를 사용해 인스턴스화하지 않고 클래스에서 직접 호출 가능하다.
+- 정적 프로퍼티와 메서드는 기본적으로 인스턴스와 별개로 사용되므로 인스턴스에서 엑세스할 수 없다. 따라서 `this` 키워드로 엑세스 불가능.
+- 클래스 안에서 정적 프로퍼티나 메서드에 접근하려면 클래스 이름으로 엑세스해야한다. (ex. `Department.fiscalYear`)
+
+```ts
+class Department {
+  static fiscalYear = 2024; // 정적 프로퍼티
+
+  protected employees: string[] = [];
+
+  constructor(private readonly id: string, private name: string) {
+    // this.id = id;
+    // this.name = name;
+  }
+
+  // 정적 메서드
+  static createEmployee(name: string) {
+    return { name: name };
+  }
+
+  describe(this: Department) {
+    console.log(`Department(${this.id}) : ${this.name}`);
+  }
+  addEmployee(employee: string) {
+    this.employees.push(employee);
+  }
+  printEmployeeInfomation() {
+    console.log(this.employees.length);
+    console.log(this.employees);
+  }
+}
+
+const employee1 = Department.createEmployee("Zoe");
+console.log(employee1, Department.fiscalYear); // {name: 'Zoe'}, 2024
+```
+
+<br>
+
+### 📖 추상 클래스
