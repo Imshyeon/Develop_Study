@@ -473,3 +473,97 @@ console.log(employee1, Department.fiscalYear); // {name: 'Zoe'}, 2024
 <br>
 
 ### 📖 추상 클래스
+
+- 기본 클래스 Department를 상속받는 모든 클래스에서 특정 클래스를 구현할 필요가 있고, 상속받는 각 클래스 부서마다 메서드를 다르게 구현해야 할 때 사용.
+- 공통으로 사용되는 메서드의 구현을 기본 클래스에 정의하지는 않지만 상속받는 각 클래스에서 각 메서드를 구현하도록 한다.
+
+> 기본 클래스에서 빈 메서드를 정의한 다음 상속받은 클래스에서 해당 메서드를 오버라이드하도록 하면 된다. (`abstract` 키워드를 사용.)
+
+- `abstract`로 지정된 추상 클래스는 인스턴스화 할 수 없다. 오로지 상속받기 위해서만 존재하는 클래스이며 상속받은 클래스에서 정의된 `describe` 메서드의 구조를 따르며 상속받은 클래스 내에서 동작하는 `describe`메서드를 구현해야한다.
+
+```ts
+// 추상 클래스 선언
+abstract class Department {
+  static fiscalYear = 2024;
+
+  protected employees: string[] = [];
+
+  constructor(protected readonly id: string, private name: string) {
+    // this.id = id;
+    // this.name = name;
+  }
+
+  static createEmployee(name: string) {
+    return { name: name };
+  }
+
+  // 추상 클래스 : 메서드의 구조는 정의하지만 이외의 본문 작성은 하지 않음.
+  abstract describe(this: Department): void;
+
+  addEmployee(employee: string) {
+    this.employees.push(employee);
+  }
+  printEmployeeInfomation() {
+    console.log(this.employees.length);
+    console.log(this.employees);
+  }
+}
+
+class ITDepartment extends Department {
+  admins: string[];
+  constructor(id: string, admins: string[]) {
+    super(id, "IT");
+    this.admins = admins;
+  }
+  // 추상 클래스에서 받은 추상 메서드 구현
+  describe() {
+    console.log("IT Department - ID : ", this.id); // IT Department - ID :  d1
+  }
+}
+
+class AccountingDepartment extends Department {
+  private lastReport: string;
+  constructor(id: string, private reports: string[]) {
+    super(id, "Accounting");
+    this.lastReport = reports[0];
+  }
+  addEmployee(name: string) {
+    if (name === "Max") {
+      return;
+    }
+    this.employees.push(name);
+  }
+  addReport(text: string) {
+    this.reports.push(text);
+    this.lastReport = text;
+  }
+  getReports() {
+    console.log(this.reports);
+  }
+
+  get mostRecentReport() {
+    if (this.lastReport) {
+      return this.lastReport;
+    }
+    throw new Error("No report found.");
+  }
+
+  set mostRecentReport(value: string) {
+    if (!value) {
+      throw new Error("값을 입력하세요");
+    }
+    this.addReport(value);
+  }
+
+  // 추상 클래스에서 받은 추상 메서드 구현
+  describe() {
+    console.log(`Accounting Department - ID : ${this.id}`);
+  }
+}
+
+const it = new ITDepartment("d1", ["Zoe"]);
+it.describe();
+
+const accounting = new AccountingDepartment("d2", []);
+accounting.describe();
+```
