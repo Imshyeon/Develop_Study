@@ -36,10 +36,23 @@ class ITDepartment extends Department {
 
 class AccountingDepartment extends Department {
   private lastReport: string;
-  constructor(id: string, private reports: string[]) {
+
+  private static instance: AccountingDepartment;
+
+  private constructor(id: string, private reports: string[]) {
+    // private constructor를 사용하면 new 키워드를 사용해 인스턴스를 생성할 수 없다.
     super(id, "Accounting");
     this.lastReport = reports[0];
   }
+
+  static getInstance() {
+    if (this.instance) {
+      return this.instance;
+    }
+    this.instance = new AccountingDepartment("d2", []);
+    return this.instance;
+  }
+
   addEmployee(name: string) {
     if (name === "Max") {
       return;
@@ -83,7 +96,12 @@ it.describe();
 it.printEmployeeInfomation();
 console.log(it);
 
-const accounting = new AccountingDepartment("d2", []);
+// const accounting = new AccountingDepartment('d2',[]);
+const accounting = AccountingDepartment.getInstance();
+const accounting2 = AccountingDepartment.getInstance();
+
+console.log(accounting, accounting2); // 동일한 인스턴스. 싱글톤 패턴 구현.
+
 accounting.addReport("Something went wrong...");
 accounting.mostRecentReport = "연말보고서";
 console.log(accounting.mostRecentReport); // 연말보고서

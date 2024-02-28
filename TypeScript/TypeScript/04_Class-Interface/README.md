@@ -567,3 +567,96 @@ it.describe();
 const accounting = new AccountingDepartment("d2", []);
 accounting.describe();
 ```
+
+<br>
+
+### 📖 싱글톤 & private constructor
+
+- 싱글톤 패턴 : 한 클래스의 인스턴스를 정확히 1개만 생성한다. 정적 메서드나 프로퍼티를 사용할 수 없거나 사용하고 싶지 않을 때, 클래스의 객체를 여러 개 생성하지 않고 정확히 1개만 생성할 수 있도록 제한해야한다.
+
+```ts
+abstract class Department {
+  static fiscalYear = 2024;
+  //   private name: string;
+  protected employees: string[] = [];
+
+  constructor(protected readonly id: string, private name: string) {
+    // this.id = id;
+    // this.name = name;
+  }
+
+  static createEmployee(name: string) {
+    return { name: name };
+  }
+
+  abstract describe(this: Department): void; // 메서드의 구조는 정의하지만 이외의 본문 작성은 하지 않음.
+
+  addEmployee(employee: string) {
+    this.employees.push(employee);
+  }
+  printEmployeeInfomation() {
+    console.log(this.employees.length);
+    console.log(this.employees);
+  }
+}
+
+class AccountingDepartment extends Department {
+  private lastReport: string;
+
+  // instance를 리턴하기 위한 private static 프로퍼티 생성
+  private static instance: AccountingDepartment;
+
+  // private constructor를 사용하면 new 키워드를 사용해 인스턴스를 생성할 수 없다.
+  private constructor(id: string, private reports: string[]) {
+    super(id, "Accounting");
+    this.lastReport = reports[0];
+  }
+
+  // 인스턴스를 클래스 내에서 설정해야한다. private constructor를 이용해 싱글톤 패턴을 사용했기 때문
+  static getInstance() {
+    if (this.instance) {
+      return this.instance;
+    }
+    this.instance = new AccountingDepartment("d2", []);
+    return this.instance;
+  }
+
+  addEmployee(name: string) {
+    if (name === "Max") {
+      return;
+    }
+    this.employees.push(name);
+  }
+  addReport(text: string) {
+    this.reports.push(text);
+    this.lastReport = text;
+  }
+  getReports() {
+    console.log(this.reports);
+  }
+
+  get mostRecentReport() {
+    if (this.lastReport) {
+      return this.lastReport;
+    }
+    throw new Error("No report found.");
+  }
+
+  set mostRecentReport(value: string) {
+    if (!value) {
+      throw new Error("값을 입력하세요");
+    }
+    this.addReport(value);
+  }
+
+  describe() {
+    console.log(`Accounting Department - ID : ${this.id}`);
+  }
+}
+
+// const accounting = new AccountingDepartment('d2',[]);
+const accounting = AccountingDepartment.getInstance();
+const accounting2 = AccountingDepartment.getInstance();
+
+console.log(accounting, accounting2); // 동일한 인스턴스. 싱글톤 패턴 구현.
+```
