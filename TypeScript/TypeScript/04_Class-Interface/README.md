@@ -206,3 +206,142 @@ accounting.printEmployeeInfomation();
 ```
 
 <br>
+
+### 📖 상속
+
+```ts
+class Department {
+  //   private name: string;
+  private employees: string[] = [];
+
+  constructor(private readonly id: string, private name: string) {
+    // this.id = id;
+    // this.name = name;
+  }
+
+  describe(this: Department) {
+    //  describe 실행 시, this가 항상 Department 클래스의 객체를 참조하도록 함.
+    console.log(`Department(${this.id}) : ${this.name}`);
+  }
+  addEmployee(employee: string) {
+    this.employees.push(employee);
+  }
+  printEmployeeInfomation() {
+    console.log(this.employees.length);
+    console.log(this.employees);
+  }
+}
+
+class ITDepartment extends Department {
+  admins: string[];
+  constructor(id: string, admins: string[]) {
+    super(id, "IT");
+    this.admins = admins;
+  }
+}
+
+class AccountingDepartment extends Department {
+  constructor(id: string, private reports: string[]) {
+    super(id, "Accounting");
+  }
+  addReport(text: string) {
+    this.reports.push(text);
+  }
+  getReports() {
+    console.log(this.reports);
+  }
+}
+
+const it = new ITDepartment("d1", ["Zoe"]);
+it.addEmployee("Max");
+it.addEmployee("Zoe");
+it.describe();
+it.printEmployeeInfomation();
+console.log(it);
+// ITDepartment {id: 'd1', name: 'IT', employees: Array(2), admins: Array(1)}
+//  admins: ['Zoe']
+//  employees: (2) ['Max', 'Zoe']
+//  id: "d1"
+//  name: "IT"
+
+const accounting = new AccountingDepartment("d2", []);
+accounting.addReport("Something went wrong...");
+accounting.getReports(); // ['Something went wrong...']
+```
+
+- `super`가 기본 클래스의 생성자를 호출.
+
+<br>
+
+### 📖 `protected`를 이용하여 프로퍼티, 메서드 재정의
+
+- `private` 프로퍼티는 정의된 클래스에서만 사용할 수 있고 상속받은 클래스에서는 사용할 수 없다.
+- 외부에서 프로퍼티를 수정할 수 없도록 유지하면서 엑세스 권한을 부여하려면 `protected` 프로퍼티 사용한다.
+- `protected` : `private`와 유사하지만 이 프로퍼티는 상속받은 클래스에서도 사용할 수 있다.
+
+```ts
+class Department {
+  // protected
+  protected employees: string[] = [];
+
+  constructor(private readonly id: string, private name: string) {
+    // this.id = id;
+    // this.name = name;
+  }
+
+  describe(this: Department) {
+    console.log(`Department(${this.id}) : ${this.name}`);
+  }
+  addEmployee(employee: string) {
+    this.employees.push(employee);
+  }
+  printEmployeeInfomation() {
+    console.log(this.employees.length);
+    console.log(this.employees);
+  }
+}
+
+class ITDepartment extends Department {
+  admins: string[];
+  constructor(id: string, admins: string[]) {
+    super(id, "IT");
+    this.admins = admins;
+  }
+}
+
+class AccountingDepartment extends Department {
+  constructor(id: string, private reports: string[]) {
+    super(id, "Accounting");
+  }
+  addEmployee(name: string) {
+    if (name === "Max") {
+      return;
+    }
+    this.employees.push(name); // protected 를 사용함으로써 상속받은 클래스에서도 사용가능.
+  }
+  addReport(text: string) {
+    this.reports.push(text);
+  }
+  getReports() {
+    console.log(this.reports);
+  }
+}
+
+const it = new ITDepartment("d1", ["Zoe"]);
+it.addEmployee("Max");
+it.addEmployee("Zoe");
+it.describe();
+it.printEmployeeInfomation();
+console.log(it);
+
+const accounting = new AccountingDepartment("d2", []);
+accounting.addReport("Something went wrong...");
+accounting.getReports();
+accounting.addEmployee("Max");
+accounting.addEmployee("Zoe");
+accounting.printEmployeeInfomation(); // 1, ['Zoe']
+```
+
+<br>
+
+### 📖 getter & setter
