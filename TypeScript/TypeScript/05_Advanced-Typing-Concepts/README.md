@@ -6,6 +6,7 @@
 [📌 형 변환](#-형-변환)<br>
 [📌 인덱스 속성](#-인덱스-속성)<br>
 [📌 함수 오버로드](#-함수-오버로드)<br>
+[📌 선택적 체이닝](#-선택적-체이닝)<br>
 <br>
 
 ## 📌 인터섹션(Intersection) 타입
@@ -226,3 +227,33 @@ const result2 = add("Zoe", " Kang"); // string이 반환
 ```
 
 <br>
+
+## 📌 선택적 체이닝
+
+- 물음표 앞에 있는 것이 정의돼 있지 않다면 물음표 이후에 나오는 것에 접근을 시도하지 않는다.
+
+```ts
+const fetchedUserData = {
+  id: "u1",
+  name: "Zoe",
+  job: { title: "CEO", description: "My own company" },
+};
+
+console.log(fetchedUserData?.job?.title);
+```
+
+<br>
+
+## 📌 `null` 병합
+
+- 어떤 입력을 받았는데 값이 null인지 undefined인지 어떤 값이 있는지 확실하지 않을 때 사용할 수 있다.
+- `??` : 값이 진짜로 null이거나 undefined라면, 그때 DEFAULT를 저장한다.
+
+```ts
+const userInputt = null;
+const storedData = userInputt ?? "DEFAULT";
+
+console.log(storedData); // DEFAULT
+```
+
+🔗 [고급 타입](https://www.typescriptlang.org/docs/handbook/2/types-from-types.html)

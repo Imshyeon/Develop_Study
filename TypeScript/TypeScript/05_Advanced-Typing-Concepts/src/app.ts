@@ -136,3 +136,19 @@ function add(a: Combinable, b: Combinable) {
 
 const result = add(1, 5); // number가 반환
 const result2 = add("Zoe", " Kang"); // string이 반환
+
+// 선택적 체이닝
+const fetchedUserData = {
+  id: "u1",
+  name: "Zoe",
+  job: { title: "CEO", description: "My own company" },
+};
+
+console.log(fetchedUserData?.job?.title);
+
+// null 병합
+
+const userInputt = "";
+const storedData = userInputt ?? "DEFAULT"; // ?? : 값이 진짜로 null이거나 undefined라면, 그때 DEFAULT를 저잦ㅇ한다.
+
+console.log(storedData);
