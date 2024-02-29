@@ -103,3 +103,13 @@ function moveAnimal(animal: Animal) {
 }
 
 moveAnimal({ type: "bird", flyingSpeed: 10 });
+
+// 형 변환
+const paragraph = document.getElementById("message-output"); // const paragraph: HTMLElement | null
+// const userInput = <HTMLInputElement>document.getElementById("user-input")!; // const userInput: HTMLElement | null
+const userInput = document.getElementById("user-input")! as HTMLInputElement; // 이 경우는 리액트에서 사용하는 경우에 이용할 수 있다. 리액트에서 <>는 화면에 렌더링하는 요소를 표현할 때도 사용하니까.
+
+// HTMLElement : value가 존재하지 않는다. 특정 html요소에 특화된 속성을 제공하지 않는다.
+userInput.value = "Hi there!";
+
+// 인덱스 속성

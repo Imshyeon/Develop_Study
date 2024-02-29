@@ -1,6 +1,10 @@
 # 고급 타입
 
 [📌 인터섹션(Intersection) 타입](#-인터섹션intersection-타입)<br>
+[📌 Type Guard](#-type-guard)<br>
+[📌 구별된 유니언](#-구별된-유니언)<br>
+[📌 형 변환](#-형-변환)<br>
+[📌 인덱스 속성](#-인덱스-속성)<br>
 <br>
 
 ## 📌 인터섹션(Intersection) 타입
@@ -145,3 +149,40 @@ function moveAnimal(animal: Animal) {
 
 moveAnimal({ type: "bird", flyingSpeed: 10 });
 ```
+
+<br>
+
+## 📌 형 변환
+
+- 타입스크립트가 어떤 타입인지 감지를 못하고 있을 때, 해당 값이 어떤 타입인지를 타입스크립트에게 알려준다.
+
+```ts
+const paragraph = document.getElementById("message-output"); // const paragraph: HTMLElement | null
+const userInput = document.getElementById("user-input"); // const paragraph: HTMLElement | null
+
+userInput.value = "Hi there!";
+```
+
+- HTMLElement : value가 존재하지 않는다. 특정 html요소에 특화된 속성을 제공하지 않는다.
+
+```ts
+// 방법 1
+const userInput = <HTMLInputElement>document.getElementById("user-input")!;
+
+// 방법 2 : 이 경우는 리액트에서 사용하는 경우에 이용할 수 있다. 리액트에서 <>는 화면에 렌더링하는 요소를 표현할 때도 사용하니까.
+const userInput = document.getElementById("user-input")! as HTMLInputElement;
+
+userInput.value = "Hi there!";
+```
+
+```ts
+const userInputElement = document.getElementById("user-input");
+
+if (userInputElement) {
+  (userInputElement as HTMLInputElement).value = "Hi there"!;
+}
+```
+
+<br>
+
+## 📌 인덱스 속성
