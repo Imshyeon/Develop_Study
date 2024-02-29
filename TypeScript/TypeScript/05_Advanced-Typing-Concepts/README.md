@@ -5,6 +5,7 @@
 [📌 구별된 유니언](#-구별된-유니언)<br>
 [📌 형 변환](#-형-변환)<br>
 [📌 인덱스 속성](#-인덱스-속성)<br>
+[📌 함수 오버로드](#-함수-오버로드)<br>
 <br>
 
 ## 📌 인터섹션(Intersection) 타입
@@ -186,3 +187,42 @@ if (userInputElement) {
 <br>
 
 ## 📌 인덱스 속성
+
+- 객체 생성을 유연하게 할 수 있다.
+
+```ts
+interface ErrorContainer {
+  [prop: string]: string;
+}
+
+const errorBag: ErrorContainer = {
+  email: "Not a valid email",
+  username: "Must start with a capital character",
+};
+```
+
+- 속성의 이름도 모르고 몇 개일지도 모르지만 `ErrorContainer`로 만들어진 객체에 추가되는 속성은 반드시 문자열로 인지될 수 있는 속성 이름이어야 하고 값도 문자열이어야 한다.
+
+<br>
+
+## 📌 함수 오버로드
+
+- 넘겨지는 인자 타입의 조합에 따라 어떤 타입을 함수가 반환하는지를 명확하게 명시
+
+```ts
+function add(a: number, b: number): number;
+function add(a: string, b: string): string;
+function add(a: number, b: string): string;
+function add(a: string, b: number): string;
+function add(a: Combinable, b: Combinable) {
+  if (typeof a === "string" || typeof b === "string") {
+    return a.toString() + b.toString();
+  }
+  return a + b;
+}
+
+const result = add(1, 5); // number가 반환
+const result2 = add("Zoe", " Kang"); // string이 반환
+```
+
+<br>
