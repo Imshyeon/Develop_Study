@@ -79,3 +79,50 @@ console.log(mergedObj.age); // 23
 <br>
 
 ### 📖 제약 조건 작업하기
+
+```ts
+const mergedObj3 = merge({ name: "Zoe" }, 23);
+console.log(mergedObj3); // {name: 'Zoe'} => 23을 병합하지 않는다.
+```
+
+- 23이 객체가 아니니깐(`Object.assign`은 서로 다른 객체만을 병합 가능)!
+- `merge`의 매개변수는 객체로 들어왔으면 좋겠다! &rarr; 제약 조건 설정
+
+<br>
+
+```ts
+function merge<T extends {}, U extends {}>(objA: T, objB: U) {
+  return Object.assign(objA, objB);
+}
+
+const mergedObj3 = merge({ name: "Zoe" }, { age: 23 });
+console.log(mergedObj3); // {name: 'Zoe', age: 23}
+```
+
+- T, U 타입은 어떤 구조의 어떤 객체여도 되지만 어찌되었든 객체여야 한다고 한계를 설정.
+- 제약 조건을 설정함으로써 불필요한 오류나 예기치않은 작동을 방지
+
+<br>
+
+### 📖 다른 일반 함수
+
+```ts
+interface Lengthy {
+  length: number;
+}
+function countAndDescribe<T extends Lengthy>(element: T): [T, string] {
+  let descriptionText = "Got no value.";
+  if (element.length === 1) {
+    descriptionText = "Got 1 element.";
+  } else if (element.length > 1) {
+    descriptionText = "Got " + element.length + " elements.";
+  }
+  return [element, descriptionText];
+}
+
+console.log(countAndDescribe("Hi there!")); // ['Hi there!', 'Got 9 elements.']
+console.log(countAndDescribe(["Sports", "Cooking"])); // [Array(2), 'Got 2 elements.']
+console.log(countAndDescribe([])); // [Array(0), 'Got no value.']
+```
+
+- `length` 속성을 넣기 위해 인터페이스 생성 후 `extends`
