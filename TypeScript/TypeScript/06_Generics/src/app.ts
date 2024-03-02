@@ -87,3 +87,29 @@ console.log(textStorage.getItem()); // ['Zoe']
 // objStorage.addItem({ name: "Zoe" });
 // objStorage.removeItem(maxObj);
 // console.log(objStorage.getItem()); // 0: {name: 'Max'} => 자바스크립트에서 객체는 참조 타입이다.
+
+// ===== BONUS =====
+// ===== 유틸리티 타입 - Partial =====
+
+interface CourseGoal {
+  title: string;
+  description: string;
+  completeUntil: Date;
+}
+
+function createCourseGoal(
+  title: string,
+  description: string,
+  date: Date
+): CourseGoal {
+  let courseGoal: Partial<CourseGoal> = {};
+  courseGoal.title = title;
+  courseGoal.description = description;
+  courseGoal.completeUntil = date;
+  return courseGoal as CourseGoal;
+}
+
+// ===== 유틸리티 타입 - Readonly =====
+const names: Readonly<string[]> = ["Max", "Sports"];
+// names.push("Zoe"); // readonly error
+// names.pop() // readonly error

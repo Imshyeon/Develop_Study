@@ -1,9 +1,12 @@
 # Generics
 
 [📌 제네릭](#-제네릭)<br>
+[📌 BONUS](#-bonus)<br>
 <br>
 
 ## 📌 제네릭
+
+🔗[제네릭 타입 Docs](https://www.typescriptlang.org/ko/docs/handbook/2/generics.html)
 
 ### 📖 내장 제네릭 & 제네릭이란?
 
@@ -205,3 +208,71 @@ class DataStorage<T extends string | number | boolean> {
 - 해당 스토리지를 생성하는데 문자열, 숫자, 불리언만 갖도록 한다.
 
 > 제네릭 클래스 안에 또 제네릭 함수를 사용하는 등 유연하게 사용할 수 있다!
+
+<br>
+
+## 📌 BONUS
+
+### 📖 제네릭 유틸리티 타입 - `Partial`
+
+🔗 [유틸리티 타입](https://www.typescriptlang.org/ko/docs/handbook/utility-types.html)
+
+```ts
+interface CourseGoal {
+  title: string;
+  description: string;
+  completeUntil: Date;
+}
+
+function createCourseGoal(
+  title: string,
+  description: string,
+  date: Date
+): CourseGoal {
+  let courseGoal: Partial<CourseGoal> = {};
+  courseGoal.title = title;
+  courseGoal.description = description;
+  courseGoal.completeUntil = date;
+  return courseGoal as CourseGoal;
+}
+```
+
+<br>
+
+### 📖 제네릭 유틸리티 타입 - `Readonly`
+
+```ts
+const names: Readonly<string[]> = ["Max", "Sports"];
+names.push("Zoe"); // readonly error
+names.pop(); // readonly error
+```
+
+<br>
+
+### 📖 제네릭 타입 vs. 유니언 타입
+
+```ts
+class DataStorage {
+  private data: (string | number | boolean)[] = [];
+
+  addItem(item: string | number | boolean) {
+    this.data.push(item);
+  }
+  removeItem(item: string | number | boolean) {
+    if (this.data.indexOf(item) === -1) {
+      return;
+    }
+    this.data.splice(this.data.indexOf(item), 1);
+  }
+
+  getItem() {
+    return [...this.data];
+  }
+}
+```
+
+- 문자열이든 숫자든 불리언이든 배열로 어떤 종류의 데이터를 저장한다.
+- 그리고 문자열, 숫자, 불리언 중 한 타입으로 데이터를 추가할 것이고 제거하는 것도 세 개의 타입 중에서 하나로 제거한다는 의미이다.
+- 즉, 배열은 배열인데 문자열, 숫자, 불리언이 섞여 있을 수 있다고 하는 것과 같다.
+
+&rarr; 따라서 문자열 배열 혹은 숫자 배열로 구분하고자 한다며 제네릭으로 사용하는 것이 좋다. 더 명확하게 데이터 저장 형식을 구분할 수 있다.
