@@ -126,3 +126,82 @@ console.log(countAndDescribe([])); // [Array(0), 'Got no value.']
 ```
 
 - `length` 속성을 넣기 위해 인터페이스 생성 후 `extends`
+
+<br>
+
+### 📖 `keyof` 제약 조건
+
+```ts
+function extractAndConvert<T extends object, U extends keyof T>(
+  obj: T,
+  key: U
+) {
+  return "Value: " + obj[key];
+}
+
+console.log(extractAndConvert({ name: "zoe", age: 23 }, "name")); // Value: zoe
+```
+
+<br>
+
+### 📖 제네릭 클래스
+
+```ts
+class DataStorage<T> {
+  private data: T[] = [];
+
+  addItem(item: T) {
+    this.data.push(item);
+  }
+  removeItem(item: T) {
+    this.data.splice(this.data.indexOf(item), 1);
+  }
+
+  getItem() {
+    return [...this.data];
+  }
+}
+
+const textStorage = new DataStorage<string>();
+textStorage.addItem("Max");
+textStorage.addItem("Zoe");
+textStorage.removeItem("Max");
+console.log(textStorage.getItem()); // ['Zoe']
+```
+
+- 제네릭 클래스를 사용하는 이유 : `DataStorage`에 문자열이나 숫자를 저장하고 싶을 수 있는데, 이에 맞는 제네릭 타입을 설정하면 해당 스토리지에는 타입에 맞는 데이터만 넣을 수 있다. 더 명확 & 유연!
+
+```ts
+const objStorage = new DataStorage<object>();
+const maxObj = { name: "Max" };
+objStorage.addItem(maxObj);
+objStorage.addItem({ name: "Zoe" });
+objStorage.removeItem(maxObj);
+console.log(objStorage.getItem()); // 0: {name: 'Max'} => 자바스크립트에서 객체는 참조 타입이다.
+```
+
+- Max를 없앴는데 제대로 동작하지 않음. 그 이유는 object로 스토리지를 생성했고 객체는 참조 값이기 때문에 `remove` 동작 시 `indexOf`가 제대로 동작되지 않아 -1을 리턴하게 된다. 따라서 데이터의 마지막 요소가 삭제.
+
+```ts
+class DataStorage<T extends string | number | boolean> {
+  private data: T[] = [];
+
+  addItem(item: T) {
+    this.data.push(item);
+  }
+  removeItem(item: T) {
+    if (this.data.indexOf(item) === -1) {
+      return;
+    }
+    this.data.splice(this.data.indexOf(item), 1); // 객체인 경우 찾지 못해 -1을 리턴 => 마지막 요소가 제거됨.
+  }
+
+  getItem() {
+    return [...this.data];
+  }
+}
+```
+
+- 해당 스토리지를 생성하는데 문자열, 숫자, 불리언만 갖도록 한다.
+
+> 제네릭 클래스 안에 또 제네릭 함수를 사용하는 등 유연하게 사용할 수 있다!

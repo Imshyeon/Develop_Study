@@ -45,3 +45,45 @@ function countAndDescribe<T extends Lengthy>(element: T): [T, string] {
 console.log(countAndDescribe("Hi there!")); // ['Hi there!', 'Got 9 elements.']
 console.log(countAndDescribe(["Sports", "Cooking"])); // [Array(2), 'Got 2 elements.']
 console.log(countAndDescribe([])); // [Array(0), 'Got no value.']
+
+// ===== keyof 제약 조건 =====
+function extractAndConvert<T extends object, U extends keyof T>(
+  obj: T,
+  key: U
+) {
+  return "Value: " + obj[key];
+}
+
+console.log(extractAndConvert({ name: "zoe", age: 23 }, "name")); // Value: zoe
+
+// ===== 제네릭 클래스 =====
+class DataStorage<T extends string | number | boolean> {
+  private data: T[] = [];
+
+  addItem(item: T) {
+    this.data.push(item);
+  }
+  removeItem(item: T) {
+    if (this.data.indexOf(item) === -1) {
+      return;
+    }
+    this.data.splice(this.data.indexOf(item), 1); // 객체인 경우 찾지 못해 -1을 리턴 => 마지막 요소가 제거됨.
+  }
+
+  getItem() {
+    return [...this.data];
+  }
+}
+
+const textStorage = new DataStorage<string>();
+textStorage.addItem("Max");
+textStorage.addItem("Zoe");
+textStorage.removeItem("Max");
+console.log(textStorage.getItem()); // ['Zoe']
+
+// const objStorage = new DataStorage<object>();
+// const maxObj = { name: "Max" };
+// objStorage.addItem(maxObj);
+// objStorage.addItem({ name: "Zoe" });
+// objStorage.removeItem(maxObj);
+// console.log(objStorage.getItem()); // 0: {name: 'Max'} => 자바스크립트에서 객체는 참조 타입이다.
