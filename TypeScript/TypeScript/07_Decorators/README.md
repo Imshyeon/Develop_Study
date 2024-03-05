@@ -203,4 +203,162 @@ class Person {
 
 <br>
 
-### 📖 속성 데코레이터에 대해 알아보기
+### 📖 속성(property) 데코레이터에 대해 알아보기
+
+```ts
+function Log(target: any, propertyName: string | Symbol) {
+  console.log("Property decorator!");
+  console.log(target, propertyName);
+}
+
+class Product {
+  @Log
+  title: string;
+  private _price: number;
+
+  set price(val: number) {
+    if (val > 0) {
+      this._price = val;
+    } else {
+      throw new Error("옳지 않은 갑 - positive 여야한다.");
+    }
+  }
+
+  constructor(t: string, p: number) {
+    this.title = t;
+    this._price = p;
+  }
+
+  getPriceWithTax(tax: number) {
+    return this._price * (1 + tax);
+  }
+}
+
+// Property decorator!
+// {getPriceWithTax: ƒ}
+//     constructor: class Product
+//     getPriceWithTax: ƒ getPriceWithTax(tax)
+//     set price: ƒ price(val)
+//     [[Prototype]]: Object
+// 'title'
+```
+
+- 출력된 값(target, propertyName)은 각각 객체의 프로토타입과 프로퍼티 이름이다.
+  - 프로토 타입에는 `title`과 `_price`는 없지만 `getPriceWithTax, set`와 같은 메서드가 들어있다. 프로토타입에는 메서드를 포함하기 때문.
+  - 프로퍼티 이름은 title로 현재 우리가 작업 중이다.
+
+> `Product`를 인스턴스화하는 곳은 없기 때문에 데코레이터는 자바스크립트에 클래스 정의가 등록되는 시점에 실행된다.
+
+- 즉, 자바스크립트에 이 프로퍼티를 클래스의 일부, 생성자 함수의 일부로 정의한 시점에 실행된다.
+
+```ts
+// 만약 이렇게 한다면
+class Product {
+  title: string;
+  @Log
+  private _price: number;
+}
+
+// 출력되는 프로퍼티 네임은 '_price'다!
+```
+
+<br>
+
+### 📖 접근자 & 매개변수 데코레이터
+
+```ts
+function Log2(target: any, name: string, descriptor: PropertyDescriptor) {
+  console.log("Accessor decorator!");
+  console.log(target);
+  console.log(name);
+  console.log(descriptor);
+}
+
+function Log3(
+  target: any,
+  name: string | Symbol,
+  descriptor: PropertyDescriptor
+) {
+  console.log("Method decorator!");
+  console.log(target);
+  console.log(name);
+  console.log(descriptor);
+}
+
+function Log4(target: any, name: string | Symbol, position: number) {
+  console.log("Parameter decorator!");
+  console.log(target);
+  console.log(name);
+  console.log(position);
+}
+
+class Product {
+  @Log
+  title: string;
+  private _price: number;
+
+  @Log2
+  set price(val: number) {
+    if (val > 0) {
+      this._price = val;
+    } else {
+      throw new Error("옳지 않은 갑 - positive 여야한다.");
+    }
+  }
+
+  constructor(t: string, p: number) {
+    this.title = t;
+    this._price = p;
+  }
+
+  @Log3
+  getPriceWithTax(@Log4 tax: number) {
+    return this._price * (1 + tax);
+  }
+}
+
+// Accessor decorator!
+// {getPriceWithTax: ƒ} -> 프로토타입
+//  price
+// {get: undefined, enumerable: false, configurable: true, set: ƒ}
+
+// Parameter decorator!
+// {getPriceWithTax: ƒ}
+// getPriceWithTax
+// 0
+
+// Method decorator!
+// {getPriceWithTax: ƒ}
+// getPriceWithTax
+// {writable: true, enumerable: false, configurable: true, value: ƒ}
+```
+
+1. Accessor decorator
+
+   - 프로토타입과 접근자 이름인 price(`set price()`), 프로퍼티 설명자가 출력되었다.
+   - 프로퍼티 설명자는 다음과 같이 출력되어있다.
+
+2. Parameter decorator(매개변수)
+   - 프로토타입과 메서드의 이름(getPriceWithTax)이 출력되었고, 해당 매개변수의 인덱스가 나왔다.
+   - 인덱스는 0부터 시작하므로 첫번째 매개변수의 번호인 '0'이 출력되었다.
+
+```ts
+// 접근자 데코레이터(Accessor Decorator)
+// {get: undefined, enumerable: false, configurable: true, set: ƒ}
+//      configurable: true
+//      enumerable: false
+//      get: undefined
+//      set: ƒ price(val)
+//      [[Prototype]]: Object
+
+// 메서드 데코레이터
+// {writable: true, enumerable: false, configurable: true, value: ƒ}
+//    configurable: true
+//    enumerable: false
+//    value: ƒ getPriceWithTax(tax)
+//    writable: true
+//    [[Prototype]]: Object
+```
+
+- Accessor Decorator에서 getter는 작성하지 않아서 `undefined`, setter는 `set price`로 작성했으니 정보가 나와있다.
+-
