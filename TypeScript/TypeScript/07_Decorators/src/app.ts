@@ -57,12 +57,11 @@ function Log3(
   target: any,
   name: string | Symbol,
   descriptor: PropertyDescriptor
-): PropertyDescriptor {
+) {
   console.log("Method decorator!");
   console.log(target);
   console.log(name);
   console.log(descriptor);
-  return {}; // descriptor를 직접 추가하여 반환 가능.
 }
 
 function Log4(target: any, name: string | Symbol, position: number) {
@@ -96,3 +95,35 @@ class Product {
     return this._price * (1 + tax);
   }
 }
+
+function Autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value; // 원본 메서드에 접근
+  const adjDescriptor: PropertyDescriptor = {
+    configurable: true,
+    enumerable: false,
+    get() {
+      // 사용자가 프로퍼티 값에 접근하려 할 때 부가적인 로직을 수행할 것.
+      // 부가적인 로직 수행 후 원래 함수가 실행되도록 함.
+      const boundFn = originalMethod.bind(this); // this는 이 게터 메서드를 실행시킨 대상을 가리킨다.
+      // 게터 메서드는 언제가 자신이 속한 실제 객체에 의해 실행된다. 따라서 게터 내부의 this는 언제나 이 게터를 정의한 객체를 가리킨다.
+      // 이 값은 이벤트리스너에 의해 바뀌지 않는다. 게터는 실행 중인 함수와 이 함수가 속한 객체 그리고 이벤트 리스너 사이에 있는 별도 계층 같은 존재이기 때문.
+      // this를 originalMethod에 바인딩함으로써, 원본 메서드의 this 역시 동일한 객체를 가리키게 만들 수 있다.
+      return boundFn;
+    },
+  };
+  return adjDescriptor;
+}
+
+class Printer {
+  message = "This works!";
+
+  @Autobind
+  showMessage() {
+    console.log(this.message);
+  }
+}
+
+const p = new Printer();
+
+const button = document.querySelector("button");
+button?.addEventListener("click", p.showMessage); // 클릭하여 이벤트 리스너 호출 -> this가 이벤트의 대상을 가리키게 된다.
