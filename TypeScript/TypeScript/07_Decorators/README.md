@@ -417,3 +417,44 @@ console.log(pers);
 - 이렇게 하면 실제로 객체의 인스턴스가 생성될 때만 템플릿이 DOM에 렌더링된다. 그러면 클래스가 정의되자마자 데코레이터 함수가 실행되어 템플릿을 렌더링하는 것을 방지할 수 있다.
 
 - 만약 Person을 인스턴스하지 않았다면(`const pers = new Person()`을 하지 않았다면) 렌더링이 되지 않는다.
+
+<br>
+
+### 📖 기타 데코레이터 반환 타입
+
+```ts
+class Product {
+  @Log
+  title: string;
+  private _price: number;
+
+  @Log2
+  set price(val: number) {
+    if (val > 0) {
+      this._price = val;
+    } else {
+      throw new Error("옳지 않은 갑 - positive 여야한다.");
+    }
+  }
+
+  constructor(t: string, p: number) {
+    this.title = t;
+    this._price = p;
+  }
+
+  @Log3
+  getPriceWithTax(@Log4 tax: number) {
+    return this._price * (1 + tax);
+  }
+}
+```
+
+- 무언가를 반환할 수 있는 데코레이터는 메서드에 추가한 데코레이터와 접근자에 추가한 데코레이터이다.
+- 즉 Log2, Log3가 무언가를 반환할 수 있다.
+- 프로퍼티 데코레이터와 매개변수 데코레이터에도 무언가를 반환할 수는 있지만 타입스크립트에선 지원하지 않는다. 즉, 반환 값이 사용되지 않는다.
+
+<br>
+
+- Log2, Log3는 자신이 추가된 프로퍼티, 즉 메서드의 설명자(`desriptor`)를 인자로 받는다.
+
+<br>

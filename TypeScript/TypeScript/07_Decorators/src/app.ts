@@ -57,11 +57,12 @@ function Log3(
   target: any,
   name: string | Symbol,
   descriptor: PropertyDescriptor
-) {
+): PropertyDescriptor {
   console.log("Method decorator!");
   console.log(target);
   console.log(name);
   console.log(descriptor);
+  return {}; // descriptor를 직접 추가하여 반환 가능.
 }
 
 function Log4(target: any, name: string | Symbol, position: number) {
