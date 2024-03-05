@@ -127,3 +127,79 @@ const p = new Printer();
 
 const button = document.querySelector("button");
 button?.addEventListener("click", p.showMessage); // 클릭하여 이벤트 리스너 호출 -> this가 이벤트의 대상을 가리키게 된다.
+
+// ===== 유효성 검증 데코레이터 =====
+interface ValidatorConfig {
+  [property: string]: {
+    [validatableProp: string]: string[]; // ['required', 'positive']
+  }; // property(검사할 프로퍼티가 있는 클래스 이름)
+}
+
+const registeredValidators: ValidatorConfig = {}; // 빈 객체로 초기화
+
+function Required(target: any, propName: string) {
+  registeredValidators[target.constructor.name] = {
+    ...registeredValidators[target.constructor.name],
+    [propName]: ["required"],
+  }; // Course
+}
+
+function PositiveNumber(target: any, propName: string) {
+  registeredValidators[target.constructor.name] = {
+    ...registeredValidators[target.constructor.name],
+    [propName]: ["positive"],
+  };
+}
+
+function validate(obj: any) {
+  console.log(obj);
+  // 등록된 검사기를 모두 살펴보고 자신에게 필요한 검사 항목을 찾아 해당 로직을 수행
+  const objValidatorConfig = registeredValidators[obj.constructor.name];
+  if (!objValidatorConfig) {
+    return true; // 객체가 유효하다.
+  }
+  let isValid = true;
+  for (const prop in objValidatorConfig) {
+    console.log(prop);
+    for (const validator of objValidatorConfig[prop]) {
+      switch (validator) {
+        case "required":
+          isValid = isValid && !!obj[prop];
+          break;
+        case "positive":
+          isValid = isValid && obj[prop] > 0;
+          break;
+      }
+    }
+  }
+  return isValid;
+}
+
+class Course {
+  @Required
+  title: string;
+  @PositiveNumber
+  price: number;
+
+  constructor(t: string, p: number) {
+    this.title = t;
+    this.price = p;
+  }
+}
+
+const courseForm = document.querySelector("form")!;
+courseForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const titleEl = document.getElementById("title") as HTMLInputElement;
+  const priceEl = document.getElementById("price") as HTMLInputElement;
+
+  const title = titleEl.value;
+  const price = +priceEl.value;
+
+  const createdCourse = new Course(title, price);
+  if (!validate(createdCourse)) {
+    throw new Error("Invalid Input, plz try again");
+    return;
+  }
+  console.log(createdCourse);
+});
