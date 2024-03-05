@@ -10,15 +10,21 @@ function Logger(logString: string) {
 
 function WithTemplate(template: string, hookId: string) {
   console.log("TEMPLATE FACTORY");
-  return function (constructor: any) {
-    // _ : 인자가 들어오는 것을 알지만 필요치 않다.
-    console.log("Rendering Template");
-    const hookEl = document.getElementById(hookId);
-    const p = new constructor();
-    if (hookEl) {
-      hookEl.innerHTML = template;
-      hookEl.querySelector("h1")!.textContent = p.name;
-    }
+  return function <T extends { new (...args: any[]): { name: string } }>(
+    originalConstructor: T
+  ) {
+    return class extends originalConstructor {
+      constructor(...args: any[]) {
+        // ..._도 된다.
+        super();
+        console.log("Rendering Template");
+        const hookEl = document.getElementById(hookId);
+        if (hookEl) {
+          hookEl.innerHTML = template;
+          hookEl.querySelector("h1")!.textContent = this.name;
+        }
+      }
+    };
   };
 }
 
@@ -31,8 +37,8 @@ class Person {
   }
 }
 
-// const pers = new Person();
-// console.log(pers);
+const pers = new Person();
+console.log(pers);
 
 // ===== 📖 속성 데코레이터에 대해 알아보기 =====
 function Log(target: any, propertyName: string | Symbol) {

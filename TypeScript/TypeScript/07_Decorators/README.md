@@ -361,4 +361,59 @@ class Product {
 ```
 
 - Accessor Decorator에서 getter는 작성하지 않아서 `undefined`, setter는 `set price`로 작성했으니 정보가 나와있다.
--
+
+<br>
+
+### 📖 데코레이터는 언제 실행하는가
+
+- 프로퍼티 데코레이터, 메서드 데코레이트, 접근자 데코레이터, 매개변수 데코레이터든 클래스를 정의하는 시점에 실행된다.
+- 데코레이터는 메서드를 호출할 때나 포로퍼티를 사용할 때처럼 런타임에 실행되는 것이 아니다.
+- 데코레이터를 사용하면 클래스가 정의될 때 배후에서 부가적인 설정 작업을 진행할 수 있다.
+
+> 데코레이터 자체는 클래스가 정의될 때나 메서드 등이 등록될 때 실행되는 함수일 뿐이다.
+
+<br>
+
+### 📖 클래스 데코레이터에서 클래스 반환 및 변경
+
+- 클래스 정의 시점이 아닌 인스턴스 되는 시점에서 동작하도록 변경!
+
+```ts
+function WithTemplate(template: string, hookId: string) {
+  console.log("TEMPLATE FACTORY");
+  return function <T extends { new (...args: any[]): { name: string } }>(
+    originalConstructor: T
+  ) {
+    return class extends originalConstructor {
+      constructor(...args: any[]) {
+        // ...args => ..._도 된다.
+        super(); // 기존 클래스의 동작 보존
+        console.log("Rendering Template");
+        const hookEl = document.getElementById(hookId);
+        if (hookEl) {
+          hookEl.innerHTML = template;
+          hookEl.querySelector("h1")!.textContent = this.name;
+        }
+      }
+    };
+  };
+}
+
+@Logger("LOGGING - PERSON")
+@WithTemplate("<h1>My Person Object</h1>", "app")
+class Person {
+  name = "Zoe";
+  constructor() {
+    console.log("Creating person obj...");
+  }
+}
+
+const pers = new Person();
+console.log(pers);
+```
+
+- 기존 생성자 함수를 바탕으로 하고있다. 그래서 기존 클래스, 즉 기존 생성자 함수의 모든 프로퍼티가 그대로 보존된다. &rarr; 꼭 해야하는 것은 아니다! 해당 프로퍼티를 계속 가져가고 싶어서 extends함.
+- 위처럼 하면 새로운 생성자 함수로 대체하여 기존에 있던 로직 뿐만 아니라 새로운 로직도 함께 수행.
+- 이렇게 하면 실제로 객체의 인스턴스가 생성될 때만 템플릿이 DOM에 렌더링된다. 그러면 클래스가 정의되자마자 데코레이터 함수가 실행되어 템플릿을 렌더링하는 것을 방지할 수 있다.
+
+- 만약 Person을 인스턴스하지 않았다면(`const pers = new Person()`을 하지 않았다면) 렌더링이 되지 않는다.
