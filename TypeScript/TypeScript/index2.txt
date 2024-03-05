@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>타입스크립트 이해하기</title>
+    <script src="08_Practice/dist/app.js" defer></script>
+  </head>
+  <body>
+    <!-- 05_Advanced-Typing-Concepts -->
+    <!-- <p id="message-output"></p>
+    <input type="text" id="user-input" /> -->
+
+    <!-- 07_Decorators -->
+    <!-- <div id="app"></div>
+    <button>Click me</button>
+    <form>
+      <input type="text" placeholder="Course title" id="title" />
+      <input type="text" placeholder="Course price" id="price" />
+      <button type="submit">Save</button>
+    </form> -->
+  </body>
+</html>
