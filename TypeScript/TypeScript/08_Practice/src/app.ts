@@ -59,8 +59,22 @@ submitBtn?.addEventListener("click", (e) => {
   if (!validationFn(form)) {
     throw new Error("잘못된 값이 입력되었습니다. 다시 시도해 주세요.");
   }
-  console.log(form);
+  printFormData(form);
 });
+
+function printFormData(form: FormSubmit) {
+  console.log(form.title, form.desc, form.people);
+  const liElement = document.querySelector("li") as HTMLLIElement;
+  liElement.textContent = `${form.title} - ${form.desc} - ${form.people}`;
+
+  const projectsEl = document.querySelector(".projects");
+  const title = projectsEl?.querySelector("header h2") as HTMLHeadElement;
+  title.textContent = form.title;
+  const ulElement = projectsEl?.querySelector("ul") as HTMLUListElement;
+  const listElement = document.createElement("li") as HTMLLIElement;
+  listElement.textContent = `${form.desc} - ${form.people}`;
+  ulElement.append(listElement);
+}
 
 // ==== validation ====
 interface ValidateConfig {
