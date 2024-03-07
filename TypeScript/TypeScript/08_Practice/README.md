@@ -189,3 +189,278 @@ class FormSubmit {
     <br>
 
 ## 📌 강사 코드
+
+### 📖 DOM 요소 선택 및 OOP 렌더링
+
+```ts
+class ProjectInput {
+  templateElement: HTMLTemplateElement;
+  hostElement: HTMLDivElement;
+  element: HTMLFormElement;
+
+  constructor() {
+    this.templateElement = document.getElementById(
+      "project-input"
+    )! as HTMLTemplateElement;
+    this.hostElement = document.getElementById("app")! as HTMLDivElement;
+
+    const importedNode = document.importNode(
+      this.templateElement.content,
+      true
+    ); // 위에서 한 cloneNode와 비슷..
+    this.element = importedNode.firstElementChild as HTMLFormElement;
+    this.attach();
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement("afterbegin", this.element);
+  }
+}
+
+const prjInput = new ProjectInput();
+```
+
+<br>
+
+### 📖 DOM 요소와 상호 작용
+
+```ts
+class ProjectInput {
+  templateElement: HTMLTemplateElement;
+  hostElement: HTMLDivElement;
+  element: HTMLFormElement;
+  titleInputElement: HTMLInputElement;
+  descriptionInputElement: HTMLInputElement;
+  peopleInputElement: HTMLInputElement;
+
+  constructor() {
+    this.templateElement = document.getElementById(
+      "project-input"
+    )! as HTMLTemplateElement;
+    this.hostElement = document.getElementById("app")! as HTMLDivElement;
+
+    const importedNode = document.importNode(
+      this.templateElement.content,
+      true
+    ); // 위에서 한 cloneNode와 비슷..
+    this.element = importedNode.firstElementChild as HTMLFormElement;
+
+    this.element.id = "user-input";
+
+    this.titleInputElement = this.element.querySelector(
+      "#title"
+    ) as HTMLInputElement;
+    this.descriptionInputElement = this.element.querySelector(
+      "#description"
+    ) as HTMLInputElement;
+    this.peopleInputElement = this.element.querySelector(
+      "#people"
+    ) as HTMLInputElement;
+
+    this.configure;
+    this.attach();
+  }
+
+  private submitHandler(event: Event) {
+    event.preventDefault();
+    console.log(this.titleInputElement.value);
+  }
+
+  private configure() {
+    this.element.addEventListener("submit", this.submitHandler);
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement("afterbegin", this.element);
+  }
+}
+
+const prjInput = new ProjectInput();
+```
+
+![강사-1](./강사-1.png)
+
+<br>
+
+### 📖 `Autobind` 데코레이터 생성 및 사용하기
+
+- `submitHandler`에서 this에 대한 bind를 진행해야하는데, 이 작업을 데코레이터를 통해서 자동적으로 바인딩할 수 있도록 구현할 것이다!
+
+```ts
+// autobind decorator
+function autobind(_: any, _2: string, desciptor: PropertyDescriptor) {
+  const originalMethod = desciptor.value;
+  const adjDescriptor: PropertyDescriptor = {
+    configurable: true,
+    get() {
+      const boundFn = originalMethod.bind(this);
+      return boundFn;
+    },
+  };
+  return adjDescriptor;
+}
+
+// ProjectInput Class
+class ProjectInput {
+  templateElement: HTMLTemplateElement;
+  hostElement: HTMLDivElement;
+  element: HTMLFormElement;
+  titleInputElement: HTMLInputElement;
+  descriptionInputElement: HTMLInputElement;
+  peopleInputElement: HTMLInputElement;
+
+  constructor() {
+    this.templateElement = document.getElementById(
+      "project-input"
+    )! as HTMLTemplateElement;
+    this.hostElement = document.getElementById("app")! as HTMLDivElement;
+
+    const importedNode = document.importNode(
+      this.templateElement.content,
+      true
+    ); // 위에서 한 cloneNode와 비슷..
+    this.element = importedNode.firstElementChild as HTMLFormElement;
+
+    this.element.id = "user-input";
+
+    this.titleInputElement = this.element.querySelector(
+      "#title"
+    ) as HTMLInputElement;
+    this.descriptionInputElement = this.element.querySelector(
+      "#description"
+    ) as HTMLInputElement;
+    this.peopleInputElement = this.element.querySelector(
+      "#people"
+    ) as HTMLInputElement;
+
+    this.configure();
+    this.attach();
+  }
+
+  @autobind
+  private submitHandler(event: Event) {
+    event.preventDefault();
+    console.log(this.titleInputElement.value);
+  }
+
+  private configure() {
+    this.element.addEventListener("submit", this.submitHandler);
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement("afterbegin", this.element);
+  }
+}
+
+const prjInput = new ProjectInput();
+```
+
+![강사-2](./강사-2.png)
+
+<br>
+
+### 📖 사용자 입력 가지오기
+
+```ts
+// autobind decorator
+function autobind(_: any, _2: string, desciptor: PropertyDescriptor) {
+  const originalMethod = desciptor.value;
+  const adjDescriptor: PropertyDescriptor = {
+    configurable: true,
+    get() {
+      const boundFn = originalMethod.bind(this);
+      return boundFn;
+    },
+  };
+  return adjDescriptor;
+}
+
+// ProjectInput Class
+class ProjectInput {
+  templateElement: HTMLTemplateElement;
+  hostElement: HTMLDivElement;
+  element: HTMLFormElement;
+  titleInputElement: HTMLInputElement;
+  descriptionInputElement: HTMLInputElement;
+  peopleInputElement: HTMLInputElement;
+
+  constructor() {
+    this.templateElement = document.getElementById(
+      "project-input"
+    )! as HTMLTemplateElement;
+    this.hostElement = document.getElementById("app")! as HTMLDivElement;
+
+    const importedNode = document.importNode(
+      this.templateElement.content,
+      true
+    ); // 위에서 한 cloneNode와 비슷..
+    this.element = importedNode.firstElementChild as HTMLFormElement;
+
+    this.element.id = "user-input";
+
+    this.titleInputElement = this.element.querySelector(
+      "#title"
+    ) as HTMLInputElement;
+    this.descriptionInputElement = this.element.querySelector(
+      "#description"
+    ) as HTMLInputElement;
+    this.peopleInputElement = this.element.querySelector(
+      "#people"
+    ) as HTMLInputElement;
+
+    this.configure();
+    this.attach();
+  }
+
+  private gatherUserInput(): [string, string, number] | undefined {
+    const enteredTitle = this.titleInputElement.value;
+    const enteredDesciption = this.descriptionInputElement.value;
+    const enteredPeople = this.peopleInputElement.value;
+
+    if (
+      enteredTitle.trim().length === 0 ||
+      enteredDesciption.trim().length === 0 ||
+      enteredTitle.trim().length === 0
+    ) {
+      alert("데이터를 입력해 주세요.");
+      return;
+    } else {
+      return [enteredTitle, enteredDesciption, +enteredPeople];
+    }
+  }
+
+  @autobind
+  private submitHandler(event: Event) {
+    event.preventDefault();
+    const userInput = this.gatherUserInput();
+    if (Array.isArray(userInput)) {
+      // 타입스크립트엣헌 튜플이나 자바스크립트에선 튜플이 없으므로 Array
+      const [title, desc, people] = userInput;
+      console.log(title, desc, people);
+      this.clearInput();
+    }
+  }
+
+  private clearInput() {
+    this.titleInputElement.value = "";
+    this.descriptionInputElement.value = "";
+    this.peopleInputElement.value = "";
+  }
+
+  private configure() {
+    this.element.addEventListener("submit", this.submitHandler);
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement("afterbegin", this.element);
+  }
+}
+
+const prjInput = new ProjectInput();
+```
+
+- `this.clearInput()` 적용 전
+  ![강사-3](./강사-3.png)
+
+- `this.clearInput()` 적용 후
+  ![강사-4](./강사-4.png)
