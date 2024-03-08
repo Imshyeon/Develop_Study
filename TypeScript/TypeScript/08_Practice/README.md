@@ -970,3 +970,97 @@ class ProjectList {
 #### 💎 결과
 
 ![강사-7](./강사-7.png)
+
+<br>
+
+### 📖 열거형으로 프로젝트 필터링하기
+
+해결해야할 문제들..
+
+1. 프로젝트가 Active, Finished 둘 다 표현됨.
+2. 중복으로 표시되는 프로젝트 아이템들이 있다.
+
+#### 💎 1번 문제 해결
+
+```ts
+class ProjectList {
+  templateElement: HTMLTemplateElement;
+  hostElement: HTMLDivElement;
+  element: HTMLElement;
+  assignedProjects: Project[];
+
+  constructor(private type: "active" | "finished") {
+    this.templateElement = document.getElementById(
+      "project-list"
+    )! as HTMLTemplateElement;
+    this.hostElement = document.getElementById("app")! as HTMLDivElement;
+    this.assignedProjects = [];
+
+    const importedNode = document.importNode(
+      this.templateElement.content,
+      true
+    );
+    this.element = importedNode.firstElementChild as HTMLElement;
+    this.element.id = `${type}-projects`;
+
+    projectState.addListener((projects: Project[]) => {
+      console.log(projects);
+      // filter 함수를 이용해서 type이 active/finished 일 때를 구분하여 표현할 수 있도록 함.
+      const relevantProjects = projects.filter((prj) => {
+        if (this.type === "active") {
+          return prj.status === ProjectStatus.Active;
+        } else {
+          return prj.status === ProjectStatus.Finished;
+        }
+      });
+      this.assignedProjects = relevantProjects;
+      this.renderProjects();
+    });
+
+    this.attach();
+    this.renderContent();
+  }
+  private renderProjects() {
+    const listEl = document.getElementById(
+      `${this.type}-projects-list`
+    )! as HTMLUListElement;
+    for (const prjItem of this.assignedProjects) {
+      const listItem = document.createElement("li");
+      listItem.textContent = prjItem.title;
+      listEl?.appendChild(listItem);
+    }
+  }
+
+  private renderContent() {
+    const listId = `${this.type}-projects-list`;
+    this.element.querySelector("ul")!.id = listId;
+    this.element.querySelector("h2")!.textContent =
+      this.type.toUpperCase() + " PROJECTS";
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement("beforeend", this.element);
+  }
+}
+```
+
+#### 💎 2번 문제 해결
+
+```ts
+// ProjectList의 메서드
+private renderProjects() {
+    const listEl = document.getElementById(
+      `${this.type}-projects-list`
+    )! as HTMLUListElement;
+    listEl.innerHTML = ""; // 아예 초기화 해서 추가할 때마다 표현하는 방식
+    for (const prjItem of this.assignedProjects) {
+      const listItem = document.createElement("li");
+      listItem.textContent = prjItem.title;
+      listEl.appendChild(listItem);
+    }
+  }
+```
+
+#### 💎 결과
+
+![강사-8](./강사-8.png)

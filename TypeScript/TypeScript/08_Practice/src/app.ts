@@ -296,7 +296,14 @@ class ProjectList {
 
     projectState.addListener((projects: Project[]) => {
       console.log(projects);
-      this.assignedProjects = projects;
+      const relevantProjects = projects.filter((prj) => {
+        if (this.type === "active") {
+          return prj.status === ProjectStatus.Active;
+        } else {
+          return prj.status === ProjectStatus.Finished;
+        }
+      });
+      this.assignedProjects = relevantProjects;
       this.renderProjects();
     });
 
@@ -308,10 +315,11 @@ class ProjectList {
     const listEl = document.getElementById(
       `${this.type}-projects-list`
     )! as HTMLUListElement;
+    listEl.innerHTML = ""; // 아예 초기화 해서 추가할 때마다 표현하는 방식
     for (const prjItem of this.assignedProjects) {
       const listItem = document.createElement("li");
       listItem.textContent = prjItem.title;
-      listEl?.appendChild(listItem);
+      listEl.appendChild(listItem);
     }
   }
 
