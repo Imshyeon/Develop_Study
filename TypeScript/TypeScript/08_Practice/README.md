@@ -676,3 +676,167 @@ const finishedPrjList = new ProjectList("finished");
 ```
 
 ![강사-5](./강사-5.png)
+
+<br>
+
+### 📖 싱글톤으로 애플리케이션 상태 관리하기
+
+#### 💎 ProjectState 초기 작성 및 submitHandler에 적용하기
+
+- 앱의 상태를 관리하는 클래스
+
+```ts
+// Project State Management
+class ProjectState {
+  private projects: any[] = [];
+  private static instance: ProjectState;
+
+  private constructor() {}
+
+  static getInstance() {
+    if (this.instance) {
+      return this.instance;
+    }
+    this.instance = new ProjectState();
+    return this.instance;
+  }
+
+  addProject(title: string, description: string, numOfPeople: number) {
+    const newProject = {
+      id: Math.random().toString(),
+      title: title,
+      description: description,
+      people: numOfPeople,
+    };
+    this.projects.push(newProject);
+  }
+}
+
+const projectState = ProjectState.getInstance(); // 앱 전체에서 하나의 타입으로 된 객체만 갖게 될 것이다.
+```
+
+- `getInstance`를 통해서 앱 전체에서 하나의 타입으로 된 객체만 가질 수 있도록 하였다.
+
+```ts
+// ProjectInput class
+@autobind
+  private submitHandler(event: Event) {
+    event.preventDefault();
+    const userInput = this.gatherUserInput();
+    if (Array.isArray(userInput)) {
+      // 타입스크립트엣헌 튜플이나 자바스크립트에선 튜플이 없으므로 Array
+      const [title, desc, people] = userInput;
+      projectState.addProject(title, desc, people);
+      this.clearInput();
+    }
+  }
+```
+
+- `ProjectInput` 클래스 안에 `submitHandler` 메서드에서 `projectState.addProject()`를 통해 생성한 프로젝트를 추가.
+
+<br>
+
+#### 💎 ProjectState 개선 및 ProjectList 클래스를 통해 렌더링하기
+
+```ts
+// ProjectState
+// Project State Management
+class ProjectState {
+  private listeners: any[] = [];
+  private projects: any[] = [];
+  private static instance: ProjectState;
+
+  private constructor() {}
+
+  static getInstance() {
+    if (this.instance) {
+      return this.instance;
+    }
+    this.instance = new ProjectState();
+    return this.instance;
+  }
+
+  addListener(listenerFn: Function) {
+    this.listeners.push(listenerFn);
+  }
+
+  addProject(title: string, description: string, numOfPeople: number) {
+    const newProject = {
+      id: Math.random().toString(),
+      title: title,
+      description: description,
+      people: numOfPeople,
+    };
+    this.projects.push(newProject);
+    for (const listenerFn of this.listeners) {
+      listenerFn(this.projects.slice()); // slice : 원본 대신 사본을 통해서 동작.
+    }
+  }
+}
+
+const projectState = ProjectState.getInstance(); // 앱 전체에서 하나의 타입으로 된 객체만 갖게 될 것이다.
+```
+
+- listener를 통해서 렌더링을 할 수 있도록 addListener와 listeners 생성
+
+```ts
+// ProjectList Class
+class ProjectList {
+  templateElement: HTMLTemplateElement;
+  hostElement: HTMLDivElement;
+  element: HTMLElement;
+  assignedProjects: any[]; // 추가
+
+  constructor(private type: "active" | "finished") {
+    this.templateElement = document.getElementById(
+      "project-list"
+    )! as HTMLTemplateElement;
+    this.hostElement = document.getElementById("app")! as HTMLDivElement;
+    this.assignedProjects = []; // 초기화
+
+    const importedNode = document.importNode(
+      this.templateElement.content,
+      true
+    );
+    this.element = importedNode.firstElementChild as HTMLElement;
+    this.element.id = `${type}-projects`;
+
+    // Listener에 대한 함수 작성
+    projectState.addListener((projects: any[]) => {
+      console.log(projects);
+      this.assignedProjects = projects;
+      this.renderProjects();
+    });
+
+    this.attach();
+    this.renderContent();
+  }
+
+  // 생성한 프로젝트를 렌더링을 하기 위한 함수 작성
+  private renderProjects() {
+    const listEl = document.getElementById(
+      `${this.type}-projects-list`
+    )! as HTMLUListElement;
+    for (const prjItem of this.assignedProjects) {
+      const listItem = document.createElement("li");
+      listItem.textContent = prjItem.title;
+      listEl?.appendChild(listItem);
+    }
+  }
+
+  private renderContent() {
+    const listId = `${this.type}-projects-list`;
+    this.element.querySelector("ul")!.id = listId;
+    this.element.querySelector("h2")!.textContent =
+      this.type.toUpperCase() + " PROJECTS";
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement("beforeend", this.element);
+  }
+}
+```
+
+#### 💎 결과
+
+![강사-6](강사-6.png)
