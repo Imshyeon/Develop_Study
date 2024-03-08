@@ -1380,3 +1380,39 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
 ```
 
 ![강사-9](./강사-9.png)
+
+<br>
+
+### 📖 게터 사용하기
+
+```ts
+// ProjectItem Class
+class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
+  private project: Project;
+
+  get persons() {
+    if (this.project.people === 1) {
+      return "1 person";
+    } else {
+      return `${this.project.people} persons`;
+    }
+  }
+
+  constructor(hostId: string, project: Project) {
+    super("single-project", hostId, false, project.id);
+    this.project = project;
+
+    this.configures();
+    this.renderContent();
+  }
+
+  configures() {}
+  renderContent() {
+    this.element.querySelector("h2")!.textContent = this.project.title;
+    this.element.querySelector("h3")!.textContent = this.persons + " assigned"; // getter 적용
+    this.element.querySelector("p")!.textContent = this.project.description;
+  }
+}
+```
+
+![강사-10](./강사-10.png)
