@@ -1583,3 +1583,148 @@ class ProjectList
 ```
 
 ![강사-12](./강사-12.gif)
+
+<br>
+
+### 📖 드롭할 수 있는 영역 추가하기
+
+#### 💎 ProjectItem
+
+```ts
+// ProjectItem Class
+class ProjectItem
+  extends Component<HTMLUListElement, HTMLLIElement>
+  implements Draggable
+{
+  private project: Project;
+
+  get persons() {
+    if (this.project.people === 1) {
+      return "1 person";
+    } else {
+      return `${this.project.people} persons`;
+    }
+  }
+
+  constructor(hostId: string, project: Project) {
+    super("single-project", hostId, false, project.id);
+    this.project = project;
+
+    this.configures();
+    this.renderContent();
+  }
+
+  @autobind
+  dragStartHandler(event: DragEvent) {
+    console.log(event);
+    // ===== 추가 =====
+    event.dataTransfer!.setData("text/plain", this.project.id);
+    event.dataTransfer!.effectAllowed = "move";
+    // ===============
+  }
+
+  dragEndHandler(_: DragEvent) {
+    console.log("DragEnd");
+  }
+
+  configures() {
+    this.element.addEventListener("dragstart", this.dragStartHandler);
+    this.element.addEventListener("dragend", this.dragEndHandler);
+  }
+
+  renderContent() {
+    this.element.querySelector("h2")!.textContent = this.project.title;
+    this.element.querySelector("h3")!.textContent = this.persons + " assigned";
+    this.element.querySelector("p")!.textContent = this.project.description;
+  }
+}
+```
+
+- `event.dataTransfer` : drag 이벤트의 특수 속성 &rarr; 이 속성을 이용해 DragEvent에 데이터를 첨부할 수 있다.
+- `event.dataTransfer.effectAllowed` : 커서의 모양을 제어하는 역할
+
+<br>
+
+#### 💎 ProjectList
+
+```ts
+// ProjectList Class
+class ProjectList
+  extends Component<HTMLDivElement, HTMLElement>
+  implements DragTarget
+{
+  assignedProjects: Project[];
+
+  constructor(private type: "active" | "finished") {
+    super("project-list", "app", false, `${type}-projects`);
+    this.assignedProjects = []; // 초기화
+    this.configures();
+    this.renderContent();
+  }
+
+  @autobind
+  dragOverHandler(event: DragEvent) {
+    // ===== 추가 =====
+    if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
+      event.preventDefault();
+
+      const listEl = this.element.querySelector("ul")!;
+      listEl.classList.add("droppable");
+    }
+    // ===============
+  }
+
+  @autobind
+  dragLeaveHandler(_: DragEvent) {
+    const listEl = this.element.querySelector("ul")!;
+    listEl.classList.remove("droppable");
+  }
+
+  dropHandler(event: DragEvent) {
+    // ===== 추가 =====
+    console.log(event.dataTransfer?.getData("text/plain"));
+    // ===============
+  }
+
+  configures() {
+    this.element.addEventListener("dragover", this.dragOverHandler);
+    this.element.addEventListener("dragleave", this.dragLeaveHandler);
+    this.element.addEventListener("drop", this.dropHandler);
+
+    projectState.addListener((projects: Project[]) => {
+      console.log(projects);
+      const relevantProjects = projects.filter((prj) => {
+        if (this.type === "active") {
+          return prj.status === ProjectStatus.Active;
+        } else {
+          return prj.status === ProjectStatus.Finished;
+        }
+      });
+      this.assignedProjects = relevantProjects;
+      this.renderProjects();
+    });
+  }
+
+  renderContent() {
+    const listId = `${this.type}-projects-list`;
+    this.element.querySelector("ul")!.id = listId;
+    this.element.querySelector("h2")!.textContent =
+      this.type.toUpperCase() + " PROJECTS";
+  }
+
+  private renderProjects() {
+    const listEl = document.getElementById(
+      `${this.type}-projects-list`
+    )! as HTMLUListElement;
+    listEl.innerHTML = ""; // 아예 초기화 해서 추가할 때마다 표현하는 방식
+    for (const prjItem of this.assignedProjects) {
+      new ProjectItem(this.element.querySelector("ul")!.id, prjItem);
+    }
+  }
+}
+```
+
+- `if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain")` : 드래그 이벤트에 첨부된 데이터가 text/plain 형식인지 검사
+- `event.preventDefault()` : 자바스크립트의 기본값은 드래그를 허용하지 않음. &rarr; 드래그를 허용한다!
+
+![강사-13](./강사-13.gif)

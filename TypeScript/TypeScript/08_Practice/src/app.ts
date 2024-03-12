@@ -356,6 +356,8 @@ class ProjectItem
   @autobind
   dragStartHandler(event: DragEvent) {
     console.log(event);
+    event.dataTransfer!.setData("text/plain", this.project.id); // drag 이벤트의 특수 속성 -> 이 속성을 이용해 DragEvent에 데이터를 첨부할 수 있다.
+    event.dataTransfer!.effectAllowed = "move"; // 커서의 모양을 제어하는 역할
   }
 
   dragEndHandler(_: DragEvent) {
@@ -389,10 +391,15 @@ class ProjectList
   }
 
   @autobind
-  dragOverHandler(_: DragEvent) {
-    // drag를 했을 때 droppable 클래스를 추가하여 CSS 적용 -> 드래그 가능한 대상을 표현
-    const listEl = this.element.querySelector("ul")!;
-    listEl.classList.add("droppable");
+  dragOverHandler(event: DragEvent) {
+    if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
+      // 드래그 이벤트에 첨부된 데이터가 text/plain 형식인지 검사
+      event.preventDefault(); // 기본값은 드래그를 허용하지 않음. -> 드래그를 허용한다!
+
+      // drag를 했을 때 droppable 클래스를 추가하여 CSS 적용 -> 드래그 가능한 대상을 표현
+      const listEl = this.element.querySelector("ul")!;
+      listEl.classList.add("droppable");
+    }
   }
 
   @autobind
@@ -402,7 +409,9 @@ class ProjectList
     listEl.classList.remove("droppable");
   }
 
-  dropHandler(_: DragEvent) {}
+  dropHandler(event: DragEvent) {
+    console.log(event.dataTransfer?.getData("text/plain"));
+  }
 
   configures() {
     this.element.addEventListener("dragover", this.dragOverHandler);
