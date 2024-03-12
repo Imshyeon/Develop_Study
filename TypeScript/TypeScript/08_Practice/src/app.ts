@@ -224,6 +224,19 @@ class ProjectState extends State<Project> {
       ProjectStatus.Active
     );
     this.projects.push(newProject);
+    this.updateListerers();
+  }
+
+  moveProject(projectId: string, newState: ProjectStatus) {
+    const project = this.projects.find((prj) => prj.id === projectId);
+    if (project && project.status !== newState) {
+      // 불필요한 재렌더링 X
+      project.status = newState;
+      this.updateListerers();
+    }
+  }
+
+  private updateListerers() {
     for (const listenerFn of this.listeners) {
       listenerFn(this.projects.slice()); // slice : 원본 대신 사본을 통해서 동작.
     }
@@ -409,8 +422,13 @@ class ProjectList
     listEl.classList.remove("droppable");
   }
 
+  @autobind
   dropHandler(event: DragEvent) {
-    console.log(event.dataTransfer?.getData("text/plain"));
+    const prjId = event.dataTransfer?.getData("text/plain")!;
+    projectState.moveProject(
+      prjId,
+      this.type === "active" ? ProjectStatus.Active : ProjectStatus.Finished
+    );
   }
 
   configures() {

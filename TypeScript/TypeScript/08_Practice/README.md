@@ -1728,3 +1728,142 @@ class ProjectList
 - `event.preventDefault()` : 자바스크립트의 기본값은 드래그를 허용하지 않음. &rarr; 드래그를 허용한다!
 
 ![강사-13](./강사-13.gif)
+
+<br>
+
+### 📖 Drag & Drop 마무리
+
+#### 💎 ProjectList
+
+```ts
+// ProjectList Class
+class ProjectList
+  extends Component<HTMLDivElement, HTMLElement>
+  implements DragTarget
+{
+  assignedProjects: Project[];
+
+  constructor(private type: "active" | "finished") {
+    super("project-list", "app", false, `${type}-projects`);
+    this.assignedProjects = []; // 초기화
+    this.configures();
+    this.renderContent();
+  }
+
+  @autobind
+  dragOverHandler(event: DragEvent) {
+    if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
+      event.preventDefault();
+      const listEl = this.element.querySelector("ul")!;
+      listEl.classList.add("droppable");
+    }
+  }
+
+  @autobind
+  dragLeaveHandler(_: DragEvent) {
+    const listEl = this.element.querySelector("ul")!;
+    listEl.classList.remove("droppable");
+  }
+
+  // ===== 추가 =====
+  @autobind
+  dropHandler(event: DragEvent) {
+    const prjId = event.dataTransfer?.getData("text/plain")!;
+    projectState.moveProject(
+      prjId,
+      this.type === "active" ? ProjectStatus.Active : ProjectStatus.Finished
+    );
+  }
+  // ===============
+
+  configures() {
+    this.element.addEventListener("dragover", this.dragOverHandler);
+    this.element.addEventListener("dragleave", this.dragLeaveHandler);
+    this.element.addEventListener("drop", this.dropHandler);
+
+    projectState.addListener((projects: Project[]) => {
+      console.log(projects);
+      const relevantProjects = projects.filter((prj) => {
+        if (this.type === "active") {
+          return prj.status === ProjectStatus.Active;
+        } else {
+          return prj.status === ProjectStatus.Finished;
+        }
+      });
+      this.assignedProjects = relevantProjects;
+      this.renderProjects();
+    });
+  }
+
+  renderContent() {
+    const listId = `${this.type}-projects-list`;
+    this.element.querySelector("ul")!.id = listId;
+    this.element.querySelector("h2")!.textContent =
+      this.type.toUpperCase() + " PROJECTS";
+  }
+
+  private renderProjects() {
+    const listEl = document.getElementById(
+      `${this.type}-projects-list`
+    )! as HTMLUListElement;
+    listEl.innerHTML = ""; // 아예 초기화 해서 추가할 때마다 표현하는 방식
+    for (const prjItem of this.assignedProjects) {
+      new ProjectItem(this.element.querySelector("ul")!.id, prjItem);
+    }
+  }
+}
+```
+
+<br>
+
+#### 💎 ProjectState
+
+```ts
+class ProjectState extends State<Project> {
+  private projects: Project[] = [];
+  private static instance: ProjectState;
+
+  private constructor() {
+    super();
+  }
+
+  static getInstance() {
+    if (this.instance) {
+      return this.instance;
+    }
+    this.instance = new ProjectState();
+    return this.instance;
+  }
+
+  addProject(title: string, description: string, numOfPeople: number) {
+    const newProject = new Project(
+      Math.random().toString(),
+      title,
+      description,
+      numOfPeople,
+      ProjectStatus.Active
+    );
+    this.projects.push(newProject);
+    // ===== 추가 =====
+    this.updateListerers();
+  }
+
+  moveProject(projectId: string, newState: ProjectStatus) {
+    const project = this.projects.find((prj) => prj.id === projectId);
+    if (project && project.status !== newState) {
+      // 불필요한 재렌더링 X
+      project.status = newState;
+      this.updateListerers(); // 렌더링
+    }
+  }
+
+  private updateListerers() {
+    for (const listenerFn of this.listeners) {
+      listenerFn(this.projects.slice()); // slice : 원본 대신 사본을 통해서 동작.
+    }
+  }
+  // ================
+}
+```
+
+![강사-14](./강사-14.gif)
