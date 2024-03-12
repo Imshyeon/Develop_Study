@@ -2,6 +2,7 @@
 
 [📌 스스로 해보기](#-스스로-해보기)<br>
 [📌 강사 코드](#-강사-코드)<br>
+[📌 Drag & Drop](#-drag--drop)<br>
 <br>
 
 ## 📌 스스로 해보기
@@ -1416,3 +1417,91 @@ class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
 ```
 
 ![강사-10](./강사-10.png)
+
+<br>
+
+## 📌 Drag & Drop
+
+### 📖 Drag & Drop 구현을 위한 인터페이스 활용하기
+
+#### 💎 app.ts
+
+```ts
+// Drag & Drop Interfaces
+interface Draggable {
+  dragStartHandler(event: DragEvent): void;
+  dragEndHandler(event: DragEvent): void;
+}
+
+interface DragTarget {
+  dragOverHandler(event: DragEvent): void;
+  dropHandler(event: DragEvent): void;
+  dragLeaveHandler(event: DragEvent): void;
+}
+
+// ProjectItem Class
+class ProjectItem
+  extends Component<HTMLUListElement, HTMLLIElement>
+  implements Draggable
+{
+  private project: Project;
+
+  get persons() {
+    if (this.project.people === 1) {
+      return "1 person";
+    } else {
+      return `${this.project.people} persons`;
+    }
+  }
+
+  constructor(hostId: string, project: Project) {
+    super("single-project", hostId, false, project.id);
+    this.project = project;
+
+    this.configures();
+    this.renderContent();
+  }
+
+  // ===== drag =====
+  @autobind
+  dragStartHandler(event: DragEvent) {
+    console.log(event);
+  }
+
+  dragEndHandler(_: DragEvent) {
+    console.log("DragEnd");
+  }
+
+  configures() {
+    this.element.addEventListener("dragstart", this.dragStartHandler);
+    this.element.addEventListener("dragend", this.dragEndHandler);
+  }
+  // ============
+
+  renderContent() {
+    this.element.querySelector("h2")!.textContent = this.project.title;
+    this.element.querySelector("h3")!.textContent = this.persons + " assigned";
+    this.element.querySelector("p")!.textContent = this.project.description;
+  }
+}
+```
+
+- DragTarget의 dragOverHandler : 드래그하는 대상이 유효한 드래그 타깃이라는 것을 브라우저와 자바스크립트에 알려줘야함. &rarr; 드롭을 할 수 있게
+- DragTarget의 dropHandler : 실제 드롭이 일어나면 반응하는 역할 &rarr; 드롭에 대한 처리
+- DragTarget의 dragLeaveHandler : 사용자가 드래그 했을 때 배경색을 바꾼다던지 시각적인 피드백 제공에 유용
+
+<br>
+
+#### 💎 index.html
+
+```html
+<template id="single-project">
+  <li draggable="true">
+    <h2></h2>
+    <h3></h3>
+    <p></p>
+  </li>
+</template>
+```
+
+- 해당 아이템이 드래그를 할 수 있도록 속성 `draggable`을 참으로 설정
