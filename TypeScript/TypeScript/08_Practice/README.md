@@ -1505,3 +1505,81 @@ class ProjectItem
 ```
 
 - 해당 아이템이 드래그를 할 수 있도록 속성 `draggable`을 참으로 설정
+
+![강사-11](./강사-11.gif)
+
+<br>
+
+### 📖 드래그 이벤트 및 UI의 현재 상태 반영하기
+
+```ts
+class ProjectList
+  extends Component<HTMLDivElement, HTMLElement>
+  implements DragTarget
+{
+  assignedProjects: Project[];
+
+  constructor(private type: "active" | "finished") {
+    super("project-list", "app", false, `${type}-projects`);
+    this.assignedProjects = []; // 초기화
+    this.configures();
+    this.renderContent();
+  }
+
+  // ===== drag =====
+  @autobind
+  dragOverHandler(_: DragEvent) {
+    // drag를 했을 때 droppable 클래스를 추가하여 CSS 적용 -> 드래그 가능한 대상을 표현
+    const listEl = this.element.querySelector("ul")!;
+    listEl.classList.add("droppable");
+  }
+
+  @autobind
+  dragLeaveHandler(_: DragEvent) {
+    // drag를 했을 때 범위에서 벗어나는 대상에서 droppable 클래스를 제거.
+    const listEl = this.element.querySelector("ul")!;
+    listEl.classList.remove("droppable");
+  }
+
+  dropHandler(_: DragEvent) {}
+
+  configures() {
+    this.element.addEventListener("dragover", this.dragOverHandler);
+    this.element.addEventListener("dragleave", this.dragLeaveHandler);
+    this.element.addEventListener("drop", this.dropHandler);
+    // ===============
+
+    projectState.addListener((projects: Project[]) => {
+      console.log(projects);
+      const relevantProjects = projects.filter((prj) => {
+        if (this.type === "active") {
+          return prj.status === ProjectStatus.Active;
+        } else {
+          return prj.status === ProjectStatus.Finished;
+        }
+      });
+      this.assignedProjects = relevantProjects;
+      this.renderProjects();
+    });
+  }
+
+  renderContent() {
+    const listId = `${this.type}-projects-list`;
+    this.element.querySelector("ul")!.id = listId;
+    this.element.querySelector("h2")!.textContent =
+      this.type.toUpperCase() + " PROJECTS";
+  }
+
+  private renderProjects() {
+    const listEl = document.getElementById(
+      `${this.type}-projects-list`
+    )! as HTMLUListElement;
+    listEl.innerHTML = ""; // 아예 초기화 해서 추가할 때마다 표현하는 방식
+    for (const prjItem of this.assignedProjects) {
+      new ProjectItem(this.element.querySelector("ul")!.id, prjItem);
+    }
+  }
+}
+```
+
+![강사-12](./강사-12.gif)
