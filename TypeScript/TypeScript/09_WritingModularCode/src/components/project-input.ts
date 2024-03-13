@@ -1,6 +1,6 @@
-import { Component } from "./base-component.js";
-import { Validatable, validate } from "../util/validation.js";
-import { autobind } from "../decorators/autobind.js";
+import Component from "./base-component.js";
+import * as Validation from "../util/validation.js";
+import { autobind as Autobind } from "../decorators/autobind.js";
 import { projectState } from "../state/project-state.js";
 
 // ProjectInput Class
@@ -36,17 +36,17 @@ export class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
     const enteredDesciption = this.descriptionInputElement.value;
     const enteredPeople = this.peopleInputElement.value;
 
-    const titleValidatable: Validatable = {
+    const titleValidatable: Validation.Validatable = {
       value: enteredTitle,
       required: true,
     };
-    const desciptionValidatable: Validatable = {
+    const desciptionValidatable: Validation.Validatable = {
       value: enteredDesciption,
       required: true,
       minLength: 5,
     };
 
-    const peopleValidatable: Validatable = {
+    const peopleValidatable: Validation.Validatable = {
       value: +enteredPeople,
       required: true,
       min: 1,
@@ -54,9 +54,9 @@ export class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
     };
 
     if (
-      !validate(titleValidatable) ||
-      !validate(desciptionValidatable) ||
-      !validate(peopleValidatable)
+      !Validation.validate(titleValidatable) ||
+      !Validation.validate(desciptionValidatable) ||
+      !Validation.validate(peopleValidatable)
     ) {
       alert("데이터를 입력해 주세요.");
       return;
@@ -65,7 +65,7 @@ export class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
     }
   }
 
-  @autobind
+  @Autobind
   private submitHandler(event: Event) {
     event.preventDefault();
     const userInput = this.gatherUserInput();
