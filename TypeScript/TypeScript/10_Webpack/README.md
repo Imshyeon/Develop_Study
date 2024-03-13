@@ -232,3 +232,71 @@ module.exports = {
 ```
 
 <br>
+
+### 📖 Production 워크플로우 추가하기
+
+- 서버에 업로드할 코드를 준비하면, 서버에서 최종 사용자에게 코드가 제공된다. 이럴 때는 다른 워크플로우를 작성하는 것이 좋다!
+
+#### 💎 webpack.config.prod.js
+
+- 설치 : `npm install --save-dev clean-webpack-plugin` &rarr; 이 패키지가 프로젝트를 다시 빌드할 때마다 dist 폴더의 내용을 깨끗이 정리할 것이다.
+
+```js
+const path = require("path");
+const CleanPlugin = require("clean-webpack-plugin");
+
+module.exports = {
+  mode: "production", // 웹팩에게 코드 최적화, 최소화 등을 지시.
+  entry: "./10_Webpack/src/app.ts",
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "10_Webpack/dist"),
+  },
+  devtool: "cheap-source-map",
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".ts", ".js"],
+  },
+  plugins: [
+    // 추가확장기능 : 전반적인 워크플로우에 적용
+    new CleanPlugin.CleanWebpackPlugin(),
+  ],
+};
+```
+
+- `publicPath`는 삭제 : webpack-dev-server에서 필요했던 코드. 프로덕션 단계에서는 웹페이지 스크립트를 실행하고 dist에 작성된 출력을 생성하고 싶기 때문이다. (로컬에서 실행되는 임시 서버를 제공하는 것이 아니니까!)
+
+#### 💎 package.json
+
+```json
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server",
+    "build": "webpack --config webpack.config.prod.js" // 작성한 파일 명을 넣으면 된다.
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "clean-webpack-plugin": "^4.0.0",
+    "lite-server": "^2.6.1",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.2",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.3"
+  }
+}
+```
