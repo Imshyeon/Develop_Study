@@ -765,3 +765,39 @@ namespace App {
   }
 }
 ```
+
+<br>
+
+## 📌 ES 모듈 사용하기
+
+### 📖 ES 모듈 사용하기
+
+#### 💎 app.ts
+
+```ts
+import { ProjectInput } from "./components/project-input.js";
+import { ProjectList } from "./components/project-list.js";
+
+new ProjectInput();
+new ProjectList("active");
+new ProjectList("finished");
+```
+
+#### 💎 tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "module": "ES2015"
+    // "outFile": "./dist/bundle.js"
+  }
+}
+```
+
+#### 💎 index.html
+
+```html
+<script type="module" src="09_WritingModularCode/dist/app.js"></script>
+```
+
+🔗 [레파지토리에서 보기]()
