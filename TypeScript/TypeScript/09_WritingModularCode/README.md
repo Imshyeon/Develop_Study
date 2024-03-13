@@ -949,3 +949,8 @@ export class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
 
 - 다른 파일에 해당 파일이 최초로 임포트될 때 한 차례만 실행된다.
 - 다른 파일이 동일한 파일을 또 임포트해도 다시 실행되지 않는다.
+
+<br>
+
+🔗 [자바스크립트 모듈 개요](https://medium.com/computed-comparisons/commonjs-vs-amd-vs-requirejs-vs-es6-modules-2e814b114a0b)<br>
+🔗 [MDN | 자바스크립트 모듈](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
