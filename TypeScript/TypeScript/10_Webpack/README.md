@@ -164,3 +164,71 @@ module.exports = {
 ```
 
 ![](3.png)
+
+<br>
+
+### 📖 설정 완료하기 & webpack-dev-server 추가하기
+
+#### 💎 package.json
+
+```json
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server", // 변경 -> localhost:8080으로 변경
+    "build": "webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "lite-server": "^2.6.1",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.2",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.3"
+  }
+}
+```
+
+#### 💎 webpack.config.js
+
+```js
+const path = require("path");
+
+module.exports = {
+  mode: "development", // 개발을 위해 빌드 -> 웹팩이 최적화를 줄여서 개발 경험을 개선하고 디버깅을 수월하게 도우면서도 의미있는 오류 메시지를 전달.
+  entry: "./10_Webpack/src/app.ts",
+  devServer: {
+    static: [
+      {
+        directory: path.join(__dirname),
+      },
+    ],
+  },
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "10_Webpack/dist"),
+    publicPath: "/dist/",
+  },
+  devtool: "inline-source-map",
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".ts", ".js"],
+  },
+};
+```
+
+<br>
