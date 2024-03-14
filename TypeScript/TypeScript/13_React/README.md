@@ -195,3 +195,67 @@ export interface Todo {
   text: string;
 }
 ```
+
+<br>
+
+### 📖 더 많은 Props 및 상태 작업
+
+#### 💎 App.tsx
+
+```tsx
+import { useState } from "react";
+import TodoList from "./components/TodoList";
+import NewTodo from "./components/NewTodo";
+import { Todo } from "./todo.model";
+
+function App() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  // const todos = [{ id: "t1", text: "Finish the course" }];
+
+  const todoAddHandler = (text: string) => {
+    setTodos((prevTodos) => [
+      ...prevTodos,
+      { id: Math.random().toString(), text: text },
+    ]);
+  };
+
+  const todoDeleteHandler = (todoId: string) => {
+    setTodos((prevTodos) => {
+      return prevTodos.filter((todo) => todo.id !== todoId);
+    });
+  };
+
+  return (
+    <div className="App">
+      <NewTodo onAddTodo={todoAddHandler} />
+      <TodoList items={todos} onDeleteTodo={todoDeleteHandler} />
+    </div>
+  );
+}
+
+export default App;
+```
+
+#### 💎 TodoList.tsx
+
+```tsx
+interface TodoListProps {
+  items: { id: string; text: string }[];
+  onDeleteTodo: (todoId: string) => void;
+}
+
+export default function TodoList({ items, onDeleteTodo }: TodoListProps) {
+  return (
+    <ul>
+      {items.map((todo) => (
+        <li key={todo.id}>
+          <span>{todo.text}</span>
+          <button onClick={onDeleteTodo.bind(null, todo.id)}>DELETE</button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+- `onDeleteTodo.bind(null,todo.id)` 대신 `()=>onDeleteTodo(todo.id)`로 대체 가능.
