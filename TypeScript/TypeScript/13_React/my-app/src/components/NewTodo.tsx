@@ -1,4 +1,5 @@
 import { FormEvent, useRef } from "react";
+import "./NewTodo.css";
 
 type NewTodoProps = {
   onAddTodo: (text: string) => void;

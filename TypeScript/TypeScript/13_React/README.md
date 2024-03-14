@@ -259,3 +259,16 @@ export default function TodoList({ items, onDeleteTodo }: TodoListProps) {
 ```
 
 - `onDeleteTodo.bind(null,todo.id)` 대신 `()=>onDeleteTodo(todo.id)`로 대체 가능.
+
+<br>
+
+### 📖 스타일링 추가
+
+- TodoList.tsx, NewTodo.tsx에 각각 `import './TodoList.css'`, `import './NewTodo.css'` 추가
+
+<br>
+
+### 📖 다른 React 기능의 타입
+
+🔗 [Redux Toolkit](https://redux-toolkit.js.org/tutorials/typescript)<br>
+🔗 [@types/react-router-dom](https://www.npmjs.com/package/@types/react-router-dom)
