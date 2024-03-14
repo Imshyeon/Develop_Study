@@ -152,3 +152,46 @@ export default function NewTodo({ onAddTodo }: NewTodoProps) {
   );
 }
 ```
+
+<br>
+
+### 📖 상태(State) 및 타입 작업하기
+
+#### 💎 App.tsx
+
+```tsx
+import { useState } from "react";
+import TodoList from "./components/TodoList";
+import NewTodo from "./components/NewTodo";
+import { Todo } from "./todo.model";
+
+function App() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  // const todos = [{ id: "t1", text: "Finish the course" }];
+
+  const todoAddHandler = (text: string) => {
+    setTodos((prevTodos) => [
+      ...prevTodos,
+      { id: Math.random().toString(), text: text },
+    ]);
+  };
+
+  return (
+    <div className="App">
+      <NewTodo onAddTodo={todoAddHandler} />
+      <TodoList items={todos} />
+    </div>
+  );
+}
+
+export default App;
+```
+
+#### 💎 todo.model.ts
+
+```ts
+export interface Todo {
+  id: string;
+  text: string;
+}
+```
