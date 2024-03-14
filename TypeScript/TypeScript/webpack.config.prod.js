@@ -3,10 +3,10 @@ const CleanPlugin = require("clean-webpack-plugin");
 
 module.exports = {
   mode: "production", // 웹팩에게 코드 최적화, 최소화 등을 지시.
-  entry: "./10_Webpack/src/app.ts",
+  entry: "./11_Libraries/src/app.ts",
   output: {
     filename: "bundle.js",
-    path: path.resolve(__dirname, "10_Webpack/dist"),
+    path: path.resolve(__dirname, "11_Libraries/dist"),
   },
   devtool: "cheap-source-map",
   module: {
