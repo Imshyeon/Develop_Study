@@ -1,11 +1,10 @@
-const names = ["Zoe", "Fubao"];
+import styles from "./Post.module.css";
 
-export default function Post() {
-  const chosenName = Math.random() > 0.5 ? names[0] : names[1];
+export default function Post({ author, body }) {
   return (
-    <div>
-      <p>{chosenName}</p>
-      <p>react.js is awesome!</p>
+    <div className={styles.post}>
+      <p className={styles.author}>{author}</p>
+      <p className={styles.text}>{body}</p>
     </div>
   );
 }

@@ -60,8 +60,36 @@ export default function Post() {
 
 <br>
 
-#### 💎 컴포넌트 재사용하기
+#### 💎 컴포넌트 재사용하기, CSS 스타일 적용하기
 
 ```jsx
-//
+// components/Post.jsx
+import styles from "./Post.module.css";
+
+export default function Post({ author, body }) {
+  return (
+    <div className={styles.post}>
+      <p className={styles.author}>{author}</p>
+      <p className={styles.text}>{body}</p>
+    </div>
+  );
+}
+
+// App.jsx
+import Post from "./components/Post";
+
+function App() {
+  return (
+    <main>
+      <Post author="Zoe" body="React.js is awesome!" />
+      <Post author="Fubao" body="Check out the full course" />
+    </main>
+  );
+}
+
+export default App;
 ```
+
+<br>
+
+#### 💎 다른 컴포넌트 만들어보기
