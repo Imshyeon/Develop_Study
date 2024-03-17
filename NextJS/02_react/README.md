@@ -109,3 +109,82 @@ export default function PostList() {
   );
 }
 ```
+
+<br>
+
+#### 💎 상태(state) 이용하기 - modal
+
+```jsx
+// components/NewPost.jsx
+import classes from "./NewPost.module.css";
+
+function NewPost({ onChange }) {
+  return (
+    <form className={classes.form}>
+      <p>
+        <label htmlFor="body">Text</label>
+        <textarea id="body" required rows={3} onChange={onChange} />
+      </p>
+      <p>
+        <label htmlFor="name">Your name</label>
+        <input type="text" id="name" required />
+      </p>
+    </form>
+  );
+}
+
+export default NewPost;
+
+
+// components/Modal.jsx
+import styles from "./Modal.module.css";
+
+export default function Modal({ children, onClose }) {
+  return (
+    <>
+      <div className={styles.backdrop} onClick={onClose} />
+      <dialog open className={styles.modal}>
+        {children}
+      </dialog>
+    </>
+  );
+}
+
+
+// components/PostList.jsx
+import Post from "./Post";
+import styles from "./PostList.module.css";
+import NewPost from "./NewPost";
+import Modal from "./Modal";
+import { useState } from "react";
+
+export default function PostList() {
+  const [enteredBody, setEnteredBody] = useState("");
+  const [modalVisible, setModalVisible] = useState(true);
+
+  function changeBodyHandler(event) {
+    setEnteredBody(event.target.value);
+  }
+
+  function hideModalHandler() {
+    setModalVisible(false);
+  }
+
+  return (
+    <>
+      {modalVisible && (
+        <Modal onClose={hideModalHandler} visible={modalVisible}>
+          <NewPost onChange={changeBodyHandler} />
+        </Modal>
+      )}
+      <ul className={styles.posts}>
+        <Post author="Zoe" body={enteredBody} />
+        <Post author="Fubao" body="Check out the full course" />
+        <Post author="Aibao" body="이뽀 이뽀 아이바오" />
+      </ul>
+    </>
+  );
+}
+```
+
+![](./image/1.gif)
