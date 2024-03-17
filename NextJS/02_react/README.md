@@ -188,3 +188,91 @@ export default function PostList() {
 ```
 
 ![](./image/1.gif)
+
+<br>
+
+#### 💎 공유 헤더 추가 및 상태 관리 추가
+
+```jsx
+// components/MainHeader.jsx
+import { MdPostAdd, MdMessage } from "react-icons/md";
+
+import classes from "./MainHeader.module.css";
+
+function MainHeader({ onCreatePost }) {
+  return (
+    <header className={classes.header}>
+      <h1 className={classes.logo}>
+        <MdMessage />
+        React Poster
+      </h1>
+      <p>
+        <button className={classes.button} onClick={onCreatePost}>
+          <MdPostAdd size={18} />
+          New Post
+        </button>
+      </p>
+    </header>
+  );
+}
+
+export default MainHeader;
+
+
+// components/PostList.jsx
+import Post from "./Post";
+import styles from "./PostList.module.css";
+import NewPost from "./NewPost";
+import Modal from "./Modal";
+import { useState } from "react";
+
+export default function PostList({ isPosting, onHideModal }) {
+  const [enteredBody, setEnteredBody] = useState("");
+
+  function changeBodyHandler(event) {
+    setEnteredBody(event.target.value);
+  }
+
+  return (
+    <>
+      {isPosting && (
+        <Modal onClose={onHideModal}>
+          <NewPost onChange={changeBodyHandler} />
+        </Modal>
+      )}
+      <ul className={styles.posts}>
+        <Post author="Zoe" body={enteredBody} />
+        <Post author="Fubao" body="Check out the full course" />
+        <Post author="Aibao" body="이뽀 이뽀 아이바오" />
+      </ul>
+    </>
+  );
+}
+
+
+// App.jsx
+import { useState } from "react";
+import MainHeader from "./components/MainHeader";
+import PostList from "./components/PostList";
+
+function App() {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  function hideModalHandler() {
+    setModalVisible(false);
+  }
+  function showModalHandler() {
+    setModalVisible(true);
+  }
+  return (
+    <>
+      <MainHeader onCreatePost={showModalHandler} />
+      <main>
+        <PostList isPosting={modalVisible} onHideModal={hideModalHandler} />
+      </main>
+    </>
+  );
+}
+
+export default App;
+```
