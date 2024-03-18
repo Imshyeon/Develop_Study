@@ -694,4 +694,105 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 );
 ```
 
-🔗 [레파지토리에서 보기]()
+🔗 [레파지토리에서 보기](https://github.com/Imshyeon/Develop_Study/commit/12490cdf6cbeada9956be602192ba0ff3ab71730)
+
+<br>
+
+#### 💎 `loader()`로 데이터 가져오기
+
+```jsx
+// index.js
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import NewPost from "./routes/NewPost";
+import RootLayout from "./routes/RootLayout";
+import Posts, { loader as PostsLoader } from "./routes/Posts";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      {
+        path: "/",
+        element: <Posts />,
+        loader: PostsLoader,
+        children: [{ path: "/create-post", element: <NewPost /> }],
+      },
+    ],
+  },
+]);
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);
+
+
+// routes/Posts.jsx
+import PostList from "../components/PostList";
+import { Outlet } from "react-router-dom";
+function Posts() {
+  return (
+    <>
+      <Outlet />
+      <main>
+        <PostList />
+      </main>
+    </>
+  );
+}
+
+export async function loader() {
+  const response = await fetch("http://localhost:8080/posts");
+  if (!response.ok) {
+    console.log("ERROR");
+  }
+  const resData = await response.json();
+  return resData.posts;
+}
+
+export default Posts;
+
+
+// components/PostList.jsx
+import { useLoaderData } from "react-router-dom";
+import Post from "./Post";
+import styles from "./PostList.module.css";
+
+export default function PostList() {
+  const posts = useLoaderData();
+
+  function addPostHandler(postData) {
+    fetch("http://localhost:8080/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData),
+    });
+  }
+
+  return (
+    <>
+      {posts.length > 0 && (
+        <ul className={styles.posts}>
+          {posts.map((post) => (
+            <Post author={post.author} body={post.body} key={post.id} />
+          ))}
+        </ul>
+      )}
+      {posts.length === 0 && (
+        <div style={{ textAlign: "center", color: "white" }}>
+          <h2>작성된 포스트가 없습니다.</h2>
+          <p>포스트를 작성해 보세요!</p>
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+<br>
+
+#### 💎 `action()`으로 데이터 전송하기
