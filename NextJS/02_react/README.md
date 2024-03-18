@@ -796,3 +796,107 @@ export default function PostList() {
 <br>
 
 #### 💎 `action()`으로 데이터 전송하기
+
+```jsx
+// index.js
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import NewPost, { action as newPostAction } from "./routes/NewPost";
+import RootLayout from "./routes/RootLayout";
+import Posts, { loader as postsLoader } from "./routes/Posts";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      {
+        path: "/",
+        element: <Posts />,
+        loader: postsLoader,
+        children: [
+          { path: "/create-post", element: <NewPost />, action: newPostAction },
+        ],
+      },
+    ],
+  },
+]);
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);
+
+
+// components/PostList.jsx
+import { useLoaderData } from "react-router-dom";
+import Post from "./Post";
+import styles from "./PostList.module.css";
+
+export default function PostList() {
+  const posts = useLoaderData();
+
+  return (
+    <>
+      {posts.length > 0 && (
+        <ul className={styles.posts}>
+          {posts.map((post) => (
+            <Post author={post.author} body={post.body} key={post.id} />
+          ))}
+        </ul>
+      )}
+      {posts.length === 0 && (
+        <div style={{ textAlign: "center", color: "white" }}>
+          <h2>작성된 포스트가 없습니다.</h2>
+          <p>포스트를 작성해 보세요!</p>
+        </div>
+      )}
+    </>
+  );
+}
+
+
+// routes/NewPost.jsx
+import classes from "./NewPost.module.css";
+import Modal from "../components/Modal";
+import { Link, Form, redirect } from "react-router-dom";
+
+function NewPost() {
+  return (
+    <Modal>
+      <Form method="POST" className={classes.form}>
+        <p>
+          <label htmlFor="body">Text</label>
+          <textarea id="body" required name="body" rows={3} />
+        </p>
+        <p>
+          <label htmlFor="name">Your name</label>
+          <input type="text" id="name" name="author" required />
+        </p>
+        <p className={classes.actions}>
+          <Link type="button" to="/">
+            취소
+          </Link>
+          <button type="submit">제출</button>
+        </p>
+      </Form>
+    </Modal>
+  );
+}
+
+export async function action({ request }) {
+  const formData = await request.formData();
+  const postData = Object.fromEntries(formData); // {body:'...', author:'...'}
+  await fetch("http://localhost:8080/posts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(postData),
+  });
+
+  return redirect("/");
+}
+
+export default NewPost;
+```
