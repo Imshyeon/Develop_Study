@@ -633,3 +633,65 @@ export default function PostList({ isPosting, onHideModal }) {
 ```
 
 <br>
+
+### 📖 라우팅
+
+#### 💎 라우팅 추가하기
+
+```js
+// index.js
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import App from "./App";
+import NewPost from "./components/NewPost";
+
+const router = createBrowserRouter([
+  { path: "/", element: <App /> },
+  { path: "/create-post", element: <NewPost /> },
+]);
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);
+```
+
+<br>
+
+#### 💎 레이아웃 라우트 사용하기
+
+- 레이아웃 라우트 : 내부에 다른 라우트를 품고있는 라우트
+
+```js
+// index.js
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import NewPost from "./routes/NewPost";
+import RootLayout from "./routes/RootLayout";
+import Posts from "./routes/Posts";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      {
+        path: "/",
+        element: <Posts />,
+        children: [{ path: "/create-post", element: <NewPost /> }],
+      },
+    ],
+  },
+]);
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);
+```
+
+🔗 [레파지토리에서 보기]()
