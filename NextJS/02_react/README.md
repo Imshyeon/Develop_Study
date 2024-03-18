@@ -438,3 +438,129 @@ export default NewPost;
 ```
 
 <br>
+
+### 📖 HTTP 동작
+
+#### 💎 POST HTTP 요청 보내기
+
+```jsx
+// components/PostList.jsx
+import Post from "./Post";
+import styles from "./PostList.module.css";
+import NewPost from "./NewPost";
+import Modal from "./Modal";
+import { useState } from "react";
+
+export default function PostList({ isPosting, onHideModal }) {
+  const [posts, setPosts] = useState([]);
+
+  function addPostHandler(postData) {
+    fetch("http://localhost:8080/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData),
+    });
+    setPosts((prevPosts) => [...prevPosts, postData]);
+  }
+
+  return (
+    <>
+      {isPosting && (
+        <Modal onClose={onHideModal}>
+          <NewPost onCancle={onHideModal} onAddPost={addPostHandler} />
+        </Modal>
+      )}
+      {posts.length > 0 && (
+        <ul className={styles.posts}>
+          {posts.map((post) => (
+            <Post author={post.author} body={post.body} key={post.body} />
+          ))}
+        </ul>
+      )}
+      {posts.length === 0 && (
+        <div style={{ textAlign: "center", color: "white" }}>
+          <h2>작성된 포스트가 없습니다.</h2>
+          <p>포스트를 작성해 보세요!</p>
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+```json
+// backend/post.json
+{
+  "posts": [
+    { "body": "test", "author": "test", "id": "0.0005431767554782141" },
+    {
+      "body": "This course is hopefully very helpful to you!",
+      "author": "Maximilian",
+      "id": "post-1"
+    }
+  ]
+}
+```
+
+<br>
+
+#### 💎 `useEffect()`를 사용해서 데이터 가져오기
+
+```jsx
+// components/PostList.jsx
+import Post from "./Post";
+import styles from "./PostList.module.css";
+import NewPost from "./NewPost";
+import Modal from "./Modal";
+import { useEffect, useState } from "react";
+
+export default function PostList({ isPosting, onHideModal }) {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    async function fetchPosts() {
+      const response = await fetch("http://localhost:8080/posts");
+      if (!response.ok) {
+        console.log("ERROR");
+      }
+      const resData = await response.json();
+      setPosts(resData.posts);
+    }
+    fetchPosts();
+  }, []);
+
+  function addPostHandler(postData) {
+    fetch("http://localhost:8080/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData),
+    });
+    setPosts((prevPosts) => [...prevPosts, postData]);
+  }
+
+  return (
+    <>
+      {isPosting && (
+        <Modal onClose={onHideModal}>
+          <NewPost onCancle={onHideModal} onAddPost={addPostHandler} />
+        </Modal>
+      )}
+      {posts.length > 0 && (
+        <ul className={styles.posts}>
+          {posts.map((post) => (
+            <Post author={post.author} body={post.body} key={post.id} />
+          ))}
+        </ul>
+      )}
+      {posts.length === 0 && (
+        <div style={{ textAlign: "center", color: "white" }}>
+          <h2>작성된 포스트가 없습니다.</h2>
+          <p>포스트를 작성해 보세요!</p>
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+<br>
