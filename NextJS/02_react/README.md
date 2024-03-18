@@ -900,3 +900,135 @@ export async function action({ request }) {
 
 export default NewPost;
 ```
+
+<br>
+
+#### 💎 동적 라우트
+
+```js
+// index.js
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import NewPost, { action as newPostAction } from "./routes/NewPost";
+import RootLayout from "./routes/RootLayout";
+import Posts, { loader as postsLoader } from "./routes/Posts";
+import PostDetails, { loader as postDetailsLoader } from "./routes/PostDetails";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      {
+        path: "/",
+        element: <Posts />,
+        loader: postsLoader,
+        children: [
+          { path: "/create-post", element: <NewPost />, action: newPostAction },
+          { path: "/:id", element: <PostDetails />, loader: postDetailsLoader },
+        ],
+      },
+    ],
+  },
+]);
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);
+
+
+// PostDetails.jsx
+import { useLoaderData, Link } from "react-router-dom";
+
+import Modal from "../components/Modal";
+import classes from "./PostDetails.module.css";
+
+function PostDetails() {
+  const post = useLoaderData();
+
+  if (!post) {
+    return (
+      <Modal>
+        <main className={classes.details}>
+          <h1>Could not find post</h1>
+          <p>Unfortunately, the requested post could not be found.</p>
+          <p>
+            <Link to=".." className={classes.btn}>
+              Okay
+            </Link>
+          </p>
+        </main>
+      </Modal>
+    );
+  }
+  return (
+    <Modal>
+      <main className={classes.details}>
+        <p className={classes.author}>{post.author}</p>
+        <p className={classes.text}>{post.body}</p>
+      </main>
+    </Modal>
+  );
+}
+
+export default PostDetails;
+
+export async function loader({ params }) {
+  const id = params.id;
+  const response = await fetch("http://localhost:8080/posts/" + id);
+  const resData = await response.json();
+  return resData.post;
+}
+
+
+// Post.jsx
+import styles from "./Post.module.css";
+import { Link } from "react-router-dom";
+
+export default function Post({ id, author, body }) {
+  return (
+    <li className={styles.post}>
+      <Link to={id}>
+        <p className={styles.author}>{author}</p>
+        <p className={styles.text}>{body}</p>
+      </Link>
+    </li>
+  );
+}
+
+
+// PostList.jsx
+import { useLoaderData } from "react-router-dom";
+import Post from "./Post";
+import styles from "./PostList.module.css";
+
+export default function PostList() {
+  const posts = useLoaderData();
+
+  return (
+    <>
+      {posts.length > 0 && (
+        <ul className={styles.posts}>
+          {posts.map((post) => (
+            <Post
+              id={post.id}
+              author={post.author}
+              body={post.body}
+              key={post.id}
+            />
+          ))}
+        </ul>
+      )}
+      {posts.length === 0 && (
+        <div style={{ textAlign: "center", color: "white" }}>
+          <h2>작성된 포스트가 없습니다.</h2>
+          <p>포스트를 작성해 보세요!</p>
+        </div>
+      )}
+    </>
+  );
+}
+```
