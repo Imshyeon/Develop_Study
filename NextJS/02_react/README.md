@@ -276,3 +276,82 @@ function App() {
 
 export default App;
 ```
+
+<br>
+
+#### 💎 양식 관리 - 버튼 추가, 제출 처리
+
+```jsx
+// components/PostList.jsx
+import Post from "./Post";
+import styles from "./PostList.module.css";
+import NewPost from "./NewPost";
+import Modal from "./Modal";
+
+export default function PostList({ isPosting, onHideModal }) {
+  return (
+    <>
+      {isPosting && (
+        <Modal onClose={onHideModal}>
+          <NewPost onCancle={onHideModal} />
+        </Modal>
+      )}
+      <ul className={styles.posts}>
+        <Post author="Fubao" body="Check out the full course" />
+        <Post author="Aibao" body="이뽀 이뽀 아이바오" />
+      </ul>
+    </>
+  );
+}
+
+
+// components/NewPost.jsx
+import classes from "./NewPost.module.css";
+import { useState } from "react";
+
+function NewPost({ onCancle }) {
+  const [enteredBody, setEnteredBody] = useState("");
+  const [enteredAuthor, setEnteredAuthor] = useState("");
+
+  function changeBodyHandler(event) {
+    setEnteredBody(event.target.value);
+  }
+
+  function changeAuthorHandler(event) {
+    setEnteredAuthor(event.target.value);
+  }
+
+  function submitHanler(event) {
+    event.preventDefault();
+    const postData = {
+      body: enteredBody,
+      author: enteredAuthor,
+    };
+  }
+
+  return (
+    <form className={classes.form} onSubmit={submitHanler}>
+      <p>
+        <label htmlFor="body">Text</label>
+        <textarea id="body" required rows={3} onChange={changeBodyHandler} />
+      </p>
+      <p>
+        <label htmlFor="name">Your name</label>
+        <input type="text" id="name" required onChange={changeAuthorHandler} />
+      </p>
+      <p className={classes.actions}>
+        <button type="button" onClick={onCancle}>
+          취소
+        </button>
+        <button type="submit">제출</button>
+      </p>
+    </form>
+  );
+}
+
+export default NewPost;
+```
+
+<br>
+
+#### 💎
