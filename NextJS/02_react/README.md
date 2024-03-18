@@ -436,3 +436,5 @@ function NewPost({ onCancle, onAddPost }) {
 
 export default NewPost;
 ```
+
+<br>
