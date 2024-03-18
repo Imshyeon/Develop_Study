@@ -354,4 +354,85 @@ export default NewPost;
 
 <br>
 
-#### 💎
+#### 💎 posts 상태 갱신 및 데이터 표시하기
+
+```jsx
+// components/PostList.jsx
+import Post from "./Post";
+import styles from "./PostList.module.css";
+import NewPost from "./NewPost";
+import Modal from "./Modal";
+import { useState } from "react";
+
+export default function PostList({ isPosting, onHideModal }) {
+  const [posts, setPosts] = useState([]);
+
+  function addPostHandler(postData) {
+    setPosts((prevPosts) => [...prevPosts, postData]);
+  }
+
+  return (
+    <>
+      {isPosting && (
+        <Modal onClose={onHideModal}>
+          <NewPost onCancle={onHideModal} onAddPost={addPostHandler} />
+        </Modal>
+      )}
+      <ul className={styles.posts}>
+        {posts.map((post) => (
+          <Post author={post.author} body={post.body} key={post.body} />
+        ))}
+      </ul>
+    </>
+  );
+}
+
+
+// components/NewPost.jsx
+import classes from "./NewPost.module.css";
+import { useState } from "react";
+
+function NewPost({ onCancle, onAddPost }) {
+  const [enteredBody, setEnteredBody] = useState("");
+  const [enteredAuthor, setEnteredAuthor] = useState("");
+
+  function changeBodyHandler(event) {
+    setEnteredBody(event.target.value);
+  }
+
+  function changeAuthorHandler(event) {
+    setEnteredAuthor(event.target.value);
+  }
+
+  function submitHanler(event) {
+    event.preventDefault();
+    const postData = {
+      body: enteredBody,
+      author: enteredAuthor,
+    };
+    onAddPost(postData);
+    onCancle();
+  }
+
+  return (
+    <form className={classes.form} onSubmit={submitHanler}>
+      <p>
+        <label htmlFor="body">Text</label>
+        <textarea id="body" required rows={3} onChange={changeBodyHandler} />
+      </p>
+      <p>
+        <label htmlFor="name">Your name</label>
+        <input type="text" id="name" required onChange={changeAuthorHandler} />
+      </p>
+      <p className={classes.actions}>
+        <button type="button" onClick={onCancle}>
+          취소
+        </button>
+        <button type="submit">제출</button>
+      </p>
+    </form>
+  );
+}
+
+export default NewPost;
+```
