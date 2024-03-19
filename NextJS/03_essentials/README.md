@@ -172,3 +172,44 @@ export default function Home() {
 - route.js : API 경로 생성(즉, JSX 코드가 아닌 데이터를 반환하는 페이지, ex: JSON 형식)
 
 🔗 [File Conventions](https://nextjs.org/docs/app/api-reference/file-conventions)
+
+<br>
+
+### 📖 동적 경로 환경설정 및 경로 매개변수 사용 방법
+
+- 만약 블로그를 작성하고 싶다면 각 블로그 페이지를 표현하기 위한 폴더를 일일히 생성할 수는 없다. 이때 필요한 것이 동적 라우트!
+- 다양한 페이지와 다양한 블로그 게시물을 렌더링하기 위한 동적 라우트.
+- NextJS에서는 대괄호를 사용한 중첩 폴더를 추가해 만들 수 있다.
+- 대괄호는 NextJS에게 어떠한 경로 분할을 원하지만 다만 아직 정확한 값을 모른다고 하는 것이다. 임의의 값 slug 식별자는 경로에 값이 실릴 때 정확한 값에 접근할 수 있도록 한다.
+- NextJS의 prop 중 params는 동적 라우트에 임의로 넣은 모든 이름이 있는 객체의 키(?)를 의미한다. ex. 'your-domain/blog/post-1' 이면, params는 post-1
+
+```js
+// app/blog/page.js
+import Link from "next/link";
+
+export default function BlogPage() {
+  return (
+    <main>
+      <h1>The Blog</h1>
+      <p>
+        <Link href="/blog/post-1">Post 1</Link>
+      </p>
+      <p>
+        <Link href="/blog/post-2">Post 2</Link>
+      </p>
+    </main>
+  );
+}
+
+// app/blog/[slug]/page.js
+export default function BlogPostPage({ params }) {
+  return (
+    <main>
+      <h1>Blog Post</h1>
+      <p>{params.slug}</p>
+    </main>
+  );
+}
+```
+
+![](./image/동적라우트.gif)
