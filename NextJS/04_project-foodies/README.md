@@ -764,3 +764,54 @@ export default function MealsLoadingPage() {
 ```
 
 ![](./readmeImage/Loading.gif)
+
+<br>
+
+### 📖 Suspense & Streamed Response를 이용한 세분화 로딩 상태 관리
+
+- meals 패이지에서 데이터를 불러오는 `<MealsGrid>`를 제외한 부분은 로딩되는 데이터와는 무관하다. 따라서 로딩할 때 데이터를 불러오는 부분을 제외한 텍스트가 바로 보이면 좋다.
+- `Suspense`는 리액트에서 제공되는 컴포넌트로 일부 데이터 또는 리소스가 불러올 때까지 로딩 상태를 처리하고 대체 컨텐츠를 표시할 수 있다.
+
+```js
+// app/meals/page.js
+import { Suspense } from "react";
+import Link from "next/link";
+import styles from "./page.module.css";
+import MealsGrid from "@/components/meals/meals-grid";
+import { getMeals } from "@/lib/meals";
+
+async function Meals() {
+  const meals = await getMeals();
+  return <MealsGrid meals={meals} />;
+}
+
+export default function MealsPage() {
+  return (
+    <>
+      <header className={styles.header}>
+        <h1>
+          Delicious meals, created
+          <span className={styles.highlight}> by you</span>
+        </h1>
+        <p>
+          Choose your favorite recipe and cook it yourself. It is easy and fun!
+        </p>
+        <p className={styles.cta}>
+          <Link href="/meals/share">Share Your Favorite Recipe</Link>
+        </p>
+      </header>
+      <main className={styles.main}>
+        <Suspense
+          fallback={<p className={styles.loading}>Fetching Meals...</p>}
+        >
+          <Meals />
+        </Suspense>
+      </main>
+    </>
+  );
+}
+```
+
+- 기존에 로딩 페이지로 사용한 loading.js와 loading.module.css는 더이상 사용하지 않는다. 따라서 loading-out.js로 이름 변경(Next.js가 감지 못하도록..)
+
+![](./readmeImage/SuspenseLoading.gif)
