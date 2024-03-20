@@ -52,7 +52,7 @@ export default function MealsLayout({ children }) {
 - 이 말인 즉, 중첩 레이아웃이 있어도 root 레이아웃의 children 속성을 받아들여 감싸진 내용을 출력한다.
 - 감싸진 내용에는 페이지와 기타 레이아웃(중첩 레이아웃)을 포함한다.
 
-![](./image/layout.png)
+![](./readmeImage/layout.png)
 
 <br>
 
@@ -94,7 +94,7 @@ export default function MainHeader() {
   - `priority` 속성을 추가하여 이미지가 깜빡임 없이 우선적으로 로딩되도록 함.
   - 🔗 [NextJS | `<Image>`](https://nextjs.org/docs/app/api-reference/components/image)
 
-![](./image/header.png)
+![](./readmeImage/header.png)
 
 <br>
 
@@ -276,7 +276,7 @@ export default function ImageSlideshow() {
 ```
 
 - `useState`를 필요로하는 컴포넌트를 가지고 있으며 이는 클라이언트 컴포넌트에서만 작동한다는 오류가 발생.
-  ![](./image/err1.png)
+  ![](./readmeImage/err1.png)
 
 <br>
 
@@ -358,7 +358,7 @@ export default function ImageSlideshow() {
 }
 ```
 
-![](./image/slideshow.gif)
+![](./readmeImage/slideshow.gif)
 
 <br>
 
@@ -390,7 +390,7 @@ export default function NavLink({ href, children }) {
 }
 ```
 
-![](./image/pathActive.gif)
+![](./readmeImage/pathActive.gif)
 
 <br>
 
@@ -434,7 +434,7 @@ export default function MealsGrid({ meals }) {
     <ul className={styles.meals}>
       {meals.map((meal) => (
         <li key={meal.id}>
-          <MealItem {...meals} />
+          <MealItem {...meal} />
         </li>
       ))}
     </ul>
@@ -474,7 +474,7 @@ export default function MealItem({ title, slug, image, summary, creator }) {
 
 - [Next.js | `<Image fill>`](https://nextjs.org/docs/app/api-reference/components/image#fill)
 
-![](./image/mealsPage.png)
+![](./readmeImage/mealsPage.png)
 
 <br>
 
@@ -694,3 +694,54 @@ initData();
 <br>
 
 ### 📖 DB에서 데이터 불러오기
+
+```js
+// lib/meals.js
+import sql from "better-sqlite3";
+
+const db = sql("meals.db");
+
+export async function getMeals() {
+  await new Promise((resolve) => setTimeout(resolve, 2000)); // 임의의 딜레이 발생
+  return db.prepare(`SELECT * FROM meals`).all();
+}
+
+// app/meals/page.js
+import Link from "next/link";
+import styles from "./page.module.css";
+import MealsGrid from "@/components/meals/meals-grid";
+import { getMeals } from "@/lib/meals";
+
+export default async function MealsPage() {
+  const meals = await getMeals();
+  return (
+    <>
+      <header className={styles.header}>
+        <h1>
+          Delicious meals, created
+          <span className={styles.highlight}> by you</span>
+        </h1>
+        <p>
+          Choose your favorite recipe and cook it yourself. It is easy and fun!
+        </p>
+        <p className={styles.cta}>
+          <Link href="/meals/share">Share Your Favorite Recipe</Link>
+        </p>
+      </header>
+      <main className={styles.main}>
+        <MealsGrid meals={meals} />
+      </main>
+    </>
+  );
+}
+```
+
+- `getMeals()`
+
+  - `all` : prepare안에 작성한 명령문을 통해 가져올 모든 데이터를 fetch할 때 사용.
+  - 만약 하나의 데이터만 가져오고 싶다면 `get`을 사용하면 됨.
+    - 해당 함수를 async로 선언(?)함으로써 Promise를 사용할 것임을 알 수 있고 자체적으로 딜레이(차후에 로딩)를 발생시킨 후, db 데이터를 프로미스로 리턴
+
+- page.js에서 `getMeals()`를 불러오는데 리턴되는 것이 프로미스이므로 `await`을 사용하였다.
+
+![](./readmeImage/mealsData.gif)
