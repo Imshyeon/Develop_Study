@@ -815,3 +815,10 @@ export default function MealsPage() {
 - 기존에 로딩 페이지로 사용한 loading.js와 loading.module.css는 더이상 사용하지 않는다. 따라서 loading-out.js로 이름 변경(Next.js가 감지 못하도록..)
 
 ![](./readmeImage/SuspenseLoading.gif)
+
+<br>
+
+### 📖 오류 처리 방법
+
+- 에러 페이지는 error 파일과 같은 폴더에 있거나 중첩된 페이지나 레이아웃에서 발생한 에러만 처리한다.
+- 따라서 Root(app 폴더)에 작성하여 어떤 페이지에서 작성한 에러도 잡을 수 있도록 할 수 있다.
