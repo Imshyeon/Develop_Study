@@ -359,3 +359,35 @@ export default function ImageSlideshow() {
 ```
 
 ![](./image/slideshow.gif)
+
+<br>
+
+### 📖 클라이언트 컴포넌트의 효율적 사용
+
+- 필요한 컴포넌트만 클라이언트 컴포넌트로 변환하여 대부분의 컴포넌트가 서버 컴포넌트로 유지되고 대부분의 컴포넌트에서 서버 컴포넌트의 이점을 잃지 않도록 하려면 컴포넌트 트리를 가능한 아래로 내려가서 `use client`를 추가하는 것이 좋다.
+
+```js
+// components/main-header/nav-link.js
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import styles from "./nav-link.module.css";
+
+export default function NavLink({ href, children }) {
+  const path = usePathname();
+
+  return (
+    <Link
+      href={href}
+      className={
+        path.startsWith(href) ? `${styles.link} ${styles.active}` : styles.link
+      }
+    >
+      {children}
+    </Link>
+  );
+}
+```
+
+![](./image/pathActive.gif)
