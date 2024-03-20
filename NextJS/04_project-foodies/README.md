@@ -165,3 +165,197 @@ export default function MainHeader() {
 <br>
 
 ### 📖 시작 페이지 내용 채우기
+
+```js
+// app/page.js
+import Link from "next/link";
+import styles from "./page.module.css";
+import ImageSlideshow from "@/components/images/image-slideshow";
+
+export default function Home() {
+  return (
+    <>
+      <header className={styles.header}>
+        {/* 이미지 슬라이드쇼 */}
+        <div className={styles.slideshow}>
+          <ImageSlideshow />
+        </div>
+        <div>
+          <div className={styles.hero}>
+            <h1>NextLevel Food for NextLevel Foodies</h1>
+            <p>Taste & share food from all over the world.</p>
+          </div>
+          <div className={styles.cta}>
+            <Link href="/community">Join the Comminity</Link>
+            <Link href="/meals">Explore Meals</Link>
+          </div>
+        </div>
+      </header>
+      <main>
+        <section className={styles.section}>
+          <h2>How it works</h2>
+          <p>
+            NextLevel Food is a platform for foodies to share their favorite
+            recipes with the world. It&apos;s a place to discover new dishes,
+            and to connect with other food lovers.
+          </p>
+          <p>
+            NextLevel Food is a place to discover new dishes, and to connect
+            with other food lovers.
+          </p>
+        </section>
+
+        <section className={styles.section}>
+          <h2>Why NextLevel Food?</h2>
+          <p>
+            NextLevel Food is a platform for foodies to share their favorite
+            recipes with the world. It&apos;s a place to discover new dishes,
+            and to connect with other food lovers.
+          </p>
+          <p>
+            NextLevel Food is a place to discover new dishes, and to connect
+            with other food lovers.
+          </p>
+        </section>
+      </main>
+    </>
+  );
+}
+
+
+// components/images/image-slideshow.js
+import { useEffect, useState } from "react";
+import Image from "next/image";
+
+import burgerImg from "@/assets/burger.jpg";
+import curryImg from "@/assets/curry.jpg";
+import dumplingsImg from "@/assets/dumplings.jpg";
+import macncheeseImg from "@/assets/macncheese.jpg";
+import pizzaImg from "@/assets/pizza.jpg";
+import schnitzelImg from "@/assets/schnitzel.jpg";
+import tomatoSaladImg from "@/assets/tomato-salad.jpg";
+import classes from "./image-slideshow.module.css";
+
+const images = [
+  { image: burgerImg, alt: "A delicious, juicy burger" },
+  { image: curryImg, alt: "A delicious, spicy curry" },
+  { image: dumplingsImg, alt: "Steamed dumplings" },
+  { image: macncheeseImg, alt: "Mac and cheese" },
+  { image: pizzaImg, alt: "A delicious pizza" },
+  { image: schnitzelImg, alt: "A delicious schnitzel" },
+  { image: tomatoSaladImg, alt: "A delicious tomato salad" },
+];
+
+export default function ImageSlideshow() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    //   이미지 인덱스를 5초마다 변경하고 슬라이드쇼처럼 보이기 위함.
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) =>
+        prevIndex < images.length - 1 ? prevIndex + 1 : 0
+      );
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className={classes.slideshow}>
+      {images.map((image, index) => (
+        <Image
+          key={index}
+          src={image.image}
+          className={index === currentImageIndex ? classes.active : ""}
+          alt={image.alt}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+- `useState`를 필요로하는 컴포넌트를 가지고 있으며 이는 클라이언트 컴포넌트에서만 작동한다는 오류가 발생.
+  ![](./image/err1.png)
+
+<br>
+
+#### 💎 리액트 서버 컴포넌트 vs. 클라이언트 컴포넌트
+
+- Next.js 뿐만 아니라 리액트 또한 대부분의 리액트 앱에서 자체적으로 구분이 있다.
+  > 리액트는 기본적으로 클라이언트 컴포넌트를 사용하고 있다. 리액트는 순수한 클라이언트 사이드 라이브러리로 브라우저에서 클라이언트 측에서 코드를 실행한다.
+- Next.js에서는 풀스택 프레임워크이므로 이러한 특성이 변경된다. 따라서 코드가 백엔드에서도 실행된다.
+  > 기본적으로 Next.js 프로젝트에서 가지고 있는 리액트 컴포넌트들은 그것들이 페이지인지, 레이아웃인지, 기본 컴포넌트인지에 상관없이 오직 서버에서만 렌더링된다. 이것이 리액트 서버 컴포넌트라고 불리는 이유이다.
+
+<br><br>
+
+1. 리액트 서버 컴포넌트 (RSC)
+
+   - 기본적으로 모든 리액트 컴포넌트는 서버에서만 렌더링 된다.
+   - 그래서 컴포넌트에 `console.log`를 사용하면 브라우저의 콘솔에는 뜨지 않고 서버(백엔드)의 콘솔에 표시되는 것이다.
+   - The backend executes the server component functions and hence derives the to-be-rendered HTML code.
+   - The client-side receives and renders the to-be-rendered HTML code
+     > 서버 컴포넌트를 사용하면 다운로드해야 하는 클라이언트 측의 자바스크립트 코드가 줄어들 수 있어 웹 사이트의 성능을 향상시킬 수 있다. 그리고 이것은 검색 엔진 최적화에도 좋다.
+   - 웹 검색 크롤러들은 완성 콘텐츠를 포함하는 페이지를 볼 수 있기 때문이다.
+
+2. 클라이언트 컴포넌트
+   - 페이지의 소스 코드를 보면 본질적으로 비어있는 것을 볼 수 있다. 왜냐하면 모든 내용은 클라이언트 측 코드와 클라이언트 측 컴포넌트의 도움으로, 클라이언트 측에서 생성되고 채워지기 때문이다.
+   - Next.js에서 클라이언트 컴포넌트를 만들 수 있다. 그러한 컴포넌트들은 서버에서 사전 렌더링 되는 것들이고 잠재적으로는 클라이언트에 렌더링될 수 있다.
+   - 만약 Next.js에서 클라이언트 컴포넌트를 만들고자 한다면 컴포넌트를 잡고있는 파일 위에 특별한 지시어(use Client)를 사용해야한다.
+
+```js
+// components/images/image-slideshow.js
+"use client"; // useState, useEffect와 같은 리액트 훅과 이벤트 트리거를 사용하기 위함
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+
+import burgerImg from "@/assets/burger.jpg";
+import curryImg from "@/assets/curry.jpg";
+import dumplingsImg from "@/assets/dumplings.jpg";
+import macncheeseImg from "@/assets/macncheese.jpg";
+import pizzaImg from "@/assets/pizza.jpg";
+import schnitzelImg from "@/assets/schnitzel.jpg";
+import tomatoSaladImg from "@/assets/tomato-salad.jpg";
+import classes from "./image-slideshow.module.css";
+
+const images = [
+  { image: burgerImg, alt: "A delicious, juicy burger" },
+  { image: curryImg, alt: "A delicious, spicy curry" },
+  { image: dumplingsImg, alt: "Steamed dumplings" },
+  { image: macncheeseImg, alt: "Mac and cheese" },
+  { image: pizzaImg, alt: "A delicious pizza" },
+  { image: schnitzelImg, alt: "A delicious schnitzel" },
+  { image: tomatoSaladImg, alt: "A delicious tomato salad" },
+];
+
+export default function ImageSlideshow() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    //   이미지 인덱스를 5초마다 변경하고 슬라이드쇼처럼 보이기 위함.
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) =>
+        prevIndex < images.length - 1 ? prevIndex + 1 : 0
+      );
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className={classes.slideshow}>
+      {images.map((image, index) => (
+        <Image
+          key={index}
+          src={image.image}
+          className={index === currentImageIndex ? classes.active : ""}
+          alt={image.alt}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+![](./image/slideshow.gif)
