@@ -745,3 +745,22 @@ export default async function MealsPage() {
 - page.js에서 `getMeals()`를 불러오는데 리턴되는 것이 프로미스이므로 `await`을 사용하였다.
 
 ![](./readmeImage/mealsData.gif)
+
+<br>
+
+### 📖 로딩 페이지 추가
+
+- Next.js는 유저가 들어갔던 페이지를 모두 캐싱한다. (해당 페이지의 데이터까지)
+- 따라서 새로고침할 때만 페이지가 다시 설계되는 것이다.
+- 그러므로 로딩될 때의 페이지를 작성하는 것이 유저 경험에도 좋다!
+
+```js
+// app/meals/loading.js
+import styles from "./loading.module.css";
+
+export default function MealsLoadingPage() {
+  return <p className={styles.loading}>Fetching Meals...</p>;
+}
+```
+
+![](./readmeImage/Loading.gif)
