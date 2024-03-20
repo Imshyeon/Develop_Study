@@ -822,3 +822,32 @@ export default function MealsPage() {
 
 - 에러 페이지는 error 파일과 같은 폴더에 있거나 중첩된 페이지나 레이아웃에서 발생한 에러만 처리한다.
 - 따라서 Root(app 폴더)에 작성하여 어떤 페이지에서 작성한 에러도 잡을 수 있도록 할 수 있다.
+
+```js
+// app/meals/error.js
+"use client";
+export default function MealsErrorPage({ error }) {
+  return (
+    <main className="error">
+      <h1>오류가 발생했습니다!</h1>
+      <p>{error.message}</p>
+    </main>
+  );
+}
+```
+
+<br>
+
+### 📖 'Not Found' 상태 처리 방법
+
+```js
+// app/not-found.js
+export default function NotFoundPage({ error }) {
+  return (
+    <main className="not-found">
+      <h1>Not Found</h1>
+      <p>요청한 페이지 혹은 리소스를 찾을 수 없습니다.</p>
+    </main>
+  );
+}
+```
