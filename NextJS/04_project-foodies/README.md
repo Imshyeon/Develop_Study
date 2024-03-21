@@ -851,3 +851,51 @@ export default function NotFoundPage({ error }) {
   );
 }
 ```
+
+<br>
+
+### 📖 동적 경로와 경로 매개 변수를 활용한 Meals 세부내용 로딩 및 렌더링
+
+```js
+// lib/meals.js
+export function getMeal(slug) {
+  return db.prepare("SELECT * FROM meals WHERE slug = ?").get(slug);
+}
+
+// app/meals/[mealSlug]/page.js
+import { getMeal } from "@/lib/meals";
+import styles from "./page.module.css";
+import Image from "next/image";
+
+export default function MealDetailPage({ params }) {
+  const meal = getMeal(params.mealSlug);
+  meal.instructions = meal.instructions.replace(/\n/g, "<br />");
+
+  return (
+    <>
+      <header className={styles.header}>
+        <div className={styles.image}>
+          <Image src={meal.image} fill />
+        </div>
+        <div className={styles.headerText}>
+          <h1>{meal.title}</h1>
+          <p className={styles.creator}>
+            by <a href={`mailto:${meal.creator_email}`}>{meal.creator}</a>
+          </p>
+          <p className={styles.summary}>{meal.summary}</p>
+        </div>
+      </header>
+      <main>
+        <p
+          className={styles.instructions}
+          dangerouslySetInnerHTML={{ __html: meal.instructions }}
+        ></p>
+      </main>
+    </>
+  );
+}
+```
+
+- `dangerouslySetInnerHTML` : 컨텐츠를 HTML로 출력시키면 크로스 사이트 스크립트(XSS) 공격에 노출될 수 있다. [참고](https://ko.legacy.reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml)
+
+![](./readmeImage/mealDetail.gif)
