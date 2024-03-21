@@ -947,3 +947,162 @@ export default function MealDetailPage({ params }) {
 ```
 
 - `notFound` : 해당 컴포넌트가 실행되는 것을 멈추고 가장 가까운 not-found나 오류화면을 보여준다.
+
+<br>
+
+### 📖 'Share Meal' 양식 사용에 대한 기초
+
+```js
+// app/meals/share/page.js
+import classes from "./page.module.css";
+
+export default function ShareMealPage() {
+  return (
+    <>
+      <header className={classes.header}>
+        <h1>
+          Share your <span className={classes.highlight}>favorite meal</span>
+        </h1>
+        <p>Or any other meal you feel needs sharing!</p>
+      </header>
+      <main className={classes.main}>
+        <form className={classes.form}>
+          <div className={classes.row}>
+            <p>
+              <label htmlFor="name">Your name</label>
+              <input type="text" id="name" name="name" required />
+            </p>
+            <p>
+              <label htmlFor="email">Your email</label>
+              <input type="email" id="email" name="email" required />
+            </p>
+          </div>
+          <p>
+            <label htmlFor="title">Title</label>
+            <input type="text" id="title" name="title" required />
+          </p>
+          <p>
+            <label htmlFor="summary">Short Summary</label>
+            <input type="text" id="summary" name="summary" required />
+          </p>
+          <p>
+            <label htmlFor="instructions">Instructions</label>
+            <textarea
+              id="instructions"
+              name="instructions"
+              rows="10"
+              required
+            ></textarea>
+          </p>
+          IMAGE PICKER
+          <p className={classes.actions}>
+            <button type="submit">Share Meal</button>
+          </p>
+        </form>
+      </main>
+    </>
+  );
+}
+```
+
+<br>
+
+### 📖 커스텀 이미지 피커(선택 도구) 입력 컴포넌트에 대한 기초
+
+```js
+// components/meals/image-picker.js
+"use client";
+
+import { useRef } from "react";
+import styles from "./image-picker.module.css";
+
+export default function ImagePicker({ label, name }) {
+  const imageInputRef = useRef();
+
+  function handlePickClick() {
+    imageInputRef.current.click();
+  }
+
+  return (
+    <div className={styles.picker}>
+      <label htmlFor={name}>{label}</label>
+      <div className={styles.controls}>
+        <input
+          className={styles.input}
+          type="file"
+          id={name}
+          accept="image/png, image/jpeg"
+          name={name}
+          ref={imageInputRef}
+        />
+        <button
+          className={styles.button}
+          type="button"
+          onClick={handlePickClick}
+        >
+          Pick an Image
+        </button>
+      </div>
+    </div>
+  );
+}
+
+
+// app/meals/share/page.js
+import ImagePicker from "@/components/meals/image-picker";
+import classes from "./page.module.css";
+
+export default function ShareMealPage() {
+  return (
+    <>
+      <header className={classes.header}>
+        <h1>
+          Share your <span className={classes.highlight}>favorite meal</span>
+        </h1>
+        <p>Or any other meal you feel needs sharing!</p>
+      </header>
+      <main className={classes.main}>
+        <form className={classes.form}>
+          <div className={classes.row}>
+            <p>
+              <label htmlFor="name">Your name</label>
+              <input type="text" id="name" name="name" required />
+            </p>
+            <p>
+              <label htmlFor="email">Your email</label>
+              <input type="email" id="email" name="email" required />
+            </p>
+          </div>
+          <p>
+            <label htmlFor="title">Title</label>
+            <input type="text" id="title" name="title" required />
+          </p>
+          <p>
+            <label htmlFor="summary">Short Summary</label>
+            <input type="text" id="summary" name="summary" required />
+          </p>
+          <p>
+            <label htmlFor="instructions">Instructions</label>
+            <textarea
+              id="instructions"
+              name="instructions"
+              rows="10"
+              required
+            ></textarea>
+          </p>
+          <ImagePicker />
+          <p className={classes.actions}>
+            <button type="submit">Share Meal</button>
+          </p>
+        </form>
+      </main>
+    </>
+  );
+}
+```
+
+![](./readmeImage/sharePage.gif)
+
+<br>
+
+### 📖
