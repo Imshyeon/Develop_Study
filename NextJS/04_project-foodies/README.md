@@ -899,3 +899,51 @@ export default function MealDetailPage({ params }) {
 - `dangerouslySetInnerHTML` : 컨텐츠를 HTML로 출력시키면 크로스 사이트 스크립트(XSS) 공격에 노출될 수 있다. [참고](https://ko.legacy.reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml)
 
 ![](./readmeImage/mealDetail.gif)
+
+<br>
+
+### 📖 개별 Meals에 대한 Not Found 오류 전송
+
+```js
+// app/meals/[mealSlug]/page.js
+import { getMeal } from "@/lib/meals";
+import styles from "./page.module.css";
+import Image from "next/image";
+
+import { notFound } from "next/navigation";
+
+export default function MealDetailPage({ params }) {
+  const meal = getMeal(params.mealSlug);
+
+  if (!meal) {
+    notFound();
+  }
+
+  meal.instructions = meal.instructions.replace(/\n/g, "<br />");
+
+  return (
+    <>
+      <header className={styles.header}>
+        <div className={styles.image}>
+          <Image src={meal.image} fill />
+        </div>
+        <div className={styles.headerText}>
+          <h1>{meal.title}</h1>
+          <p className={styles.creator}>
+            by <a href={`mailto:${meal.creator_email}`}>{meal.creator}</a>
+          </p>
+          <p className={styles.summary}>{meal.summary}</p>
+        </div>
+      </header>
+      <main>
+        <p
+          className={styles.instructions}
+          dangerouslySetInnerHTML={{ __html: meal.instructions }}
+        ></p>
+      </main>
+    </>
+  );
+}
+```
+
+- `notFound` : 해당 컴포넌트가 실행되는 것을 멈추고 가장 가까운 not-found나 오류화면을 보여준다.
