@@ -1179,3 +1179,261 @@ export default function ImagePicker({ label, name }) {
 🔗 [MDN | FileReader](https://developer.mozilla.org/ko/docs/Web/API/FileReader)
 
 ![](./readmeImage/imagePicker.gif)
+
+<br>
+
+### 📖 양식 제출 처리를 위한 서버 액션 소개 및 사용방법
+
+```js
+// app/meals/share/page.js
+import ImagePicker from "@/components/meals/image-picker";
+import classes from "./page.module.css";
+
+export default function ShareMealPage() {
+  async function shareMeal(formData) {
+    // 이 함수를 클라이언트 쪽이 아닌 서버 측에서 실행된다. 또한 이 함수는 자동적으로 제출된 폼 데이터를 받는다.
+    "use server";
+
+    const meal = {
+      title: formData.get("title"),
+      creator_email: formData.get("email"),
+      summary: formData.get("summary"),
+      image: formData.get("image"),
+      instructions: formData.get("instructions"),
+      creator: formData.get("name"),
+    };
+
+    console.log(meal);
+  }
+
+  return (
+    <>
+      <header className={classes.header}>
+        <h1>
+          Share your <span className={classes.highlight}>favorite meal</span>
+        </h1>
+        <p>Or any other meal you feel needs sharing!</p>
+      </header>
+      <main className={classes.main}>
+        <form className={classes.form} action={shareMeal}>
+          <div className={classes.row}>
+            <p>
+              <label htmlFor="name">Your name</label>
+              <input type="text" id="name" name="name" required />
+            </p>
+            <p>
+              <label htmlFor="email">Your email</label>
+              <input type="email" id="email" name="email" required />
+            </p>
+          </div>
+          <p>
+            <label htmlFor="title">Title</label>
+            <input type="text" id="title" name="title" required />
+          </p>
+          <p>
+            <label htmlFor="summary">Short Summary</label>
+            <input type="text" id="summary" name="summary" required />
+          </p>
+          <p>
+            <label htmlFor="instructions">Instructions</label>
+            <textarea
+              id="instructions"
+              name="instructions"
+              rows="10"
+              required
+            ></textarea>
+          </p>
+          <ImagePicker name="image" label="Your image" />
+          <p className={classes.actions}>
+            <button type="submit">Share Meal</button>
+          </p>
+        </form>
+      </main>
+    </>
+  );
+}
+```
+
+- 풀스택 어플리케이션을 이미 사용하므로 데이터를 수집하여 서버에 보내는 대신 다른 방식을 사용한다.
+- `'use server'` : Server Action이라는 것을 생성하는데 오직 서버에서만 실행될 수 있게 보장해주는 기능이다.
+  - 컴포넌트의 기본 설정이 서버 컴포넌트인 것과 같이 이것도 오직 서버에서만 사용하도록 한다.
+  - Server Action으로 바꾸기 위해서는 `async` 키워도 또한 붙여야 한다.
+- 이러한 기능을 통해 Server Action을 가지고 form의 action 속성에 값으로 할당할 수 있다.
+- 만약 form이 제출되면 NextJS가 자동으로 요청을 생성하여 웹사이트를 제공하는 NextJS 서버로 보내게 된다.
+
+<br>
+
+### 📖 개별 파일에 서버 액션 저장
+
+```js
+// lib/action.js
+"use server";
+
+export async function shareMeal(formData) {
+  const meal = {
+    title: formData.get("title"),
+    creator_email: formData.get("email"),
+    summary: formData.get("summary"),
+    image: formData.get("image"),
+    instructions: formData.get("instructions"),
+    creator: formData.get("name"),
+  };
+
+  console.log(meal);
+}
+
+// app/meals/share/page.js
+("use client");
+
+import ImagePicker from "@/components/meals/image-picker";
+import classes from "./page.module.css";
+import { shareMeal } from "@/lib/action";
+
+export default function ShareMealPage() {
+  return (
+    <>
+      <header className={classes.header}>
+        <h1>
+          Share your <span className={classes.highlight}>favorite meal</span>
+        </h1>
+        <p>Or any other meal you feel needs sharing!</p>
+      </header>
+      <main className={classes.main}>
+        <form className={classes.form} action={shareMeal}>
+          <div className={classes.row}>
+            <p>
+              <label htmlFor="name">Your name</label>
+              <input type="text" id="name" name="name" required />
+            </p>
+            <p>
+              <label htmlFor="email">Your email</label>
+              <input type="email" id="email" name="email" required />
+            </p>
+          </div>
+          <p>
+            <label htmlFor="title">Title</label>
+            <input type="text" id="title" name="title" required />
+          </p>
+          <p>
+            <label htmlFor="summary">Short Summary</label>
+            <input type="text" id="summary" name="summary" required />
+          </p>
+          <p>
+            <label htmlFor="instructions">Instructions</label>
+            <textarea
+              id="instructions"
+              name="instructions"
+              rows="10"
+              required
+            ></textarea>
+          </p>
+          <ImagePicker name="image" label="Your image" />
+          <p className={classes.actions}>
+            <button type="submit">Share Meal</button>
+          </p>
+        </form>
+      </main>
+    </>
+  );
+}
+```
+
+<br>
+
+### 📖 XSS 보호를 위한 Slug 생성 및 유저 입력 무결 처리하기
+
+- 패키지 설치 : `npm install slugify xss` &rarr; instructions의 경우 HTML을 그대로 표현하므로 XSS에 취약하다. 따라서 xss도 설치
+
+```js
+// lib/meals.js
+import sql from "better-sqlite3";
+import slugify from "slugify";
+import xss from "xss";
+
+const db = sql("meals.db");
+
+// ...
+
+export function saveMeal(meal) {
+  meal.slug = slugify(meal.title, { lower: true });
+  meal.instructions = xss(meal.instructions); // instructions 검열
+}
+```
+
+<br>
+
+### 📖 업로드된 이미지 저장 및 데이터베이스에 데이터 저장
+
+```js
+// lib/meals.js
+import fs from "node:fs"; // 파일시스템 이용
+
+import sql from "better-sqlite3";
+import slugify from "slugify";
+import xss from "xss";
+
+const db = sql("meals.db");
+
+//...
+
+export async function saveMeal(meal) {
+  meal.slug = slugify(meal.title, { lower: true });
+  meal.instructions = xss(meal.instructions); // instructions 검열
+
+  const extension = meal.image.name.split(".").pop(); // 마지막 요소. 즉 확장자 받음
+  const fileName = `${meal.slug}.${extension}`;
+
+  const stream = fs.createWriteStream(`public/images/${fileName}`);
+  const bufferedImage = await meal.image.arrayBuffer(); // arrayBuffer함수가 프로미스를 반환 -> 버퍼로 변환됨.. 따라서 await 키워드 사용
+
+  stream.write(Buffer.from(bufferedImage), (error) => {
+    // write(저장할 chunk, 저장한 후 진행하는 코드(폴백))
+
+    if (error) {
+      // 에러가 있다면 에러에 대한 동작
+      throw new Error("이미지를 저장하는데 실패했습니다.");
+    }
+  }); // chunk : 이미지를 버퍼로..
+
+  meal.image = `/images/${fileName}`; // 모든 이미지에 관한 요청은 자동적으로 public 폴더로 보내짐
+
+  // 데이터베이스에 저장하기
+  db.prepare(
+    `
+    INSERT INTO meals
+     (title, summary, instructions, creator, creator_email, image, slug)
+     VALUES (
+       @title,
+       @summary,
+       @instructions,
+       @creator,
+       @creator_email,
+       @image,
+       @slug
+     )
+  `
+  ).run(meal);
+}
+
+// lib/action.js
+("use server");
+
+import { redirect } from "next/dist/server/api-utils";
+import { saveMeal } from "./meals";
+
+export async function shareMeal(formData) {
+  const meal = {
+    title: formData.get("title"),
+    creator_email: formData.get("email"),
+    summary: formData.get("summary"),
+    image: formData.get("image"),
+    instructions: formData.get("instructions"),
+    creator: formData.get("name"),
+  };
+
+  await saveMeal(meal);
+  redirect("/meals");
+}
+```
+
+![](./readmeImage/saveData.png)
