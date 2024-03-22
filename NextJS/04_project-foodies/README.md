@@ -1879,3 +1879,46 @@ export default function ShareMealPage() {
   - 접근 키 부분으로 스크롤하여 새로운 접근 키 생성. 해당 내용은 공유하면 안된다.
 
 ![](./readmeImage/AWS-finish.gif)
+
+<br>
+
+### 📖 정적 메타 데이터 추가
+
+- 페이지에 적용할 수 있는 메타데이터 추가
+- app/layout.js에 작성된 `metadata`에서 메타데이터 필드를 지정할 수 있다. [🔗 참고](https://nextjs.org/docs/app/building-your-application/optimizing/metadata)
+- `metadata` 상수는 다양한 메타데이터를 추가할 수 있게 해준다. ex. 검색 엔진 크롤러에 노출될 수 있게 하거나 페이지 링크를 X(트위터)나 페이스북에 공유할 때 보여준다.
+
+> - layout에 작성한 메타데이터를 해당 데이터가 감싸고있는 모든 페이지에 자동으로 적용된다.
+> - 만약 페이지에 `metadata`가 존재한다면 페이지의 `metadata`가 우선 적용된다.
+
+```js
+// app/meals/page.js
+export const metadata = {
+  title: "All Meals",
+  description: "Browse the delicious meals shared by our vibrant community.",
+};
+```
+
+<br>
+
+### 📖 동적 메타데이터 추가
+
+- 동적페이지에서는 `metadata`라는 이름의 변수(상수)를 export 하는게 아니라 `generateMetadata`라는 async 함수를 export 하여 메타데이터를 적용시킨다.
+- 만약 이 함수가 존재한다면 NextJS가 대신 실행시켜주며 반드시 이 함수에서 metadata 객체를 반환해야만 한다.
+- 해당 함수는 페이지 컴포넌트가 속성으로 받는 것과 동일한 데이터를 받는다.
+
+```js
+// app/meals/[mealSlug]/page.js
+export async function generateMetadata({ params }) {
+  const meal = getMeal(params.mealSlug);
+
+  if (!meal) {
+    notFound();
+  }
+
+  return {
+    title: meal.title,
+    description: meal.summary,
+  };
+}
+```
