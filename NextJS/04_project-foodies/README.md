@@ -1517,3 +1517,171 @@ export default function ShareMealPage() {
 ```
 
 ![](./readmeImage/pending.gif)
+
+<br>
+
+### 📖 서버 사이드 입력 유효성 확인 추가 방법
+
+- required 속성을 통해서 일차적으로 유효성 검사를 하고 있지만 부족하다.
+- 현재는 간단하게 유효성 검사를 했지만 차후에는 서드파티 패키지를 사용하는 등 더 자세히 해야한다.
+
+```js
+// lib/action.js
+"use server";
+
+import { redirect } from "next/navigation";
+import { saveMeal } from "./meals";
+
+function isInvalidText(text) {
+  return !text || text.trim() === "";
+}
+
+export async function shareMeal(formData) {
+  const meal = {
+    title: formData.get("title"),
+    creator_email: formData.get("email"),
+    summary: formData.get("summary"),
+    image: formData.get("image"),
+    instructions: formData.get("instructions"),
+    creator: formData.get("name"),
+  };
+
+  if (
+    isInvalidText(meal.title) ||
+    isInvalidText(meal.summary) ||
+    isInvalidText(meal.instructions) ||
+    isInvalidText(meal.creator) ||
+    isInvalidText(meal.creator_email) ||
+    !meal.creator_email.instructions("@") ||
+    !meal.image ||
+    meal.image.size === 0
+  ) {
+    throw new Error("Invalid Input");
+  }
+
+  await saveMeal(meal);
+  redirect("/meals");
+}
+```
+
+<br>
+
+### 📖 서버 행동 응답 및 useFormState 작업
+
+- 위처럼 하면 작성했던 모든 데이터가 지워진다.
+- 만약 작성했던 데이터를 남겨두고 싶다면..?
+
+```js
+// lib/action.js
+"use server";
+
+import { redirect } from "next/navigation";
+import { saveMeal } from "./meals";
+
+function isInvalidText(text) {
+  return !text || text.trim() === "";
+}
+
+// shareMeal(prevState, formData)로 변경
+export async function shareMeal(prevState, formData) {
+  const meal = {
+    title: formData.get("title"),
+    creator_email: formData.get("email"),
+    summary: formData.get("summary"),
+    image: formData.get("image"),
+    instructions: formData.get("instructions"),
+    creator: formData.get("name"),
+  };
+
+  if (
+    isInvalidText(meal.title) ||
+    isInvalidText(meal.summary) ||
+    isInvalidText(meal.instructions) ||
+    isInvalidText(meal.creator) ||
+    isInvalidText(meal.creator_email) ||
+    !meal.creator_email.instructions("@") ||
+    !meal.image ||
+    meal.image.size === 0
+  ) {
+    // 직렬화 가능한 것으로 리턴.
+    return {
+      message: "Invalid input.",
+    };
+  }
+
+  await saveMeal(meal);
+  redirect("/meals");
+}
+
+// app/meals/share/page.js
+("use client");
+
+import { useFormState } from "react-dom"; // 추가
+import ImagePicker from "@/components/meals/image-picker";
+import classes from "./page.module.css";
+import { shareMeal } from "@/lib/action";
+import MealsFormSubmit from "@/components/meals/meals-form-submit";
+
+export default function ShareMealPage() {
+  const [state, formAction] = useFormState(shareMeal, { message: null }); // 추가
+
+  return (
+    <>
+      <header className={classes.header}>
+        <h1>
+          Share your <span className={classes.highlight}>favorite meal</span>
+        </h1>
+        <p>Or any other meal you feel needs sharing!</p>
+      </header>
+      <main className={classes.main}>
+        <form className={classes.form} action={formAction}>
+          <div className={classes.row}>
+            <p>
+              <label htmlFor="name">Your name</label>
+              <input type="text" id="name" name="name" required />
+            </p>
+            <p>
+              <label htmlFor="email">Your email</label>
+              <input type="email" id="email" name="email" required />
+            </p>
+          </div>
+          <p>
+            <label htmlFor="title">Title</label>
+            <input type="text" id="title" name="title" required />
+          </p>
+          <p>
+            <label htmlFor="summary">Short Summary</label>
+            <input type="text" id="summary" name="summary" required />
+          </p>
+          <p>
+            <label htmlFor="instructions">Instructions</label>
+            <textarea
+              id="instructions"
+              name="instructions"
+              rows="10"
+              required
+            ></textarea>
+          </p>
+          <ImagePicker name="image" label="Your image" />
+          {/* 추가 */}
+          {state.message && <p>{state.message}</p>}
+          <p className={classes.actions}>
+            <MealsFormSubmit />
+          </p>
+        </form>
+      </main>
+    </>
+  );
+}
+```
+
+- `useFormState` 훅은 리액트의 `useState` 훅과 약간 비슷하게 동작한다.
+- `useFormState` 훅은 Server Actions를 통해 제출될 form을 사용하는 페이지나 컴포넌트의 상태를 관리한다.
+- `useFormState(arg1, arg2)`
+  1. arg1 : form이 제출될 때 동작하는 실제 Server Action
+  2. arg2 : 컴포넌트의 초기 상태. Server Action이 동작하기 전이나 response가 돌아오기 전에 useFormState가 반환할 초기 값.
+- `useFormState`의 반환값은 `useState`처럼 두개의 요소로 되어있다.
+  1. 해당 컴포넌트의 현재 상태 혹은 현재 response. 즉, Server Action으로부터 받은 가장 최근의 응답 또는 초기 상태.
+  2. formAction : form의 action 속성에 값으로 설정
+
+![](./readmeImage/useFormState.png)
