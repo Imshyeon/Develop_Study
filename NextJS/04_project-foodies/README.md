@@ -1714,3 +1714,168 @@ export default function ShareMealPage() {
 <br>
 
 ### 📖 로컬 Filesystem에 파일 저장 금지
+
+- 'The requested resource isn't a valid image for /images/dune-part-two.jpg received text/html; charset=utf-8' 라는 오류가 발생하면서 작성한 새로운 데이터에 사진이 뜨지 않는다.
+- 현재 public/images 폴더에 저장을 하고있다. 따라서 이미지가 보이지 않는다.
+- 개발 환경에서는 해당 폴더에 접근이 가능하지만, 배포 환경에서는 .next 폴더에 복사가 되고 .next 폴더를 사용하게 된다.
+
+  🔗 [Next.js | Static Assets in public](https://nextjs.org/docs/app/building-your-application/optimizing/static-assets)
+  ![](./readmeImage/fs-blob.png)
+  위의 사진 처럼 Vercel blob(혹은 AWS S3)을 사용하는 것을 추천하고 있다.
+
+<br>
+
+### 📖 업로드된 이미지를 클라우드에 저장하기(AWS S3)
+
+- 업로드된 파일(또는 런타임에 생성된 기타 파일)을 로컬 파일 시스템에 저장하는 것은 이상적이지 않다. 대신 AWS S3 같은 클라우드 파일 저장소를 통해 파일을 저장하는 것이 좋다.
+- AWS S3는 환경설정에 따라 파일을 저장하고 제공할 수 있는 AWS 서비스이다.
+
+<br>
+
+#### 💎 1. AWS 계정 만들기
+
+#### 💎 2. S3 버킷 생성 : S3 콘솔로 이동하여 버킷 생성
+
+- 버킷 : 파일을 저장할 수 있는 용기 (이미지를 포함한 모든 파일 저장 가능.)
+- 버킷은 전세계적으로 고유한 이름이어야한다. &rarr; zoekangdev-nextjs-demo-users-image 으로 설정
+
+#### 💎 3. 더미 이미지 파일 업로드
+
+![](./readmeImage/AWS-upload.png)
+
+#### 💎 4. 이미지를 제공할 버킷 환경 설정
+
+- 기본 설정 : lock down. 그 안의 파일이 보호되고 다른 사람이 접근 불가능.
+- 우리의 목적은 모든 사람이 이미지를 볼 수 있도록 하는 것이므로 permission(권한) 탭 &rarr; 공용 액세스 차단(block public access)을 편집 &rarr; 액세스 차단 체크박스 비활성화 &rarr; 저장
+  ![](./readmeImage/AWS-edit.png)
+- 버킷 정책 작성
+  ```json
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "PublicRead",
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": ["s3:GetObject", "s3:GetObjectVersion"],
+        "Resource": ["arn:aws:s3:::zoekangdev-nextjs-demo-users-image/*"]
+      }
+    ]
+  }
+  ```
+- 해당 버킷에는 공개적으로 공유하고 싶지 않은 파일은 추가해선 안된다.
+
+#### 💎 5. S3 이미지를 사용하기 위한 NextJS 코드 업데이트
+
+- public/images 폴더 삭제하여 public/ 만 남도록 한다.
+- .next 폴더 삭제
+- initdb.js 파일 업데이트하여 데이터베이스 편집 : `image: '/images/burger.jpg'` &rarr; `image: 'burger.jpg`
+- components/meals/meal-item.js 편집
+  ```js
+  <Image
+    src={`https://zoekangdev-nextjs-demo-users-image.s3.ap-northeast-2.amazonaws.com/${image}`}
+    alt={title}
+    fill
+  />
+  ```
+- app/meals/[mealSlug]/page.js 편집
+  ```js
+  <Image
+    src={`https://zoekangdev-nextjs-demo-users-image.s3.ap-northeast-2.amazonaws.com/${meal.image}`}
+    alt={meal.title}
+    fill
+  />
+  ```
+- 기존의 데이터베이스인 meals.db 삭제 &rarr; `node initdb.js` 실행하여 데이터베이스 업그레이드
+- 다음과 같은 오류가 발생
+  > Invalid src prop (https://zoekangdev-nextjs-demo-users-image.s3.ap-northeast-2.amazonaws.com/burger.jpg) on `next/image`, hostname "zoekangdev-nextjs-demo-users-image.s3.ap-northeast-2.amazonaws.com" is not configured under images in your `next.config.js` See more info: https://nextjs.org/docs/messages/next-image-unconfigured-host
+
+#### 💎 6. 이미지 소스로 S3 허용
+
+- 위의 오류는 NextJS가 기본적으로 `<Image>` 컴포넌트를 사용할 때 외부 URL을 허용하지 않기 때문에 발생하는 것이다.
+- 오류를 해결하기 위해 URL을 명시적으로 허용해야한다.
+- next.config.js 편집
+  ```js
+  const nextConfig = {
+    images: {
+      remotePatterns: [
+        {
+          protocol: "https",
+          hostname:
+            "zoekangdev-nextjs-demo-users-image.s3.ap-northeast-2.amazonaws.com",
+          port: "",
+          pathname: "/**",
+        },
+      ],
+    },
+  };
+  ```
+- `remotePatternsconfig`을 통해 특정 S3 URL을 이미지의 유효한 소스로 사용 가능하게 되었다.
+  ![](./readmeImage/AWS-images.gif)
+
+#### 💎 7. 업로드된 이미지를 S3에 저장
+
+- 유저가 생성한 이미지 데이터를 S3에 포워딩(forward). 이는 AWS에서 제공하는 패키지인 '@aws-sdk/client-s3'를 통해 가능하다.
+- 설치 : `npm install @aws-sdk/client-s3`
+- lib/meals.js 편집
+  ```js
+  // 가장 상단에 추가
+  import { S3 } from "@aws-sdk/client-s3";
+  const s3 = new S3({
+    region: "ap-northeast-2",
+  });
+  ```
+- `saveMeal()` 편집
+
+  ```js
+  export async function saveMeal(meal) {
+    meal.slug = slugify(meal.title, { lower: true });
+    meal.instructions = xss(meal.instructions); // instructions 검열
+
+    const extension = meal.image.name.split(".").pop(); // 마지막 요소. 즉 확장자 받음
+    const fileName = `${meal.slug}.${extension}`;
+
+    const bufferedImage = await meal.image.arrayBuffer(); // arrayBuffer함수가 프로미스를 반환 -> 버퍼로 변환됨.. 따라서 await 키워드 사용
+
+    s3.putObject({
+      Bucket: "zoekangdev-nextjs-demo-users-image",
+      Key: fileName,
+      Body: Buffer.from(bufferedImage),
+      ContentType: meal.image.type,
+    });
+
+    meal.image = fileName; // 모든 이미지에 관한 요청은 자동적으로 public 폴더로 보내짐
+
+    // 데이터베이스에 저장하기
+    db.prepare(
+      `
+    INSERT INTO meals
+     (title, summary, instructions, creator, creator_email, image, slug)
+     VALUES (
+       @title,
+       @summary,
+       @instructions,
+       @creator,
+       @creator_email,
+       @image,
+       @slug
+     )
+  `
+    ).run(meal);
+  }
+  ```
+
+#### 💎 8. NextJS 백엔드 AWS 접근 권한 부여
+
+- 버킷의 내용을 모두에게 제공하도록 S3를 설정했으나 모든 사람이 버킷에 작성하거나 버킷 내용을 변경할 수 있도록 설정하지 않았고, 또 설정해서도 안된다. 그러나 현재 앱은 이것을 하려고 한다..
+- 앱에 권한을 부여하려면 앱에 대한 AWS 접근 키를 설정해야한다.
+- 루트 NextJS 프로젝트에 .env.local 파일을 추가 &rarr; NextJS에 의해 자동으로 읽히고 거기에 설정된 환경 변수를 앱의 백엔드 부분에서 사용할 수 있게 된다. [참고](https://nextjs.org/docs/app/building-your-application/configuring/environment-variables)
+- .env.local 파일에 두 개의 키-값 쌍을 추가.
+  ```
+  AWS_ACCESS_KEY_ID=<your aws access key>
+  AWS_SECRET_ACCESS_KEY=<your aws secret access key>
+  ```
+  - 해당 접근 코드는 AWS 콘솔 내부에서 얻을 수 있다. 계정 이름 클릭 후 '보안 자격 증명' 클릭
+  - 접근 키 부분으로 스크롤하여 새로운 접근 키 생성. 해당 내용은 공유하면 안된다.
+
+![](./readmeImage/AWS-finish.gif)

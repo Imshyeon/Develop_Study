@@ -9,7 +9,11 @@ export default function MealItem({ title, slug, image, summary, creator }) {
       <header>
         <div className={classes.image}>
           {/* fill : Next.js에게 가능한 공간을 부모 컴포넌트에 의해 정의된 이미지들로 채워야 함을 알려준다. */}
-          <Image src={image} alt={title} fill />
+          <Image
+            src={`https://zoekangdev-nextjs-demo-users-image.s3.ap-northeast-2.amazonaws.com/${image}`}
+            alt={title}
+            fill
+          />
         </div>
         <div className={classes.headerText}>
           <h2>{title}</h2>

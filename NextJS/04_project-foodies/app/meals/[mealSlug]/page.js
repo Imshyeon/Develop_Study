@@ -17,7 +17,11 @@ export default function MealDetailPage({ params }) {
     <>
       <header className={styles.header}>
         <div className={styles.image}>
-          <Image src={meal.image} fill />
+          <Image
+            src={`https://zoekangdev-nextjs-demo-users-image.s3.ap-northeast-2.amazonaws.com/${meal.image}`}
+            alt={meal.title}
+            fill
+          />
         </div>
         <div className={styles.headerText}>
           <h1>{meal.title}</h1>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intersection Observer Example</title>
+  <style>
+    .target {
+      width: 100px;
+      height: 100px;
+      background-color: lightblue;
+      margin: 200vh 0; /* 맨 처음에는 화면 밖에 위치 */
+    }
+  </style>
+</head>
+<body>
+  <button class="buttonForDarkmode">Darkmode</button>
+  <div class="target target-1"></div>
+  <div class="target target-2"></div>
+
+  <script src="app.js" defer></script>
+  <script>
+    // Intersection Observer 생성
+    const observer = new IntersectionObserver(callback, { threshold: 0.5 });
+
+    // 대상 요소 감시
+    const targetElements = document.querySelectorAll('.target');
+    targetElements.forEach(targetElement=>{
+        observer.observe(targetElement);
+    })
+
+    // 콜백 함수 구현
+    function callback(entries, observer) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          console.log('대상 요소가 화면에 나타남');
+          // 여기에서 애니메이션을 추가하거나 필요한 동작을 수행할 수 있음
+        } else {
+          console.log('대상 요소가 화면에서 사라짐');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

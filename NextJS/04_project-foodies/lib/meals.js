@@ -1,3 +1,9 @@
+import { S3 } from "@aws-sdk/client-s3";
+
+const s3 = new S3({
+  region: "ap-northeast-2",
+});
+
 import fs from "node:fs"; // 파일시스템 이용
 
 import sql from "better-sqlite3";
@@ -27,19 +33,16 @@ export async function saveMeal(meal) {
   const extension = meal.image.name.split(".").pop(); // 마지막 요소. 즉 확장자 받음
   const fileName = `${meal.slug}.${extension}`;
 
-  const stream = fs.createWriteStream(`public/images/${fileName}`);
   const bufferedImage = await meal.image.arrayBuffer(); // arrayBuffer함수가 프로미스를 반환 -> 버퍼로 변환됨.. 따라서 await 키워드 사용
 
-  stream.write(Buffer.from(bufferedImage), (error) => {
-    // write(저장할 chunk, 저장한 후 진행하는 코드(폴백))
+  s3.putObject({
+    Bucket: "zoekangdev-nextjs-demo-users-image",
+    Key: fileName,
+    Body: Buffer.from(bufferedImage),
+    ContentType: meal.image.type,
+  });
 
-    if (error) {
-      // 에러가 있다면 에러에 대한 동작
-      throw new Error("이미지를 저장하는데 실패했습니다.");
-    }
-  }); // chunk : 이미지를 버퍼로..
-
-  meal.image = `/images/${fileName}`; // 모든 이미지에 관한 요청은 자동적으로 public 폴더로 보내짐
+  meal.image = fileName; // 모든 이미지에 관한 요청은 자동적으로 public 폴더로 보내짐
 
   // 데이터베이스에 저장하기
   db.prepare(
