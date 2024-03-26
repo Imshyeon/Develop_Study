@@ -219,3 +219,46 @@ export default function ClientsPage() {
   );
 }
 ```
+
+<br>
+
+### 📖 Link href를 설정하는 다른 방법
+
+```js
+import Link from "next/link";
+
+// 모든 클라이언트 나열
+export default function ClientsPage() {
+  const clients = [
+    { id: "max", name: "Maxmilian" },
+    { id: "zoe", name: "Zoe" },
+    { id: "taemin", name: "Taemin" },
+  ];
+  return (
+    <div>
+      <h1>The Clients Page</h1>
+      <ul>
+        {clients.map((client) => (
+          <li key={client.id}>
+            <Link
+              href={{
+                pathname: "/clients/[id]",
+                query: { id: client.id },
+              }}
+            >
+              {client.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+- 자바스크립트의 객체 형태로, Next.js에서 사용하는 특수 객체이다.
+- href 프로퍼티의 값이자 문자열의 대안(문자열로 link를 작성하는 방법의 대안)이다.
+
+<br>
+
+### 📖 프로그래밍 방식으로 네비게이팅하기
