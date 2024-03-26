@@ -2,7 +2,8 @@
 
 [📌 프로젝트 계획](#-프로젝트-계획)<br>
 [📌 프로젝트 구현](#-프로젝트-구현)<br>
-[📌 프로젝트 구현 - Event Detail (동적 라우트) ](#-프로젝트-구현---event-detail-동적-라우트)<br>
+[📌 프로젝트 구현 - Event Detail (동적 라우트)](#-프로젝트-구현---event-detail-동적-라우트)<br>
+[📌 일반적인 레이아웃 래퍼 컴포넌트 추가하기](#-일반적인-레이아웃-래퍼-컴포넌트-추가하기)<br>
 <br>
 
 ## 📌 프로젝트 계획
@@ -310,4 +311,63 @@ export default function EventDetailPage() {
 
 <br>
 
-### 📖 일반적인 레이아웃 래퍼 컴포넌트 추가하기
+## 📌 일반적인 레이아웃 래퍼 컴포넌트 추가하기
+
+- \_app.js에 네비게이션 추가
+- \_app.js가 루트 컴포넌트로서 여러 페이지 컴포넌트가 렌더링되는 곳이다.
+- Next.js는 \_app 컴포넌트를 이용해서 개발자가 만든 페이지 콘텐츠를 전달하고 페이지를 이동할 때 콘텐츠를 표시해준다.
+
+```js
+// _app.js
+import Layout from "../components/layout/layout";
+import "../styles/globals.css";
+
+function MyApp({ Component, pageProps }) {
+  return (
+    <Layout>
+      <Component {...pageProps} />
+    </Layout>
+  );
+}
+
+export default MyApp;
+
+
+// components/layout/layout.js
+import MainHeader from "./main-header.js";
+
+export default function Layout({ children }) {
+  return (
+    <>
+      <MainHeader />
+      <main>{children}</main>
+    </>
+  );
+}
+
+
+// components/layout/main-header.js
+import Link from "next/link";
+import styles from "./main-header.module.css";
+
+export default function MainHeader() {
+  return (
+    <header className={styles.header}>
+      <div className={styles.logo}>
+        <Link href="/">NextEvents</Link>
+      </div>
+      <nav className={styles.navigation}>
+        <ul>
+          <li>
+            <Link href="/events">Browse All Events</Link>
+          </li>
+        </ul>
+      </nav>
+    </header>
+  );
+}
+```
+
+![](./readmeImg/Navigation.gif)
+
+<br>
