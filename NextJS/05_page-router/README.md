@@ -146,3 +146,26 @@ export default function SelectedClientProjectPage() {
 <br>
 
 ### 📖 Catch-All 라우트 추가하기
+
+- 모든 라우트를 한번에 확보하는 방식.
+- 예를 들어, '/blog/2024/03/' 로 접근했을 경우 해당 월에 작성된 모든 블로그 게시물을 불러오는 경우가 있다.
+- [...NAME].js 를 통해 해당하는 경로를 모두 렌더링하도록 정의했기 때문에 Next.js는 /blog 뒤에 무엇이 붙든 페이지를 렌더링한다.
+
+```js
+// /blog/[...blogSlug].js
+import { useRouter } from "next/router";
+
+export default function BlogPostsPage() {
+  const router = useRouter();
+  console.log(router.query); // {blogSlug: ["2024", "03"]}
+  return (
+    <div>
+      <h1>The Blog Posts</h1>
+    </div>
+  );
+}
+```
+
+<br>
+
+### 📖 `<Link>` 컴포넌트로 네비게이팅하기
