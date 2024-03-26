@@ -90,3 +90,59 @@ export default function PortfolioDetailPage() {
   );
 }
 ```
+
+<br>
+
+### 📖 중첩된 동적 라우트 & 경로 구축하기
+
+#### 💎 폴더 생성
+
+> - clients
+> - index.js : 모든 clients를 나열하는 페이지
+> - [id]
+>   - index.js : 특정 client의 모든 project를 나타내는 페이지
+>   - [clientPrjId].js : 특정 client의 특정 project를 나타내는 페이지
+
+```js
+// clients/index.js
+// 모든 클라이언트 나열
+export default function ClientsPage() {
+  return (
+    <div>
+      <h1>The Clients Page</h1>
+    </div>
+  );
+}
+
+// clients/[id]/index.js
+import { useRouter } from "next/router";
+
+export default function ClientProjectsPage() {
+  const router = useRouter();
+  return (
+    <div>
+      <h1>The Projects of a {router.query.id.toUpperCase()} Client</h1>
+    </div>
+  );
+}
+
+// clients/[id]/[clientPrjId].js
+import { useRouter } from "next/router";
+
+export default function SelectedClientProjectPage() {
+  const router = useRouter();
+  console.log(router.query);
+  return (
+    <div>
+      <h1>
+        The Project Page for a {router.query.clientPrjId} for a{" "}
+        {router.query.id.toUpperCase()} Client
+      </h1>
+    </div>
+  );
+}
+```
+
+<br>
+
+### 📖 Catch-All 라우트 추가하기
