@@ -7,7 +7,7 @@ export default function SelectedClientProjectPage() {
     <div>
       <h1>
         The Project Page for a {router.query.clientPrjId} for a{" "}
-        {router.query.id.toUpperCase()} Client
+        {router.query.id} Client
       </h1>
     </div>
   );
