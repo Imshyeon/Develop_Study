@@ -169,3 +169,53 @@ export default function BlogPostsPage() {
 <br>
 
 ### 📖 `<Link>` 컴포넌트로 네비게이팅하기
+
+- 기존의 `<a>` 태그는 새 페이지를 불러오기 위해 새로운 HTTP 요청을 보낸다. 즉, 리액트 앱을 실행할 때 갖는 앱 상태(state)가 바뀐다.
+- `<Link>` 컴포넌트를 통해서 백엔드에서 HTTP 요청을 보낼 필요도 없고 앱 상태가 바뀌지도 않는다.
+  - `href` : 이동할 페이지의 링크
+  - `replace` : 새로운 페이지를 또 띄우지 않고 현재 페이지를 새 페이지로 바꿀 수 있다. &rarr; 뒤로 갈 수 없다.
+
+```js
+// index.js
+import Link from "next/link";
+
+export default function HomePage() {
+  return (
+    <div>
+      <h1>The Home Page</h1>
+      <ul>
+        <li>
+          <Link href="/portfolio">Portfolio</Link>
+        </li>
+        <li>
+          <Link href="/clients">Clients</Link>
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+
+// clients/index.js
+import Link from "next/link";
+
+export default function ClientsPage() {
+  const clients = [
+    { id: "max", name: "Maxmilian" },
+    { id: "zoe", name: "Zoe" },
+    { id: "taemin", name: "Taemin" },
+  ];
+  return (
+    <div>
+      <h1>The Clients Page</h1>
+      <ul>
+        {clients.map((client) => (
+          <li key={client.id}>
+            <Link href={`/clients/${client.id}`}>{client.name}</Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
