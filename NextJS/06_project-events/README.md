@@ -62,3 +62,99 @@ export default function FilteredEventsPage() {
   );
 }
 ```
+
+<br>
+
+### 📖 더미 데이터 & 정적 파일 추가하기
+
+- 프로젝트의 root에 dummy-data.js 생성
+- public/images/ 에 정적 파일 추가
+
+> 이미지는 반드시 public 폴더에 저장해야한다. public 폴더는 Next.js 프로젝트에서는 특수한 역할을 한다. 해당 폴더에 저장되어 있는 이미지나 글꼴 같은 데이터들은 Next.js에서 정적 데이터로 작용하기 때문에 CSS, HTML 코드에서 참조할 수 있다.
+> <br>
+
+> public에 이미지를 저장하면 Next.js에서는 그 폴더에 저장된 모든 콘텐츠를 어플리케이션의 일부로 간주하므로 정적인 콘텐츠로 활용이 가능하고 따라서 웹 사이트의 방문자들이 보일 공공 콘텐츠를 임베드(Embed)할 때 HTML 코드에서 훨씬 수월하게 작업할 수 있게 된다.(public 폴더 밖의 파일과 폴더는 Next.js에서 접근하지 못해 방문자의 브라우저에서 불러오지 못함.)
+
+<br>
+
+### 📖 일반적인 React 컴포넌트 추가하기
+
+- pages 폴더에는 각 페이지에 쓰이는 컴포넌트만 있으므로 별도의 components 폴더를 생성해서 일반적인 React 컴포넌트를 추가하는 것이 좋다.
+
+```js
+// pages/index.js
+import { getFeaturedEvents } from "../dummy-data.js";
+import EventList from "../components/events/event-list.js";
+
+export default function HomePage() {
+  const featuredEvents = getFeaturedEvents();
+  return (
+    <div>
+      <ul>
+        <EventList items={featuredEvents} />
+      </ul>
+    </div>
+  );
+}
+
+
+// components/events/event-list.js
+import EventItem from "./event-item";
+import styles from "./event-list.module.css";
+
+export default function EventList({ items }) {
+  return (
+    <ul className={styles.list}>
+      {items.map((item) => (
+        <EventItem
+          key={item.id}
+          title={item.title}
+          image={item.image}
+          date={item.date}
+          location={item.location}
+          id={item.id}
+        />
+      ))}
+    </ul>
+  );
+}
+
+
+
+// components/events/event-item.js
+import Link from "next/link";
+import styles from "./event-item.module.css";
+
+export default function EventItem({ title, image, date, location, id }) {
+  const humanReadableDate = new Date(date).toLocaleDateString("ko-KR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const formattedAddress = location.replace(",", "\n");
+  const exploreLink = `/events/${id}`;
+
+  return (
+    <li key={id} className={styles.item}>
+      <img src={"/" + image} alt={title} />
+      <div className={styles.content}>
+        <div className={styles.summary}>
+          <h2>{title}</h2>
+          <div className={styles.date}>
+            <time>{humanReadableDate}</time>
+          </div>
+          <div className={styles.address}>
+            <address>{formattedAddress}</address>
+          </div>
+        </div>
+        <div className={styles.actions}>
+          <Link href={exploreLink}>Explore Event</Link>
+        </div>
+      </div>
+    </li>
+  );
+}
+```
+
+<br>
