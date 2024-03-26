@@ -392,3 +392,89 @@ export default function EventsPage() {
 <br>
 
 ## 📌 Filtered Events 페이지 작업하기
+
+### 📖 이벤트 필터링을 위한 필터 양식 추가하기
+
+```js
+// pages/events/index.js
+import { getAllEvents } from "../../dummy-data.js";
+import EventList from "../../components/events/event-list.js";
+import EventsSearch from "../../components/events/events-search.js";
+
+export default function EventsPage() {
+  const events = getAllEvents();
+  return (
+    <div>
+      <EventsSearch />
+      <EventList items={events} />
+    </div>
+  );
+}
+
+
+// components/events/events-search.js
+import Button from "../ui/button";
+import styles from "./events-search.module.css";
+
+export default function EventsSearch({ }) {
+    function submitHandler(event) {
+        event.preventDefault()
+    }
+
+  return (
+    <form className={styles.form} onSubmit={submitHandler}>
+      <div className={styles.controls}>
+        <div className={styles.control}>
+          <label htmlFor="year">Year</label>
+          <select id="year">
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+          </select>
+        </div>
+        <div className={styles.control}>
+          <label htmlFor="month">Month</label>
+          <select id="month">
+            <option value="1" defaultValue>
+              January
+            </option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
+        </div>
+      </div>
+      <Button>Find Events</Button>
+    </form>
+  );
+}
+
+
+// components/ui/button.js
+import Link from "next/link";
+import styles from "./button.module.css";
+
+export default function Button({ children, link, onClick }) {
+  if (link) {
+    return (
+      <Link href={link} className={styles.btn}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <button className={styles.btn} onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+```
+
+<br>
