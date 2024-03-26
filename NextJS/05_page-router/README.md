@@ -17,3 +17,76 @@
 <br>
 
 ### 📖 첫 번째 페이지 추가하기
+
+```js
+// pages/index.js
+export default function HomePage() {
+  return (
+    <div>
+      <h1>The Home Page</h1>
+    </div>
+  );
+}
+```
+
+<br>
+
+### 📖 이름이 붙은 / 정적 라우트 파일 추가하기
+
+```js
+// pages/about.js
+export default function AboutPage() {
+  return (
+    <div>
+      <h1>The About Page</h1>
+    </div>
+  );
+}
+```
+
+<br>
+
+### 📖 중첩 경로 & 라우트로 작업하기
+
+```js
+// pages/portfolio/index.js
+export default function PortfolioPage() {
+  return (
+    <div>
+      <h1>The Portfolio Page</h1>
+    </div>
+  );
+}
+```
+
+- 이러한 방식으로 about페이지도 pages/about/index.js로 변경할 수 있다.
+
+```js
+// pages/about/index.js
+export default function AboutPage() {
+  return (
+    <div>
+      <h1>The About Page</h1>
+    </div>
+  );
+}
+```
+
+<br>
+
+### 📖 동적 경로 & 라우트 추가하기
+
+```js
+import { useRouter } from "next/router";
+
+export default function PortfolioDetailPage() {
+  const router = useRouter();
+  console.log(router.pathname); // /portfolio/[id];
+  console.log(router.query); // {"id" : "2"}
+  return (
+    <div>
+      <h1>The Portfolio Project {router.query.id} Page</h1>
+    </div>
+  );
+}
+```
