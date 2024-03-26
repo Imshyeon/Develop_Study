@@ -2,6 +2,7 @@
 
 [📌 프로젝트 계획](#-프로젝트-계획)<br>
 [📌 프로젝트 구현](#-프로젝트-구현)<br>
+[📌 프로젝트 구현 - Event Detail (동적 라우트) ](#-프로젝트-구현---event-detail-동적-라우트)<br>
 <br>
 
 ## 📌 프로젝트 계획
@@ -265,3 +266,48 @@ export default function EventItem({ title, image, date, location, id }) {
 ```
 
 ![](./readmeImg/EventsPage.png)
+
+<br>
+
+## 📌 프로젝트 구현 - Event Detail (동적 라우트)
+
+### 📖 Event Detail 페이지 추가하기 (동적 라우트)
+
+```js
+// pages/events/[id].js
+import { useRouter } from "next/router";
+import { getEventById } from "../../dummy-data.js";
+import EventSummary from "../../components/event-detail/event-summary.js";
+import EventLogistics from "../../components/event-detail/event-logistics.js";
+import EventContent from "../../components/event-detail/event-content.js";
+
+export default function EventDetailPage() {
+  const router = useRouter();
+  const eventId = router.query.id;
+  const event = getEventById(eventId);
+  if (!event) {
+    return <p>No Event Found!</p>;
+  }
+
+  return (
+    <>
+      <EventSummary title={event.title} />
+      <EventLogistics
+        date={event.date}
+        address={event.location}
+        image={event.image}
+        imageAlt={event.title}
+      />
+      <EventContent>
+        <p>{event.description}</p>
+      </EventContent>
+    </>
+  );
+}
+```
+
+![](./readmeImg/EventDetail.png)
+
+<br>
+
+### 📖 일반적인 레이아웃 래퍼 컴포넌트 추가하기
