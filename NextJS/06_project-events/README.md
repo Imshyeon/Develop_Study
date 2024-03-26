@@ -4,6 +4,8 @@
 [📌 프로젝트 구현](#-프로젝트-구현)<br>
 [📌 프로젝트 구현 - Event Detail (동적 라우트)](#-프로젝트-구현---event-detail-동적-라우트)<br>
 [📌 일반적인 레이아웃 래퍼 컴포넌트 추가하기](#-일반적인-레이아웃-래퍼-컴포넌트-추가하기)<br>
+[📌 All Events 페이지 작업하기](#-all-events-페이지-작업하기)<br>
+[📌 Filtered Events 페이지 작업하기 ](#-filtered-events-페이지-작업하기)<br>
 <br>
 
 ## 📌 프로젝트 계획
@@ -371,3 +373,22 @@ export default function MainHeader() {
 ![](./readmeImg/Navigation.gif)
 
 <br>
+
+## 📌 All Events 페이지 작업하기
+
+```js
+import { getAllEvents } from "../../dummy-data.js";
+import EventList from "../../components/events/event-list.js";
+export default function EventsPage() {
+  const events = getAllEvents();
+  return (
+    <div>
+      <EventList items={events} />
+    </div>
+  );
+}
+```
+
+<br>
+
+## 📌 Filtered Events 페이지 작업하기
