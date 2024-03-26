@@ -158,3 +158,110 @@ export default function EventItem({ title, image, date, location, id }) {
 ```
 
 <br>
+
+### 📖 버튼 & 아이콘 추가하기
+
+#### 💎 버튼
+
+```js
+// components/ui/button.js
+import Link from "next/link";
+import styles from "./button.module.css";
+
+export default function Button({ children, link }) {
+  return (
+    <Link href={link} className={styles.btn}>
+      {children}
+    </Link>
+  );
+}
+
+// components/events/event-item.js
+import Link from "next/link";
+import styles from "./event-item.module.css";
+import Button from "../ui/button";
+
+export default function EventItem({ title, image, date, location, id }) {
+  const humanReadableDate = new Date(date).toLocaleDateString("ko-KR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const formattedAddress = location.replace(",", "\n");
+  const exploreLink = `/events/${id}`;
+
+  return (
+    <li key={id} className={styles.item}>
+      <img src={"/" + image} alt={title} />
+      <div className={styles.content}>
+        <div className={styles.summary}>
+          <h2>{title}</h2>
+          <div className={styles.date}>
+            <time>{humanReadableDate}</time>
+          </div>
+          <div className={styles.address}>
+            <address>{formattedAddress}</address>
+          </div>
+        </div>
+        <div className={styles.actions}>
+          <Button link={exploreLink}>Explore Event</Button>
+        </div>
+      </div>
+    </li>
+  );
+}
+```
+
+<br>
+
+#### 💎 아이콘
+
+```js
+// components/events/event-item.js
+import styles from "./event-item.module.css";
+import Button from "../ui/button.js";
+import DateIcon from "../icons/date-icon.js";
+import AddressIcon from "../icons/address-icon.js";
+import ArrowRightIcon from "../icons/arrow-right-icon.js";
+
+export default function EventItem({ title, image, date, location, id }) {
+  const humanReadableDate = new Date(date).toLocaleDateString("ko-KR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const formattedAddress = location.replace(",", "\n");
+  const exploreLink = `/events/${id}`;
+
+  return (
+    <li key={id} className={styles.item}>
+      <img src={"/" + image} alt={title} />
+      <div className={styles.content}>
+        <div className={styles.summary}>
+          <h2>{title}</h2>
+          <div className={styles.date}>
+            <DateIcon />
+            <time>{humanReadableDate}</time>
+          </div>
+          <div className={styles.address}>
+            <AddressIcon />
+            <address>{formattedAddress}</address>
+          </div>
+        </div>
+        <div className={styles.actions}>
+          <Button link={exploreLink}>
+            <span>Explore Event</span>
+            <span className={styles.icon}>
+              <ArrowRightIcon />
+            </span>
+          </Button>
+        </div>
+      </div>
+    </li>
+  );
+}
+```
+
+![](./readmeImg/EventsPage.png)
