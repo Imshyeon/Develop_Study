@@ -27,3 +27,15 @@ export async function getStaticProps(context) {
     },
   };
 }
+
+export async function getStaticPaths() {
+  // 목적 : 동적 페이지의 어떤 인스턴스를 생성할 지 NextJS에 알린다.
+  return {
+    paths: [
+      { params: { pid: "p1" } },
+      { params: { pid: "p2" } },
+      { params: { pid: "p3" } },
+    ],
+    fallback: false,
+  };
+}
