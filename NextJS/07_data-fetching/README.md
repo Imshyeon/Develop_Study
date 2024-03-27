@@ -162,3 +162,57 @@ export async function getStaticProps() {
 - `npm run build` 명령의 출력을 포함하는 .next 폴더를 보면 server 폴더가 있다. 해당 폴더에서 사전 생성된 HTML 파일을 확인할 수 있다.
 - `npm start`를 통해 프로덕션 준비 페이지를 미리 볼 수 있다.
 - 페이지 소스에는 Next.js가 삽입한 스크립트 태그가 있고 필요한 데이터를 포함한다. 이는 사전 렌더링된 HTML 코드가 리액트 어플리케이션과 연결되는 수화(hydrate) 과정에 필요하다. 그리고 프리페칭한 데이터는 리액트 어플리케이션으로 전달되서 리액트 어플리케이션이 전달된 게 동적 데이터인지 어떤 종류의 데이터를 렌더링할 지 알 수 있다.
+
+<br>
+
+### 📖 증분 정적 생성(ISR) 활용하기
+
+- `npm run build`를 통해서 사전 렌더링이 되는 것이기 때문에 반쪽짜리 사전 렌더링이라고 볼 수 있다.
+- 페이지를 사전 생성하는 것은 꽤나 정적인 것을 구축하는 경우에는 좋은 방법이다.
+- 그러나 만약 자주 바뀌는 데이터가 있는 경우, 페이지를 다시 빌드하고 다시 배포해야 한다.
+
+#### 💎 솔루션 1
+
+- 페이지를 사전 빌드하지만 서버에서 업데이트된 데이터 페칭을 위해 `useEffect`를 사용하는 리액트 컴포넌트에 표준 리액트 코드를 포함한다.
+- 즉, 항상 사전 렌더링 된 데이터를 일부 포함해 페이지를 제공하지만 백그라운드에서 최신 데이터를 페칭해서, 그 데이터가 도착한 후에 로드된 페이지를 업데이트한다.
+
+#### 💎 솔루션 2
+
+- `getStaticProps`는 build 스크립트로 프로젝트를 빌드할 때 실행된다.
+- Next.js는 증분 정적 생성(ISR, Incremental Static Generation)이라는 내장 기능이 있다.
+- 페이지를 빌드할 때 정적으로 한 번만 생성하는 것이 아니라 배포 후에도 재배포 없이 계속 업데이트가 된다는 뜻이다.
+
+  > 따라서 페이지를 사전 생성을 하긴 하지만 최대 X초 마다 들어오는 모든 요청에 대해 주어진 페이지를 Next.js가 재생성 하도록 할 수 있다.
+
+- 페이지가 오래되어서 서버에서 다시 사전 생성되면 새로 생성된 페이지를 서버에 있던 오래된 기존 페이지를 대체하고 캐시되며 향후 방문자느 재생성된 페이지를 보게 된다.
+
+```js
+// pages/index.js
+export async function getStaticProps() {
+  console.log("(Re-)Generating...");
+  const filePath = path.join(process.cwd(), "data", "dummy-backend.json"); // 해당 파일에 대한 절대 경로를 구축
+  const jsonData = await fs.readFile(filePath);
+  const data = JSON.parse(jsonData); // JS 객체로 변경
+  return {
+    props: {
+      products: data.products,
+    },
+    revalidate: 10, // 이 페이지로 들어오는 모든 요청에 대해 마지막으로 재생성된 지 10초가 지나면 재생성되어야 한다로 Next.js에게 알림.
+  };
+}
+```
+
+> 들어오는 요청에 대해서 서버에서 사전 렌더링을 계속 수행할 수 있고 이를 수행하기 위해서는 `getStaticProps`에서 반환하는 객체에서 `props`를 반환할 뿐만 아니라 `revalidate`라고 하는 두번째 키도 추가하기만 하면 된다.
+
+- `revalidate` : Next.js가 페이지를 재생성할 때까지 기다려하는 시간을 초 단위로 작성한다. 이 시간은 어플리케이션의 종류에 따라 달라질 수 있다.
+
+<br>
+
+### 📖 ISR: 내부에서 일어나는 일
+
+`npm run build` 수행. ISR도 수행한다.
+![](./readmeImg/build.png)
+
+- Next.js는 `revalidate`가 10초로 설정되었다는 것을 인식하고 따라서 page/ 즉, 시작페이지, 인덱스 페이지가 10초마다 재생성되어야 한다는 것을 알고 있다.
+- `npm run build` 후 `npm start`를 실행하여 로컬 컴퓨터에서 프로덕션 웹사이트를 볼 수 있다.
+- `getStaticProps` 함수는 서버에서 다시 실행이 되는데, 브라우저에서도 아니고 빌드 프로세스 중에서도 아닌 `npm start`로 배포된 후의 서버에서 실행되는 것이다.
