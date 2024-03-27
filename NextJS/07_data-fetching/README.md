@@ -299,3 +299,26 @@ export async function getStaticProps(context) {
 ```
 
 <br>
+
+### 📖 동적 페이지를 위한 `getStaticPaths`의 개요
+
+위의 코드만을 사용했을 때 다음의 에러가 발생한다.
+
+> Error: getStaticPaths is required for dynamic SSG pages and is missing for '/[pid]'.
+> Read more: https://nextjs.org/docs/messages/invalid-getstaticpaths-value
+
+- Next.js는 기본적으로 페이지를 사전 생성하는데 동적 페이지에서는 그렇지 않다.
+- 즉, 해당 페이지로 연결되는 동적 세그먼트가 있는 경우에 Next.js는 기본 동작으로 페이지를 사전 생성하지 않는다. &rarr; 왜냐하면 **이 페이지는 하나가 아니라 여러 페이지로 이루어져 있기 때문이다.**
+- 상품 ID마다 서로 다른 페이지에 프레임 및 HTML 콘텐츠는 같고 데이터만 다르게 구성된다. Next.js는 사전에 동적 페이지를 위해서 얼마자 많은 페이지를 미리 생성해야하는지 알지 못하고 [pid]에 어떤 값이 지원되는지 알지 못한다.
+
+<br>
+
+> 동적라우트의 경우 NextJS가 더 많은 정보를 요구한다. 동적 페이지에서 어떤 인스턴스가 사전 생성되야 하는지 알려줄 수 있다. 즉, 어떤 [id] 값이 사용 가능한지, 어떤 동적 세그먼트 값을 사용할 수 있는지 알아야 한다. <br>
+
+> &rarr; NextJS가 그 페이지의 여러 인스턴스를 사전 생성할 수 있게 된다. 이를 NextJS에 알려주려면 페이지에 추가할 다른 함수, 즉 페이지 파일에 추가할 수 있는 또 다른 함수를 사용한다. 그 함수가 바로 `getStaticPaths`이다.
+
+```js
+export async function getStaticPaths(){...} // getStaticProps처럼 page 컴포넌트 파일에서만 추가할 수 있는 함수이다.
+```
+
+<br>
