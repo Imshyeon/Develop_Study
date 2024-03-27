@@ -256,3 +256,46 @@ export async function getStaticProps(context) {
   - 데이터 fetching에 실패할 경우 필요한 설정이다.
 
 <br>
+
+### 📖 동적 매개변수 작업하기
+
+- NextJS에 의한 콘텍스트 매개변수를 사용하여 구체적인 매개변수 값을 구할 수 있다. 즉, 경로 상의 동적 세그먼트에 대한 구체적인 값을 알 수 있다.
+- 컴포넌트 함수와 `getStaticProps`에서 매개변수를 추출할 때 차이점이 있다.
+  - 컴포넌트 함수에서 매개변수를 추출하면 컴포넌트 내부에서 사용이 가능하다. 추출된 ID를 사용하거나 일부 백엔드 서버에 요청을 보내 거기에서 fetching하기 위해서이다. 하지만 이러한 과정은 브라우저에서만 이뤄진다.
+  - `getStaticProps`로 데이터를 준비하여 페이지를 사전 렌더링하게 되면 이 경우에는 서버에서 이루어진다.
+  - 서버 상에서 혹은 `getStaticProps`로 구축 과정 중에 페이지를 미리 준비하려면 매개변수로의 액세스가 필요하다. 즉, `getStaticProps` 내부의 동적 경로 세그먼트에 액세스해서 매개 변수 데이터를 통해 컴포넌트에 대한 데이터를 준비한다.
+
+```js
+// pages/[pid].js
+import fs from "fs/promises";
+import path from "path";
+
+export default function ProductDetailPage(props) {
+  const { loadedProduct } = props;
+  return (
+    <>
+      <h1>{loadedProduct.title}</h1>
+      <p>{loadedProduct.description}</p>
+    </>
+  );
+}
+
+export async function getStaticProps(context) {
+  const { params } = context;
+  const productId = params.pid;
+
+  const filePath = path.join(process.cwd(), "data", "dummy-backend.json");
+  const jsonData = await fs.readFile(filePath);
+  const data = JSON.parse(jsonData);
+
+  const product = data.products.find((product) => product.id === productId);
+
+  return {
+    props: {
+      loadedProduct: product,
+    },
+  };
+}
+```
+
+<br>
