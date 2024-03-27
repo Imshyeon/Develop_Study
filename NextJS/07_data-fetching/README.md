@@ -216,3 +216,43 @@ export async function getStaticProps() {
 - Next.js는 `revalidate`가 10초로 설정되었다는 것을 인식하고 따라서 page/ 즉, 시작페이지, 인덱스 페이지가 10초마다 재생성되어야 한다는 것을 알고 있다.
 - `npm run build` 후 `npm start`를 실행하여 로컬 컴퓨터에서 프로덕션 웹사이트를 볼 수 있다.
 - `getStaticProps` 함수는 서버에서 다시 실행이 되는데, 브라우저에서도 아니고 빌드 프로세스 중에서도 아닌 `npm start`로 배포된 후의 서버에서 실행되는 것이다.
+
+<br>
+
+### 📖 `getStaticProps`와 구성 옵션 자세히 살펴보기
+
+```js
+// pages/index.js
+export async function getStaticProps(context) {
+  console.log("(Re-)Generating...");
+  const filePath = path.join(process.cwd(), "data", "dummy-backend.json"); // 해당 파일에 대한 절대 경로를 구축
+  const jsonData = await fs.readFile(filePath);
+  const data = JSON.parse(jsonData); // JS 객체로 변경
+
+  if (!data) {
+    return {
+      redirect: {
+        destination: "/no-data",
+      },
+    };
+  }
+
+  if (data.products.length === 0) {
+    return { notFound: true };
+  }
+
+  return {
+    props: {
+      products: data.products,
+    },
+    revalidate: 10,
+  };
+}
+```
+
+- `notFound` : 참 혹은 거짓의 불리언 값을 필요로 한다. 키를 true로 설정하면 페이지가 404 오류를 반환하며 일반 페이지 대신에 404 오류 페이지를 렌더링한다.
+  - 데이터 fetching에 실패했을 때 404 페이지를 렌더링하는 일반적인 사용 사례(use case)이다.
+- `redirect` : 페이지 콘텐츠가 컴포넌트 콘텐츠를 렌더링하지 않고 다른 페이지, 즉 다른 라우트로 리디렉션 한다.
+  - 데이터 fetching에 실패할 경우 필요한 설정이다.
+
+<br>

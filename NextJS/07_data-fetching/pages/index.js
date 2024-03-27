@@ -13,11 +13,24 @@ export default function HomePage(props) {
   );
 }
 
-export async function getStaticProps() {
+export async function getStaticProps(context) {
   console.log("(Re-)Generating...");
   const filePath = path.join(process.cwd(), "data", "dummy-backend.json"); // 해당 파일에 대한 절대 경로를 구축
   const jsonData = await fs.readFile(filePath);
   const data = JSON.parse(jsonData); // JS 객체로 변경
+
+  if (!data) {
+    return {
+      redirect: {
+        destination: "/no-data",
+      },
+    };
+  }
+
+  if (data.products.length === 0) {
+    return { notFound: true };
+  }
+
   return {
     props: {
       products: data.products,
