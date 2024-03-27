@@ -155,3 +155,10 @@ export async function getStaticProps() {
 ![](./readmeImg/filesystem.gif)
 
 <br>
+
+### 📖 내부에서 일어나고 있는 일
+
+- `npm run build`를 사용하는 build 스크립트는 Next.js 프로젝트를 배포할 때 실행하는 스크립트이다. build 스크립트의 `next build` 명령어가 페이지를 사전 생성한다.
+- `npm run build` 명령의 출력을 포함하는 .next 폴더를 보면 server 폴더가 있다. 해당 폴더에서 사전 생성된 HTML 파일을 확인할 수 있다.
+- `npm start`를 통해 프로덕션 준비 페이지를 미리 볼 수 있다.
+- 페이지 소스에는 Next.js가 삽입한 스크립트 태그가 있고 필요한 데이터를 포함한다. 이는 사전 렌더링된 HTML 코드가 리액트 어플리케이션과 연결되는 수화(hydrate) 과정에 필요하다. 그리고 프리페칭한 데이터는 리액트 어플리케이션으로 전달되서 리액트 어플리케이션이 전달된 게 동적 데이터인지 어떤 종류의 데이터를 렌더링할 지 알 수 있다.
