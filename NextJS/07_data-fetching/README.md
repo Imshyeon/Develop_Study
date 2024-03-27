@@ -75,3 +75,39 @@ export async function getStaticProps(context){...}
 > Next.js는 동적 데이터가 없는 모든 페이지를 사전 렌더링한다.
 
 - 이러한 사전 렌더링은 컴포넌트를 부호화하는 모든 콘텐츠를 검색 엔진이 인식하고 사용자가 웹 사이트르 처음부터 볼 수 있다는 점에서 좋다.
+
+<br>
+
+### 📖 페이지에 `getStaticProps` 추가하기
+
+- `getStaticProps` 함수는 모든 페이지 파일에 추가할 수 있고 페이지에만 추가할 수 있으며 export가 되야한다.
+- 그렇게 하면 Next.js가 페이지를 사전 생성할 때 사용자를 대신하여 `getStaticProps` 함수도 호출한다.
+- `getStaticProps` 함수는 이 페이지가 사전 생성되어야 하는 페이지임을 Next.js에게 알려준다.
+- Next.js는 기본적으로 모든 페이지를 사전 렌더링하지만 차후에 페이지를 사전 렌더링하지 않는 방식을 배움으로써 `getStaticProps`가 Mext.js에 사전 렌더링 하지 말라고 지시하지 않고 페이지를 여전히 사전 생성되도록 한다.
+
+```js
+// pages/index.js
+export default function HomePage(props) {
+  const { products } = props;
+
+  return (
+    <ul>
+      {products.map((product) => (
+        <li key={product.id}>{product.title}</li>
+      ))}
+    </ul>
+  );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      products: [{ id: "p1", title: "Product 1" }],
+    },
+  };
+}
+```
+
+- `getStaticProps`는 props 키가 있는 객체를 항상 반환해야한다. 이 함수가 하는 일은 컴포넌트에 대한 프로퍼티를 준비하는 것이다.
+- 만약 파일에 `getStaticProps` 함수가 있으면 Next.js에서 먼저 해당 함수를 실행(컴포넌트 함수에 대한 props를 준비)하고 두번째로 컴포넌트 함수를 실행한다.
+- `getStaticProps` 함수에서는 원하는 코드를 제한 없이 실행가능하고 클라이언트 사이드에서는 절대 볼 수 없는 코드로 데이터를 페칭하고 HomePage 컴포넌트에 `props`를 통해 데이터를 줄 수 있다.
