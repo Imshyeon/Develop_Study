@@ -111,3 +111,47 @@ export async function getStaticProps() {
 - `getStaticProps`는 props 키가 있는 객체를 항상 반환해야한다. 이 함수가 하는 일은 컴포넌트에 대한 프로퍼티를 준비하는 것이다.
 - 만약 파일에 `getStaticProps` 함수가 있으면 Next.js에서 먼저 해당 함수를 실행(컴포넌트 함수에 대한 props를 준비)하고 두번째로 컴포넌트 함수를 실행한다.
 - `getStaticProps` 함수에서는 원하는 코드를 제한 없이 실행가능하고 클라이언트 사이드에서는 절대 볼 수 없는 코드로 데이터를 페칭하고 HomePage 컴포넌트에 `props`를 통해 데이터를 줄 수 있다.
+
+<br>
+
+### 📖 서버 사이드 코드 실행하기 & Filesystem 사용하기
+
+- Next.js는 `getStaticProps`나 기타 다른 특정 함수에서만 쓰이는 임포트를 확인하고 클라이언트 사이드 코드 번들에서는 해당 임포트를 제거한다.
+- 따라서 클라이언트 사이드 코드, 즉 브라우저 측 리액트 앱 코드가 준비될 때 그 임포트는 사라진다. &rarr; Next.js가 클라이언트 사이드에서 사용되지 않음을 알고 코드는 나눈다.
+
+```js
+// pages/index.js
+import fs from "fs/promises";
+import path from "path";
+
+export default function HomePage(props) {
+  const { products } = props;
+
+  return (
+    <ul>
+      {products.map((product) => (
+        <li key={product.id}>{product.title}</li>
+      ))}
+    </ul>
+  );
+}
+
+export async function getStaticProps() {
+  const filePath = path.join(process.cwd(), "data", "dummy-backend.json"); // 해당 파일에 대한 절대 경로를 구축
+  const jsonData = await fs.readFile(filePath);
+  const data = JSON.parse(jsonData); // JS 객체로 변경
+  return {
+    props: {
+      products: data.products,
+    },
+  };
+}
+```
+
+- `process.cwd()` : 이 코드 파일의 현재 작업 디렉토리를 제공. 이때 현재 작업 디렉토리는 pages 폴더가 아니다.
+  - 해당 파일이 실행될 때 Next.js가 함수를 실행하고 모든 파일이 루트 프로젝트 폴더에 있는 것처럼 취급한다.
+  - 따라서 현재 작업 디렉토리는 pages 폴더가 아닌 전체 프로젝트 폴더가 된다.
+
+![](./readmeImg/filesystem.gif)
+
+<br>
