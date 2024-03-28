@@ -644,3 +644,27 @@ export async function getServerSideProps(context) {
 - 예를 들어, 매우 동적인 데이터가 있다고 하면 데이터가 매초마다 여러번 바뀌게 될 것이고 어떤 페이지를 제공하면 순식간에 구식 페이지가 된다. 이럴 때 `getServerSideProps` 함수를 사용한다.
 
 <br>
+
+### 📖 동적 페이지 & `getServerSideProps`
+
+- 동적 페이지를 제공할 때 `getStaticProps`는 `getStaticPaths`와 함께 사용하여 Next.js에게 어떤 페이지의 인스턴스를 사전 생성할 것인지를 알려줘야한다. 그러나 `getServerSideProps`는 그럴 필요가 없다.
+
+- [uid].js를 테스트하기 위해 products/[pid].js로 [pid].js 위치를 변경한다. 그렇지 않으면 두 개의 동적 세그먼트 페이지가 pages 폴더의 동일한 수준에 존재하므로 충돌이 발생한다.
+
+```js
+// pages/[uid].js
+export default function UserIdPage(props) {
+  return <h1>{props.id}</h1>;
+}
+
+export async function getServerSideProps(context) {
+  const { params } = context;
+  const userId = params.uid;
+
+  return {
+    props: { id: "userid-" + userId },
+  };
+}
+```
+
+> `getServerSideProps` 함수는 서버에서만 작동하므로 Next.js는 아무 페이지도 사전 생성할 필요가 없고 따라서 사전 생성할 대상이 없으니 `getStaticPaths`와 같은 함수를 통해 정보가 필요하지 않다.
