@@ -2,6 +2,7 @@
 
 [📌 기존 React 앱과 Next.js](#-기존-react-앱과-nextjs)<br>
 [📌 Next.js의 사전 렌더링 양식 - 정적 생성(Static Generation)](#-nextjs의-사전-렌더링-양식---정적-생성static-generation)<br>
+[📌 Next.js의 사전 렌더링 방식 - SSR](#-nextjs의-사전-렌더링-방식---ssr)<br>
 <br>
 
 ## 📌 기존 React 앱과 Next.js
@@ -585,3 +586,21 @@ export async function getStaticPaths() {
 - `getStaticPaths`에서 `fallback:true`로 설정하여 dummy-data.js 파일에서 찾을 수 없는 id에 대해서도 페이지를 렌더링할 수 있도록 한다.
 - 컴포넌트 함수에서 `loadedProduct`이 없을 때 Loading... 문구가 뜨도록 한다. &rarr; 잠깐 문구가 뜨다가 static 오류 발생
 - static 오류 발생을 막기 위해서 `getStaticProps` 함수에서 페칭에 실패했을 떄 오류가 있는 누락된 페이지를 리턴하는 것 대신, `notFound: true`로 설정함으로써 404 에러 페이지가 뜨도록 설정한다.
+
+<br>
+
+## 📌 Next.js의 사전 렌더링 방식 - SSR
+
+### 📖 서버 사이드 렌더링(SSR)을 위한 `getServerSideProps`의 개요
+
+- 유입되는 모든 요청에 대한 페이지를 사전 렌더링할 때가 필요하다. 따라서 매 초는 아니지만 유입되는 모든 요청에 대해서나 서버에 도달하는 특정 요청 객체에 접근할 필요가 있다. (ex. 쿠키를 추출해야하는 경우)
+- NextJS는 페이지 컴포넌트 파일을 추가할 수 있는 함수를 제공한다. 이 함수는 페이지 요청이 서버에 도달할 때마다 실행되는 함수이다.
+- 따라서 빌드 시간이나 매초마다 사전 생성하지 않고 서버에서만 작동하는 코드이다.
+- 어플리케이션을 배포한 후 유입되는 모든 요청에 대해서만 재실행된다.
+
+```js
+export async function getServerSideProps(){...}
+```
+
+- 페이지 컴포넌트에 위의 함수가 있으면 NextJS가 해당 함수를 실행하고 해당 페이지에 대한 요청이 들어올 때마다 실행할 것이다.
+- 그러므로 `getStaticProps`나 `getServerSideProps`함수 중 하나만 사용해야 한다. 두 함수가 동일한 작업을 수행해서 충돌을 일으키기 때문이다.
