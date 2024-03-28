@@ -394,3 +394,63 @@ export async function getStaticPaths() {
 <br>
 
 ### 📖 대체 페이지 작업하기 - fallback 작업
+
+- fallback 키를 사용하면 사전 생성되어야 할 페이지가 많을 때 도움이 된다.
+- 모든 상품을 사전 생성하는 것이 물론 최적의 방법은 아니다. 왜냐하면 많은 페이지를 사전 생성하면 시간이 너무 오래 걸리기 때문이다.
+- 또한 방문객이 거의 없는 페이지의 사전 생성은 시간과 자원의 낭비가 된다.
+
+> `fallback: true`로 함으로써 일부 페이지만 사전 렌더링을 할 수 있다.
+
+- `fallback: true` 를 사용하면 paths에 포함되지 않은 페이지라도(즉, pid 매개변수에 대한 배개변수 값이 없더라도) 페이지 방문 시 로딩되는 값이 유효할 수 있도록 NextJS에 요청할 수 있다. &rarr; 사전에 생성되는 것은 아니고 요청이 서버에 도달하는 순간의 시점에 생성된다.
+- 이러한 방법으로 방문이 많은 페이지는 사전 생성하고 방문이 적은 페이지는 서버에 생성하는 것을 미뤄서 필요한 경우에만 사전 생성되게 할 수 있다.
+
+> f`allback`을 사용하려면 컴포넌트 함수에서 폴백 상태를 반환할 수 있게 해줘야 한다.
+
+```js
+import fs from "fs/promises";
+import path from "path";
+
+export default function ProductDetailPage(props) {
+  const { loadedProduct } = props;
+
+  // fallback 상태 반환
+  if (!loadedProduct) {
+    return <p>Loading...</p>;
+  }
+
+  return (
+    <>
+      <h1>{loadedProduct.title}</h1>
+      <p>{loadedProduct.description}</p>
+    </>
+  );
+}
+
+export async function getStaticProps(context) {
+  const { params } = context;
+  const productId = params.pid;
+
+  const filePath = path.join(process.cwd(), "data", "dummy-backend.json");
+  const jsonData = await fs.readFile(filePath);
+  const data = JSON.parse(jsonData);
+
+  const product = data.products.find((product) => product.id === productId);
+
+  return {
+    props: {
+      loadedProduct: product,
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  return {
+    paths: [{ params: { pid: "p1" } }],
+    fallback: true,
+  };
+}
+```
+
+- 만약 `fallback: 'blocking'`로 설정할 경우, 컴포넌트 함수에서 폴백 확인을 할 필요가 없다.
+- 왜냐하면 페이지가 서비스를 제공하기 전에 서버에 완전히 사전 생성되도록 NextJS가 기다릴 것이기 때문이다.
+- 그렇게 되면 페이지 방문자가 응답받는 시간은 길어지지만 수신된 응답은 종료될 것이다.
