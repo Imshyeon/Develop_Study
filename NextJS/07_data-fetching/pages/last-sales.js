@@ -1,35 +1,61 @@
 import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 export default function LastSalesPage() {
   const [sales, setSales] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  //   const [isLoading, setIsLoading] = useState(false);
+
+  const fetcher = (url) => fetch(url).then((res) => res.json());
+  const { data, error } = useSWR(
+    "https://nextjs-course-demo-846e7-default-rtdb.firebaseio.com/sales.json",
+    fetcher
+  );
+
+  console.log(data);
+  // fetcher를 수정해도 되지만 useEffect를 이용.
   useEffect(() => {
-    setIsLoading(true);
-    fetch(
-      "https://nextjs-course-demo-846e7-default-rtdb.firebaseio.com/sales.json"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        const transformedSales = [];
-        for (const key in data) {
-          transformedSales.push({
-            id: key,
-            username: data[key].username,
-            volume: data[key].volume,
-          });
-        }
+    if (data) {
+      const transformedSales = [];
 
-        setSales(transformedSales);
-        setIsLoading(false);
-      }); // 참고 : fetch는 getStaticProps, getServerSideProps에도 사용 가능
-  }, []);
+      for (const key in data) {
+        transformedSales.push({
+          id: key,
+          username: data[key].username,
+          volume: data[key].volume,
+        });
+      }
 
-  if (isLoading) {
-    return <p>Loading...</p>;
+      setSales(transformedSales);
+    }
+  }, [data]);
+
+  //   useEffect(() => {
+  //     setIsLoading(true);
+  //     fetch(
+  //       "https://nextjs-course-demo-846e7-default-rtdb.firebaseio.com/sales.json"
+  //     )
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         const transformedSales = [];
+  //         for (const key in data) {
+  //           transformedSales.push({
+  //             id: key,
+  //             username: data[key].username,
+  //             volume: data[key].volume,
+  //           });
+  //         }
+
+  //         setSales(transformedSales);
+  //         setIsLoading(false);
+  //       }); // 참고 : fetch는 getStaticProps, getServerSideProps에도 사용 가능
+  //   }, []);
+
+  if (error) {
+    return <p>Failed to load.</p>;
   }
 
-  if (!sales) {
-    return <p>No data yet.</p>;
+  if (!data | !sales) {
+    return <p>Loading...</p>;
   }
 
   return (

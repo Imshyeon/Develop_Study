@@ -747,3 +747,98 @@ export default function LastSalesPage() {
 > 데이터를 클라이언트 사이드에서 페칭하고 있기 때문에 사전 렌더링이 이뤄지지만 데이터가 없다.
 
 <br>
+
+### 📖 `useSWR` NextJS 훅 사용하기
+
+🔗 [SWR Vercel](https://swr.vercel.app/ko)
+
+- 이 훅은 기본적으로 HTTP 요청을 보낼 때 fetch API를 사용한다.
+- 이 훅은 캐싱 및 자동 유효성 재검사와 에러 시 요청 재시도 등이 있고 코드 전체를 직접 작성하지 않아도 된다는 장점을 가지고 있다.
+
+1. 설치 : `npm install swr`
+2. 사용하기
+
+```js
+useSWR(<URL>, fetcher)
+```
+
+- 이 훅은 하나 이상의 인수로서 보낼 요청의 식별자가 필요하다. 일반적으로는 그 요청의 URL이 필요하다. 식별자라고 부르는 이유는 이 훅이 같은 URL에 여러 요청을 한번에 묶어 보내기 때문이다.
+- `fetcher` : 요청이 어떤 방식으로 전송될지 정하는 함수. 기본값은 Fetch API를 사용하는 것이다.
+
+```js
+// pages/last-sales.js
+import { useEffect, useState } from "react";
+import useSWR from "swr";
+
+export default function LastSalesPage() {
+  const [sales, setSales] = useState();
+  //   const [isLoading, setIsLoading] = useState(false);
+
+  const fetcher = (url) => fetch(url).then((res) => res.json());
+  const { data, error } = useSWR(
+    "https://nextjs-course-demo-846e7-default-rtdb.firebaseio.com/sales.json",
+    fetcher
+  );
+
+  console.log(data);
+  // fetcher를 수정해도 되지만 useEffect를 이용.
+  useEffect(() => {
+    if (data) {
+      const transformedSales = [];
+
+      for (const key in data) {
+        transformedSales.push({
+          id: key,
+          username: data[key].username,
+          volume: data[key].volume,
+        });
+      }
+
+      setSales(transformedSales);
+    }
+  }, [data]);
+
+  //   useEffect(() => {
+  //     setIsLoading(true);
+  //     fetch(
+  //       "https://nextjs-course-demo-846e7-default-rtdb.firebaseio.com/sales.json"
+  //     )
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         const transformedSales = [];
+  //         for (const key in data) {
+  //           transformedSales.push({
+  //             id: key,
+  //             username: data[key].username,
+  //             volume: data[key].volume,
+  //           });
+  //         }
+
+  //         setSales(transformedSales);
+  //         setIsLoading(false);
+  //       }); // 참고 : fetch는 getStaticProps, getServerSideProps에도 사용 가능
+  //   }, []);
+
+  if (error) {
+    return <p>Failed to load.</p>;
+  }
+
+  if (!data | !sales) {
+    return <p>Loading...</p>;
+  }
+
+  return (
+    <ul>
+      {sales.map((sale) => (
+        <li key={sale.id}>
+          {sale.username} - ${sale.volume}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+![](./readmeImg/useSWR.gif)
+
+<br>
