@@ -668,3 +668,15 @@ export async function getServerSideProps(context) {
 ```
 
 > `getServerSideProps` 함수는 서버에서만 작동하므로 Next.js는 아무 페이지도 사전 생성할 필요가 없고 따라서 사전 생성할 대상이 없으니 `getStaticPaths`와 같은 함수를 통해 정보가 필요하지 않다.
+
+<br>
+
+### 📖 `getServerSideProps` : 내부에서 일어나는 일
+
+![](./readmeImg/build3.png)
+
+- 람다 기호가 있는 페이지들(/[uid], /user-profile)은 사전 생성하지 않고 서버 측에서만 사전 렌더링이 되었다는 뜻이다.
+- 두 페이지 모두 `getServerSideProps`를 사용했기 때문에 해당 페이지들이 사전 생성되지 않았다.
+- `npm start`를 입력 후 '/u1'에 접속했을 때, 서버의 터미널에 `console.log(Server Side Code)`가 표현됨을 볼 수 있다.
+
+<br>
