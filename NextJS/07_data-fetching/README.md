@@ -604,3 +604,26 @@ export async function getServerSideProps(){...}
 
 - 페이지 컴포넌트에 위의 함수가 있으면 NextJS가 해당 함수를 실행하고 해당 페이지에 대한 요청이 들어올 때마다 실행할 것이다.
 - 그러므로 `getStaticProps`나 `getServerSideProps`함수 중 하나만 사용해야 한다. 두 함수가 동일한 작업을 수행해서 충돌을 일으키기 때문이다.
+
+<br>
+
+### 📖 서버 사이드 렌더링에 `getServerSideProps` 사용하기
+
+```js
+// pages/user-profile.js
+// 이 컴포넌트 함수는 어떤 사용자가 렌더링 하는지 먼저 파악해야 하므로 사전 렌더링 불가능.
+export default function UserProfilePage(props) {
+  return <h1>{props.username}</h1>;
+}
+
+export async function getServerSideProps(context) {
+  return { props: { username: "Zoe" } };
+}
+```
+
+- `getServerSideProps`는 `getStaticProps`와 유사하다. `props`는 필수이고 `notFound, redirect`는 선택적인 키이다. 그러나 `revalidate` 키는 필요하지 않을 뿐더러 컴포넌트에 설정할 수도 없다. 왜냐하면 `getServerSideProps` 함수마다 들어오는 요청에 전부 유효성 검사를 실행하기 때문이다.
+- 따라서 일정 시간이 지나도 유효성 재검사를 실행할 필요가 없는 게 항상 실행되기 때문이다.
+
+> `getServerSideProps` 함수는 배포된 서버와 개발 서버에서만 실행이 된다. 사전에 셍성된 정적 함수는 그렇지 않다.
+
+<br>
