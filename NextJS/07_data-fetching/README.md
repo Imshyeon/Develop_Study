@@ -842,3 +842,140 @@ export default function LastSalesPage() {
 ![](./readmeImg/useSWR.gif)
 
 <br>
+
+### 📖 사전 페칭을 클라이언트 사이드 페칭과 결합하기
+
+- 클라이언트 사이드 데이터 페칭과 서버 사이드 사전 렌더링의 결합
+
+```js
+import { useEffect, useState } from "react";
+import useSWR from "swr";
+
+export default function LastSalesPage(props) {
+  const [sales, setSales] = useState(props.sales);
+  //   const [isLoading, setIsLoading] = useState(false);
+
+  const fetcher = (url) => fetch(url).then((res) => res.json());
+  const { data, error } = useSWR(
+    "https://nextjs-course-demo-846e7-default-rtdb.firebaseio.com/sales.json",
+    fetcher
+  );
+
+  console.log(data);
+  // fetcher를 수정해도 되지만 useEffect를 이용.
+  useEffect(() => {
+    if (data) {
+      const transformedSales = [];
+
+      for (const key in data) {
+        transformedSales.push({
+          id: key,
+          username: data[key].username,
+          volume: data[key].volume,
+        });
+      }
+
+      setSales(transformedSales);
+    }
+  }, [data]);
+
+  //   useEffect(() => {
+  //     setIsLoading(true);
+  //     fetch(
+  //       "https://nextjs-course-demo-846e7-default-rtdb.firebaseio.com/sales.json"
+  //     )
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         const transformedSales = [];
+  //         for (const key in data) {
+  //           transformedSales.push({
+  //             id: key,
+  //             username: data[key].username,
+  //             volume: data[key].volume,
+  //           });
+  //         }
+
+  //         setSales(transformedSales);
+  //         setIsLoading(false);
+  //       }); // 참고 : fetch는 getStaticProps, getServerSideProps에도 사용 가능
+  //   }, []);
+
+  if (error) {
+    return <p>Failed to load.</p>;
+  }
+
+  if (!data && !sales) {
+    return <p>Loading...</p>;
+  }
+
+  return (
+    <ul>
+      {sales.map((sale) => (
+        <li key={sale.id}>
+          {sale.username} - ${sale.volume}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export async function getStaticProps(context) {
+  // 리액트 컴포넌트가 아니라 useSWR을 사용할 수 없다.
+
+  // 방법 1
+  //   return fetch(
+  //     "https://nextjs-course-demo-846e7-default-rtdb.firebaseio.com/sales.json"
+  //   )
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       const transformedSales = [];
+  //       for (const key in data) {
+  //         transformedSales.push({
+  //           id: key,
+  //           username: data[key].username,
+  //           volume: data[key].volume,
+  //         });
+  //       }
+
+  //       return {
+  //         props: { sales: transformedSales },
+  //         revalidate: 10,
+  //       };
+  //     });
+
+  // 방법 2
+  const response = await fetch(
+    "https://nextjs-course-demo-846e7-default-rtdb.firebaseio.com/sales.json"
+  );
+  const data = await response.json();
+
+  const transformedSales = [];
+
+  for (const key in data) {
+    transformedSales.push({
+      id: key,
+      username: data[key].username,
+      volume: data[key].volume,
+    });
+  }
+
+  return {
+    props: { sales: transformedSales },
+    revalidate: 10, // npm run build 전 삭제.
+  };
+}
+```
+
+- 데이터가 사전 렌더링된 페이지 소스에 존재하게 된다.
+- 개발 중에는 `revalidate`를 설정하고 배포 시, 삭제하면 페이지 소스에서 표시하기가 쉬워진다. (만료된 상태로는 페이지를 확인하기 힘들기 때문.)
+
+![](./readmeImg/사전렌더링-클라이언트사이드페칭.gif)
+
+<br>
+
+#### 💎 Firebase에서 데이터를 추가했을 때의 비교
+
+![](./readmeImg/firebase-데이터추가.gif)
+
+- firebase에서 데이터를 추가한 후에 추가된 데이터가 페이지에 잘 적용이 됨을 볼 수 있다.
+- 다만, 페이지 소스에서는 초기의 데이터 zoe, taemin만 반영된 것을 보아 새로 추가된 데이터들은 사전 렌더링이 되지 않았음을 알 수 있다.
