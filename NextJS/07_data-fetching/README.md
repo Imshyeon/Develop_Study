@@ -470,9 +470,9 @@ import path from "path";
 export default function ProductDetailPage(props) {
   const { loadedProduct } = props;
 
-  //   if (!loadedProduct) {
-  //     return <p>Loading...</p>;
-  //   }
+  if (!loadedProduct) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <>
@@ -518,3 +518,70 @@ export async function getStaticPaths() {
   };
 }
 ```
+
+<br>
+
+### 📖 대체 페이지 & Not Found 페이지
+
+```js
+import fs from "fs/promises";
+import path from "path";
+
+export default function ProductDetailPage(props) {
+  const { loadedProduct } = props;
+
+  if (!loadedProduct) {
+    return <p>Loading...</p>;
+  }
+
+  return (
+    <>
+      <h1>{loadedProduct.title}</h1>
+      <p>{loadedProduct.description}</p>
+    </>
+  );
+}
+
+async function getData() {
+  const filePath = path.join(process.cwd(), "data", "dummy-backend.json");
+  const jsonData = await fs.readFile(filePath);
+  const data = JSON.parse(jsonData);
+
+  return data;
+}
+
+export async function getStaticProps(context) {
+  const { params } = context;
+  const productId = params.pid;
+
+  const data = await getData();
+  const product = data.products.find((product) => product.id === productId);
+
+  // 페칭에 실패한다면 에러를 일으키는 데이터가 누락된 일반 페이지를 반환하는 대신, 페이지를 찾을 수 없다는 404 에러 페이지를 띄우도록 함.
+  if (!product) {
+    return { notFound: true };
+  }
+
+  return {
+    props: {
+      loadedProduct: product,
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  const data = await getData();
+
+  const ids = data.products.map((product) => product.id);
+  const pathWithParams = ids.map((id) => ({ params: { pid: id } }));
+
+  return {
+    paths: pathWithParams,
+    fallback: true,
+  };
+}
+```
+
+- `getStaticPaths`에서 `fallback:true`로 설정하여 dummy-data.js 파일에서 찾을 수 없는 id에 대해서도 페이지를 렌더링할 수 있도록 한다.
+- 컴포넌트 함수에서 `loadedProduct`이 없을 때 Loading... 문구가 뜨도록 한다. &rarr; 잠깐 문구가 뜨다가 static 오류 발생
+- static 오류 발생을 막기 위해서 `getStaticProps` 함수에서 페칭에 실패했을 떄 오류가 있는 누락된 페이지를 리턴하는 것 대신, `notFound: true`로 설정함으로써 404 에러 페이지가 뜨도록 설정한다.
