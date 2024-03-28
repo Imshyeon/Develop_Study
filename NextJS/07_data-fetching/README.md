@@ -3,6 +3,7 @@
 [📌 기존 React 앱과 Next.js](#-기존-react-앱과-nextjs)<br>
 [📌 Next.js의 사전 렌더링 양식 - 정적 생성(Static Generation)](#-nextjs의-사전-렌더링-양식---정적-생성static-generation)<br>
 [📌 Next.js의 사전 렌더링 방식 - SSR](#-nextjs의-사전-렌더링-방식---ssr)<br>
+[📌 클라이언트 사이드 데이터 페칭](#-클라이언트-사이드-데이터-페칭)<br>
 <br>
 
 ## 📌 기존 React 앱과 Next.js
@@ -678,5 +679,71 @@ export async function getServerSideProps(context) {
 - 람다 기호가 있는 페이지들(/[uid], /user-profile)은 사전 생성하지 않고 서버 측에서만 사전 렌더링이 되었다는 뜻이다.
 - 두 페이지 모두 `getServerSideProps`를 사용했기 때문에 해당 페이지들이 사전 생성되지 않았다.
 - `npm start`를 입력 후 '/u1'에 접속했을 때, 서버의 터미널에 `console.log(Server Side Code)`가 표현됨을 볼 수 있다.
+
+<br>
+
+## 📌 클라이언트 사이드 데이터 페칭
+
+### 📖 클라이언트 사이드 데이터 페칭의 개요
+
+- Next.js를 통해 어플리케이션을 개발할 때, 때로는 사전 렌더링을 할 필요가 없거나 사전 렌더링을 할 수 없는 데이터를 다루게 된다. (ex. 갱신 주기가 잦은 데이터인 경우, 특정 유저에만 한정되는 데이터인 경우, 데이터의 일부분만 표시하는 경우)
+- 위의 경우, 페이지 사전 생성과 데이터 pre-fetching 방식이 제대로 기능하지 못하거나 필요하지 않을 수 있따. 그 경우, 사전 생성이나 pre-fetching대신 리액트 컴포넌트에서 기존 접근법인 `useEffect, fetch` 같은 함수를 이용해서 클라이언트 측 리액트 앱 내의 API에서 데이터를 가져오는 것이 좋다.
+
+<br>
+
+### 📖 클라이언트 사이드 데이터 페칭 구현하기
+
+```js
+// pages/last-sales.js
+import { useEffect, useState } from "react";
+
+export default function LastSalesPage() {
+  const [sales, setSales] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    setIsLoading(true);
+    fetch(
+      "https://nextjs-course-demo-846e7-default-rtdb.firebaseio.com/sales.json"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const transformedSales = [];
+        for (const key in data) {
+          transformedSales.push({
+            id: key,
+            username: data[key].username,
+            volume: data[key].volume,
+          });
+        }
+
+        setSales(transformedSales);
+        setIsLoading(false);
+      }); // 참고 : fetch는 getStaticProps, getServerSideProps에도 사용 가능
+  }, []);
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!sales) {
+    return <p>No data yet.</p>;
+  }
+
+  return (
+    <ul>
+      {sales.map((sale) => (
+        <li key={sale.id}>
+          {sale.username} - ${sale.volume}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+- 이 페이지에서 사용하는 데이터는 Next.js에서 `getStaticProps`와 같은 함수로 준비한 것이 아니기 때문에 Next.js에서 페이지를 사전 렌더링할 때 `useEffect`를 거치지 않는다.
+- 따라서 `<p>No data yet</p>`으로 페이지 사전 렌더링이 이뤄진다.
+
+> 데이터를 클라이언트 사이드에서 페칭하고 있기 때문에 사전 렌더링이 이뤄지지만 데이터가 없다.
 
 <br>
