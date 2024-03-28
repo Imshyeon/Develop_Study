@@ -407,6 +407,7 @@ export async function getStaticPaths() {
 > f`allback`을 사용하려면 컴포넌트 함수에서 폴백 상태를 반환할 수 있게 해줘야 한다.
 
 ```js
+// pages/[pid].js
 import fs from "fs/promises";
 import path from "path";
 
@@ -454,3 +455,66 @@ export async function getStaticPaths() {
 - 만약 `fallback: 'blocking'`로 설정할 경우, 컴포넌트 함수에서 폴백 확인을 할 필요가 없다.
 - 왜냐하면 페이지가 서비스를 제공하기 전에 서버에 완전히 사전 생성되도록 NextJS가 기다릴 것이기 때문이다.
 - 그렇게 되면 페이지 방문자가 응답받는 시간은 길어지지만 수신된 응답은 종료될 것이다.
+
+<br>
+
+### 📖 동적으로 경로 로딩하기
+
+- 실제 작업은 데이터페이스나 파일로부터 [pid]정보를 받게 된다.
+
+```js
+// pages/[pid].js
+import fs from "fs/promises";
+import path from "path";
+
+export default function ProductDetailPage(props) {
+  const { loadedProduct } = props;
+
+  //   if (!loadedProduct) {
+  //     return <p>Loading...</p>;
+  //   }
+
+  return (
+    <>
+      <h1>{loadedProduct.title}</h1>
+      <p>{loadedProduct.description}</p>
+    </>
+  );
+}
+
+// data 받아오는 코드 추출
+async function getData() {
+  const filePath = path.join(process.cwd(), "data", "dummy-backend.json");
+  const jsonData = await fs.readFile(filePath);
+  const data = JSON.parse(jsonData);
+
+  return data;
+}
+
+export async function getStaticProps(context) {
+  const { params } = context;
+  const productId = params.pid;
+
+  const data = await getData();
+  const product = data.products.find((product) => product.id === productId);
+
+  return {
+    props: {
+      loadedProduct: product,
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  // 동적으로 params 받아오기
+  const data = await getData();
+
+  const ids = data.products.map((product) => product.id);
+  const pathWithParams = ids.map((id) => ({ params: { pid: id } }));
+
+  return {
+    paths: pathWithParams,
+    fallback: false,
+  };
+}
+```
