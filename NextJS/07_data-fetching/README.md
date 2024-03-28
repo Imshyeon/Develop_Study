@@ -379,3 +379,18 @@ export async function getStaticPaths() {
   };
 }
 ```
+
+<br>
+
+### 📖 `getStaticPaths`와 링크 사전 fetching : 내부에서 일어나는 일
+
+![](./readmeImg/build2.png)
+![](./readmeImg/pre-fetching.png)
+
+- 위의 사진들을 통해 사전 렌더링되는 페이지는 총 6개이고, `npm start`를 통해 사전 fetching되는 데이터를 보았을 때, p1(p2/p3).json이 사전 페칭되었음을 알 수 있다.
+- 즉 NextJS가 사전 페칭을 한다.
+- 링크(Product 1,2,3)를 클릭하면 서버에 새로운 요청을 보내서 사전 렌더링 된 HTML 파일을 로드하는게 아니라 싱글 페이지 어플리케이션에 계속 머무른다는 것을 알 수 있다.
+
+<br>
+
+### 📖 대체 페이지 작업하기 - fallback 작업
