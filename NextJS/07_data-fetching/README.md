@@ -627,3 +627,20 @@ export async function getServerSideProps(context) {
 > `getServerSideProps` 함수는 배포된 서버와 개발 서버에서만 실행이 된다. 사전에 셍성된 정적 함수는 그렇지 않다.
 
 <br>
+
+### 📖 `getServerSideProps`와 콘텍스트
+
+- 해당 함수가 서버에서만 실행되는 이유는 콘텍스트 객체를 통해 알 수 있다.
+- `getStaticProps` 함수의 context와 달리 매개변수(params) 객체나 덜 중요한 부분에 접근하는 것이 끝이 아니다. 요청(req) 객체 전체에도 접근할 수 있게 된다. 응답(res) 객체에 접근해서 해당 요청을 조정하거나 헤더도 추가할 수 있다.
+
+> context 객체를 든 여러 값과 키를 얻을 수 있고 매개변수 객체에도 여전히 접근할 수 있게 되며 응답(res), 요청(req) 객체에 접근할 수 있다.
+
+- 요청(req)과 응답(res) 객체는 공식 Node.js 기본 입력 메시지와 응답 객체이다.
+
+🔗 [request | Node.js](https://nodejs.org/api/http.html#http_class_http_incomingmessage)<br>
+🔗 [response | Node.js](https://nodejs.org/api/http.html#http_class_http_serverresponse)
+
+- 이러한 것들은 특수 헤더나 쿠키 데이터가 필요할 때 쓰일 수 있고 요청이 들어올 때마다 함수가 실행된다는 것을 확인해서 샤젼에 생성된 정적 함수가 아니라는 것을 확인할 때 필요하다.
+- 예를 들어, 매우 동적인 데이터가 있다고 하면 데이터가 매초마다 여러번 바뀌게 될 것이고 어떤 페이지를 제공하면 순식간에 구식 페이지가 된다. 이럴 때 `getServerSideProps` 함수를 사용한다.
+
+<br>
